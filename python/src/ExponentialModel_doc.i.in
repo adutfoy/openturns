@@ -2,6 +2,8 @@
 "Multivariate stationary exponential covariance function.
 
 Available constructors:
+    ExponentialModel(*spatialDim=1*)
+
     ExponentialModel(*spatialDim, sigma, theta*)
 
     ExponentialModel(*spatialDim, sigma, theta, spatialCorrelation*)
