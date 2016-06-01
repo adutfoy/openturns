@@ -15,7 +15,7 @@ Parameters
 spatialDim : int
     Spatial dimension :math:`n`.
 
-    When not fulfilled, the spatial dimension is equal to the  size of the parameter :math:`\vect{\theta}`.
+    When not fulfilled, the spatial dimension is deduced from the :math:`\vect{\theta}` parameter.
 
     By default, equal to 1.
 thetaScalar : float
