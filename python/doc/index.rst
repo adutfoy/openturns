@@ -18,6 +18,7 @@
     install
     user_manual/user_manual
     examples/examples
+    quick_start/quick_start
     theory
     developer_guide/developer_guide
     bibliography
