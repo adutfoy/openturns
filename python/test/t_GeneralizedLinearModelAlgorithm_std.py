@@ -53,6 +53,21 @@ try:
                         [0.00013144], 1e-5, 1e-5)
     assert_almost_equal(conditionalCovariance.getParameter(), [
                         0.011464782674211804], 1e-5, 1e-3)
+
+    # With no estimation of the covariance model parameters
+    basis = ot.LinearBasisFactory(spatialDimension).build()
+    covarianceModel = ot.DiracCovarianceModel(spatialDimension)
+    algo = ot.GeneralizedLinearModelAlgorithm(X, Y, covarianceModel, basis, True, True, False)
+    algo.run()
+
+    # perform an evaluation
+    result = algo.getResult()
+    metaModel = result.getMetaModel()
+    conditionalCovariance = result.getCovarianceModel()
+    residual = metaModel(X) - Y
+    assert_almost_equal(residual.computeCenteredMoment(2), [0.00013144], 1e-5, 1e-5)
+    assert_almost_equal(conditionalCovariance.getParameter(), [1.0], 0.0, 0.0)
+>>>>>>> Improved GeneralizedLinearModelAlgorithm.
     print("Test Ok")
 
 except:

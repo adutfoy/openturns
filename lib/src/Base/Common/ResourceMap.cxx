@@ -713,6 +713,7 @@ void ResourceMap::loadDefaultConfiguration()
   set("GeneralizedLinearModelAlgorithm-LinearAlgebra", "LAPACK");
   setAsBool("GeneralizedLinearModelAlgorithm-NormalizeData", true);
   setAsBool("GeneralizedLinearModelAlgorithm-KeepCovariance", true);
+  setAsBool("GeneralizedLinearModelAlgorithm-OptimizeParameters", true);
   setAsNumericalScalar( "GeneralizedLinearModelAlgorithm-MeanEpsilon", 1.0e-12 );
   setAsNumericalScalar( "GeneralizedLinearModelAlgorithm-StartingScaling", 1.0e-13 );
   setAsNumericalScalar( "GeneralizedLinearModelAlgorithm-MaximalScaling", 1.0e5 );

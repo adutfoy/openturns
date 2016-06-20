@@ -85,6 +85,7 @@ int main(int argc, char *argv[])
     NumericalSample Y2 = model(X2);
 
     Basis basis = LinearBasisFactory(spatialDimension).build();
+    //DiracCovarianceModel covarianceModel(spatialDimension);
     DiracCovarianceModel covarianceModel(spatialDimension);
     GeneralizedLinearModelAlgorithm algo(X, Y, covarianceModel, basis);
     algo.run();
@@ -93,9 +94,24 @@ int main(int argc, char *argv[])
     GeneralizedLinearModelResult result = algo.getResult();
     NumericalMathFunction metaModel = result.getMetaModel();
     CovarianceModel conditionalCovariance = result.getCovarianceModel();
-    const NumericalSample residual = metaModel(X) - Y;
+    NumericalSample residual = metaModel(X) - Y;
     assert_almost_equal(residual.computeCenteredMoment(2), NumericalPoint(1, 0.00013144), 1e-5, 1e-5);
     assert_almost_equal(conditionalCovariance.getParameter(), NumericalPoint(1, 0.011464782674211804), 1e-5, 1e-3);
+
+    // Now without estimating covariance parameters
+    basis = LinearBasisFactory(spatialDimension).build();
+    covarianceModel = DiracCovarianceModel(spatialDimension);
+    algo = GeneralizedLinearModelAlgorithm(X, Y, covarianceModel, basis, true, true, false);
+    algo.run();
+
+    // perform an evaluation
+    result = algo.getResult();
+    metaModel = result.getMetaModel();
+    conditionalCovariance = result.getCovarianceModel();
+    residual = metaModel(X) - Y;
+    assert_almost_equal(residual.computeCenteredMoment(2), NumericalPoint(1, 0.00013144), 1e-5, 1e-5);
+    assert_almost_equal(conditionalCovariance.getParameter(), NumericalPoint(1, 1.0), 0.0, 0.0);
+
     std::cout << "Test Ok" << std::endl;
 
   }

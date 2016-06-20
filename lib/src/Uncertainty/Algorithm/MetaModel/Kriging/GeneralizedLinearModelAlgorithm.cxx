@@ -59,6 +59,7 @@ GeneralizedLinearModelAlgorithm::GeneralizedLinearModelAlgorithm ()
   , keepCholeskyFactor_(false)
   , method_(0)
   , hasRun_(false)
+  , optimizeParameters_(true)
 {
   // Nothing to do
 }
@@ -87,6 +88,7 @@ GeneralizedLinearModelAlgorithm::GeneralizedLinearModelAlgorithm (const Numerica
   , keepCholeskyFactor_(keepCholeskyFactor)
   , method_(0)
   , hasRun_(false)
+  , optimizeParameters_(optimizeParameters)
 {
   // set data & covariance model
   setData(inputSample, outputSample);
@@ -137,6 +139,7 @@ GeneralizedLinearModelAlgorithm::GeneralizedLinearModelAlgorithm (const Numerica
   , keepCholeskyFactor_(keepCholeskyFactor)
   , method_(0)
   , hasRun_(false)
+  , optimizeParameters_(optimizeParameters)
 {
   // set data & covariance model
   setData(inputSample, outputSample);
@@ -199,6 +202,7 @@ GeneralizedLinearModelAlgorithm::GeneralizedLinearModelAlgorithm (const Numerica
   , keepCholeskyFactor_(keepCholeskyFactor)
   , method_(0)
   , hasRun_(false)
+  , optimizeParameters_(optimizeParameters)
 {
   // set data & covariance model
   setData(inputSample, outputSample);
@@ -249,6 +253,7 @@ GeneralizedLinearModelAlgorithm::GeneralizedLinearModelAlgorithm (const Numerica
   , keepCholeskyFactor_(keepCholeskyFactor)
   , method_(0)
   , hasRun_(false)
+  , optimizeParameters_(optimizeParameters)
 {
   // set data & covariance model
   setData(inputSample, outputSample);
@@ -301,6 +306,7 @@ GeneralizedLinearModelAlgorithm::GeneralizedLinearModelAlgorithm (const Numerica
   , keepCholeskyFactor_(keepCholeskyFactor)
   , method_(0)
   , hasRun_(false)
+  , optimizeParameters_(optimizeParameters)
 {
   // set data & covariance model
   setData(inputSample, outputSample);
@@ -421,15 +427,19 @@ void GeneralizedLinearModelAlgorithm::initializeDefaultOptimizationSolver()
   else
     throw InvalidArgumentException(HERE) << "Unknown optimization solver:" << solverName;
   // Define Optimization Problem
-  // Default problem takes into account the bounds and thus determine the dimension
-  OptimizationProblem problem;
-  // Bounds should be of size spatialDimension + dimension
-  const UnsignedInteger optimizationProblemSize = covarianceModel_.getParameter().getSize();
-  const NumericalPoint lowerBound(optimizationProblemSize, ResourceMap::GetAsNumericalScalar( "GeneralizedLinearModelAlgorithm-DefaultOptimizationLowerBound"));
-  const NumericalPoint upperBound(optimizationProblemSize, ResourceMap::GetAsNumericalScalar( "GeneralizedLinearModelAlgorithm-DefaultOptimizationUpperBound"));
-  const Interval bounds(lowerBound, upperBound);
-  problem.setBounds(bounds);
-  solver_.setProblem(problem);
+  // Bounds should be of size spatialDimension + dimension if dimension > 1, or spatialDimension if dimension = 1
+  const UnsignedInteger optimizationProblemSize = (covarianceModel_.getDimension() == 1 ? covarianceModel_.getParameter().getSize() - 1 : covarianceModel_.getParameter().getSize());
+  // Here we initialize the solver only if there is something to optimize
+  if (optimizationProblemSize > 0)
+    {
+      // Default problem takes into account the bounds and thus determine the dimension
+      OptimizationProblem problem;
+      const NumericalPoint lowerBound(optimizationProblemSize, ResourceMap::GetAsNumericalScalar( "GeneralizedLinearModelAlgorithm-DefaultOptimizationLowerBound"));
+      const NumericalPoint upperBound(optimizationProblemSize, ResourceMap::GetAsNumericalScalar( "GeneralizedLinearModelAlgorithm-DefaultOptimizationUpperBound"));
+      const Interval bounds(lowerBound, upperBound);
+      problem.setBounds(bounds);
+      solver_.setProblem(problem);
+    }
 }
 
 /* Virtual constructor */
@@ -489,7 +499,7 @@ void GeneralizedLinearModelAlgorithm::computeF()
 /* Perform regression */
 void GeneralizedLinearModelAlgorithm::run()
 {
-  // Do not crun again if already computed
+  // Do not run again if already computed
   if (hasRun_) return;
   LOGINFO("normalize the data");
   normalizeInputSample();
@@ -498,7 +508,12 @@ void GeneralizedLinearModelAlgorithm::run()
   const UnsignedInteger outputDimension = outputSample_.getDimension();
   NumericalPointWithDescription covarianceModelParameters;
   // optimization of likelihood function if provided
-  LOGINFO("Optimize the parameter of the marginal covariance model");
+  // Here we call the optimizeLogLikelihood() method even if the
+  // optimizeParameters flag is true, because we need the side-effect
+  // (all the linear algebra) of this method at least for the current
+  // covariance parameters. The flag is used in optimizeLogLikelihood()
+  // to trigger an early exit so no optimization is made.
+  LOGINFO("Optimize the parameter of the covariance model");
   covarianceModelParameters = optimizeLogLikelihood();
   LOGINFO("Store the estimates");
   // Here we do the work twice:
@@ -577,15 +592,20 @@ void GeneralizedLinearModelAlgorithm::run()
 
 NumericalScalar GeneralizedLinearModelAlgorithm::computeLogLikelihood(const NumericalPoint & parameters) const
 {
-  if (parameters.getSize() != covarianceModel_.getParameter().getSize())
+  NumericalPoint fullParameters(parameters);
+  // Special case when the output dimension is 1: only the scale is optimized for, the scale is kept equal to 1
+  // so if covarianceModel_.getDimension(), parameters stores only scales and we add a unit scale
+  if (covarianceModel_.getDimension() == 1) fullParameters.add(1.0);
+  // Now check that the full parameters have a size compatible with the covariance model
+  if (fullParameters.getSize() != covarianceModel_.getParameter().getSize())
     throw InvalidArgumentException(HERE) << "In GeneralizedLinearModelAlgorithm::computeLogLikelihood, could not compute likelihood,"
                                          << " covariance model requires an argument of size " << covarianceModel_.getParameter().getSize()
-                                         << " but here we got " << parameters.getSize();
+                                         << " but here we got " << fullParameters.getSize();
   NumericalScalar logLikelihood;
   if (method_ == 1)
-    logLikelihood = computeHMatLogDeterminantCholesky(parameters);
+    logLikelihood = computeHMatLogDeterminantCholesky(fullParameters);
   else
-    logLikelihood = computeLapackLogDeterminantCholesky(parameters);
+    logLikelihood = computeLapackLogDeterminantCholesky(fullParameters);
   // The lapack/hmat implementation computes :
   // 1) The log-determinant of the covariance matrix (log inverse). This is returned by the method
   // 2) rho_ : the point is updated
@@ -753,28 +773,49 @@ NumericalPoint GeneralizedLinearModelAlgorithm::optimizeLogLikelihood()
 {
   // initial guess
   const NumericalPoint initialParameters(covarianceModel_.getParameter());
+  NumericalPoint workingParameters(initialParameters);
+  // Cope with the dimension = 1 case
+  const Bool scalarOutput = (covarianceModel_.getDimension() == 1);
+  // We keep only the scale part
+  if (scalarOutput) workingParameters.erase(workingParameters.getSize() - 1);
   // We use the functional form of the log-likelihood computation to benefit from the cache mechanism
   NumericalMathFunction logLikelihoodFunction(getObjectiveFunction());
-  const NumericalScalar initialLogLikelihood = logLikelihoodFunction(initialParameters)[0];
-  LOGINFO(OSS() << "Initial parameters=" << initialParameters << ", log-likelihood=" << initialLogLikelihood);
+  const NumericalScalar initialLogLikelihood = logLikelihoodFunction(workingParameters)[0];
+  if (scalarOutput)
+    {
+      // Here we restore the amplitude parameter using the optimized value
+      workingParameters.add(rho_.normSquare() / outputSample_.getSize());
+      LOGINFO(OSS() << "Initial parameters (optimized scale)=" << workingParameters << ", log-likelihood=" << initialLogLikelihood);
+    }
+  else LOGINFO(OSS() << "Initial parameters=" << workingParameters << ", log-likelihood=" << initialLogLikelihood);
 
+  // Early exit if no scale optimization
+  if (!optimizeParameters_) return workingParameters;
+  // In the scalar case
+  if (scalarOutput)
+    {
+      // Check if there is no scale parameter to optimize
+      if (workingParameters.getSize() == 1) return workingParameters;
+      // Else we have to remove the amplitude part
+      workingParameters.erase(workingParameters.getSize() - 1);
+    }
   // Define Optimization problem
   OptimizationProblem problem(solver_.getProblem());
   problem.setObjective(logLikelihoodFunction);
   problem.setMinimization(false);
-  solver_.setStartingPoint(initialParameters);
+  solver_.setStartingPoint(workingParameters);
   solver_.setProblem(problem);
   solver_.run();
-
   // check result
-  const NumericalScalar optimizedLogLikelihood = solver_.getResult().getOptimalValue()[0];
-  const NumericalPoint optimizedParameters(solver_.getResult().getOptimalPoint());
+  NumericalPoint optimizedParameters(solver_.getResult().getOptimalPoint());
+  const NumericalScalar optimizedLogLikelihood = logLikelihoodFunction(optimizedParameters)[0];
+  // Here we add the analytical scale estimate in the case where dimension=1
+  if (scalarOutput) optimizedParameters.add(rho_.normSquare() / outputSample_.getSize());
   LOGINFO(OSS() << "Optimized parameters=" << optimizedParameters << ", log-likelihood=" << optimizedLogLikelihood);
   const NumericalPoint finalParameters(optimizedLogLikelihood > initialLogLikelihood ? optimizedParameters : initialParameters);
   // the last optimized point is not necessarily the last evaluated, so update intermediate results
-  const NumericalScalar finalLogLikelihood = logLikelihoodFunction(finalParameters)[0];
+  const NumericalScalar finalLogLikelihood = std::max(optimizedLogLikelihood, initialLogLikelihood);
   LOGINFO(OSS() << "Final parameters=" << finalParameters << ", log-likelihood=" << finalLogLikelihood);
-
   return finalParameters;
 }
 
@@ -821,6 +862,17 @@ NumericalMathFunction GeneralizedLinearModelAlgorithm::getInputTransformation() 
   return inputTransformation_;
 }
 
+/* Optimize parameters flag accessor */
+Bool GeneralizedLinearModelAlgorithm::getOptimizeParameters() const
+{
+  return optimizeParameters_;
+}
+
+void GeneralizedLinearModelAlgorithm::setOptimizeParameters(const Bool optimizeParameters)
+{
+  optimizeParameters_ = optimizeParameters;
+}
+
 NumericalPoint GeneralizedLinearModelAlgorithm::getRho() const
 {
   return rho_;
@@ -835,7 +887,8 @@ String GeneralizedLinearModelAlgorithm::__repr__() const
       << ", outputSample=" << outputSample_
       << ", basis=" << basis_
       << ", covarianceModel=" << covarianceModel_
-      << ", solver=" << solver_;
+      << ", solver=" << solver_
+      << ", optimizeParameters=" << optimizeParameters_;
   return oss;
 }
 
@@ -865,7 +918,8 @@ NumericalMathFunction GeneralizedLinearModelAlgorithm::getObjectiveFunction()
   normalizeInputSample();
   LOGINFO("Compute the design matrix");
   computeF();
-  NumericalMathFunction logLikelihood(bindMethod <GeneralizedLinearModelAlgorithm, NumericalScalar, NumericalPoint> ( *this, &GeneralizedLinearModelAlgorithm::computeLogLikelihood, covarianceModel_.getParameter().getSize(), 1 ));
+  const UnsignedInteger inputDimension = covarianceModel_.getParameter().getSize() - (covarianceModel_.getDimension() == 1 ? 1 : 0);
+  NumericalMathFunction logLikelihood(bindMethod <GeneralizedLinearModelAlgorithm, NumericalScalar, NumericalPoint> ( *this, &GeneralizedLinearModelAlgorithm::computeLogLikelihood, inputDimension, 1 ));
   // Here we change the finite difference gradient for a non centered one in order to reduce the computational cost
   logLikelihood.setGradient(NonCenteredFiniteDifferenceGradient(ResourceMap::GetAsNumericalScalar( "NonCenteredFiniteDifferenceGradient-DefaultEpsilon" ), logLikelihood.getEvaluation()).clone());
   logLikelihood.enableCache();
@@ -900,6 +954,7 @@ void GeneralizedLinearModelAlgorithm::save(Advocate & adv) const
   adv.saveAttribute( "method", method_ );
   adv.saveAttribute( "keepCholeskyFactor_", keepCholeskyFactor_ );
   adv.saveAttribute( "covarianceCholeskyFactor_", covarianceCholeskyFactor_ );
+  adv.saveAttribute( "optimizeParameters_", optimizeParameters_ );
 }
 
 
@@ -918,6 +973,7 @@ void GeneralizedLinearModelAlgorithm::load(Advocate & adv)
   adv.loadAttribute( "method", method_ );
   adv.loadAttribute( "keepCholeskyFactor_", keepCholeskyFactor_ );
   adv.loadAttribute( "covarianceCholeskyFactor_", covarianceCholeskyFactor_ );
+  adv.loadAttribute( "optimizeParameters_", optimizeParameters_ );
 }
 
 END_NAMESPACE_OPENTURNS

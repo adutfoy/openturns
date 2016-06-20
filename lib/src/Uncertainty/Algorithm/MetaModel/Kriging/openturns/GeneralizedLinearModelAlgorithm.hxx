@@ -55,14 +55,16 @@ public:
                                    const NumericalSample & outputSample,
                                    const CovarianceModel & covarianceModel,
                                    const Bool normalize = ResourceMap::GetAsBool("GeneralizedLinearModelAlgorithm-NormalizeData"),
-                                   const Bool keepCholeskyFactor = ResourceMap::GetAsBool("GeneralizedLinearModelAlgorithm-KeepCovariance"));
+                                   const Bool keepCholeskyFactor = ResourceMap::GetAsBool("GeneralizedLinearModelAlgorithm-KeepCovariance"),
+				   const Bool optimizeParameters = ResourceMap::GetAsBool("GeneralizedLinearModelAlgorithm-OptimizeParameters"));
 
   GeneralizedLinearModelAlgorithm (const NumericalSample & inputSample,
                                    const NumericalSample & outputSample,
                                    const CovarianceModel & covarianceModel,
                                    const Basis & basis,
                                    const Bool normalize = ResourceMap::GetAsBool("GeneralizedLinearModelAlgorithm-NormalizeData"),
-                                   const Bool keepCholeskyFactor = ResourceMap::GetAsBool("GeneralizedLinearModelAlgorithm-KeepCovariance"));
+                                   const Bool keepCholeskyFactor = ResourceMap::GetAsBool("GeneralizedLinearModelAlgorithm-KeepCovariance"),
+				   const Bool optimizeParameters = ResourceMap::GetAsBool("GeneralizedLinearModelAlgorithm-OptimizeParameters"));
 
   /** Parameters constructor */
   GeneralizedLinearModelAlgorithm (const NumericalSample & inputSample,
@@ -70,7 +72,8 @@ public:
                                    const NumericalSample & outputSample,
                                    const CovarianceModel & covarianceModel,
                                    const Basis & basis,
-                                   const Bool keepCholeskyFactor = ResourceMap::GetAsBool("GeneralizedLinearModelAlgorithm-KeepCovariance"));
+                                   const Bool keepCholeskyFactor = ResourceMap::GetAsBool("GeneralizedLinearModelAlgorithm-KeepCovariance"),
+				   const Bool optimizeParameters = ResourceMap::GetAsBool("GeneralizedLinearModelAlgorithm-OptimizeParameters"));
 
   /** Parameters constructor */
   GeneralizedLinearModelAlgorithm (const NumericalSample & inputSample,
@@ -78,7 +81,8 @@ public:
                                    const CovarianceModel & covarianceModel,
                                    const BasisCollection & multivariateBasis,
                                    const Bool normalize = ResourceMap::GetAsBool("GeneralizedLinearModelAlgorithm-NormalizeData"),
-                                   const Bool keepCholeskyFactor = ResourceMap::GetAsBool("GeneralizedLinearModelAlgorithm-KeepCovariance"));
+                                   const Bool keepCholeskyFactor = ResourceMap::GetAsBool("GeneralizedLinearModelAlgorithm-KeepCovariance"),
+				   const Bool optimizeParameters = ResourceMap::GetAsBool("GeneralizedLinearModelAlgorithm-OptimizeParameters"));
 
   /** Parameters constructor */
   GeneralizedLinearModelAlgorithm (const NumericalSample & inputSample,
@@ -86,7 +90,8 @@ public:
                                    const NumericalSample & outputSample,
                                    const CovarianceModel & covarianceModel,
                                    const BasisCollection & multivariateBasis,
-                                   const Bool keepCholeskyFactor = ResourceMap::GetAsBool("GeneralizedLinearModelAlgorithm-KeepCovariance"));
+                                   const Bool keepCholeskyFactor = ResourceMap::GetAsBool("GeneralizedLinearModelAlgorithm-KeepCovariance"),
+				   const Bool optimizeParameters = ResourceMap::GetAsBool("GeneralizedLinearModelAlgorithm-OptimizeParameters"));
 
   /** Virtual constructor */
   GeneralizedLinearModelAlgorithm * clone() const;
@@ -115,12 +120,15 @@ public:
   OptimizationSolver getOptimizationSolver() const;
   void setOptimizationSolver(const OptimizationSolver & solver);
 
+  /** Optimization flag accessor */
+  Bool getOptimizeParameters() const;
+  void setOptimizeParameters(const Bool optimizeParameters);
+
   /** Method save() stores the object through the StorageManager */
   virtual void save(Advocate & adv) const;
 
   /** Method load() reloads the object from the StorageManager */
   virtual void load(Advocate & adv);
-
 
 protected:
   // Optimize the log-likelihood
@@ -213,6 +221,10 @@ private:
 
   /** Bool to tell if optimization has run */
   Bool hasRun_;
+
+  /** Flag to tell if the parameters of the covariance model
+      have to be optimized */
+  Bool optimizeParameters_;
 }; // class GeneralizedLinearModelAlgorithm
 
 
