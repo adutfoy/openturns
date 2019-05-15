@@ -27,6 +27,9 @@ Continuous parametric distributions
 
     :template: classWithPlot.rst_t
     Beta
+    BlockIndependentDistribution
+
+    :template: classWithPlot.rst_t
     Burr
 
     :template: Distribution.rst_t
