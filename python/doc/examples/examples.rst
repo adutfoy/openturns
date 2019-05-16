@@ -31,4 +31,9 @@ This is the examples section.
         flood_model.ipynb
         optimal_lhs.ipynb
         ego.ipynb
+	meta_modeling/viscous_fall_metamodel.ipynb
+	meta_modeling/kriging_advanced.ipynb
+	meta_modeling/functional_chaos_advanced_ctors.ipynb
+	
+	
 
