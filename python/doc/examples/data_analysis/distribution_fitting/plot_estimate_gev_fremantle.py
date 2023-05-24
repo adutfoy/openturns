@@ -27,13 +27,13 @@ from openturns.usecases import coles
 
 data = coles.Coles().fremantle
 print(data[:5])
-graph = ot.Graph()
-graph.setTitle('Annual maximum sea-levels at Fremantle')
-graph.setAxes(True)
-graph.setGrid(True)
+graph = ot.Graph(
+        "Annual maximum sea-levels at Fremantle","year", "level (m)", True, ""
+)
 cloud = ot.Cloud(data[:, :2])
 cloud.setColor("red")
 graph.add(cloud)
+graph.setIntegerXTick(True)
 view = otv.View(graph)
 
 # %%
@@ -200,7 +200,7 @@ for i in range(beta.getSize()):
 # and non stationary models. The difference is significant enough to be in favor of the non stationary model.
 print('Max log-likelihood: ')
 print('Stationary model =  ', result_LL.getLogLikelihood())
-print('Non stationary model =  ', result_NonStatLL.getLogLikelihood())
+print('Non stationary linear model =  ', result_NonStatLL.getLogLikelihood())
 
 # %%
 # We can draw the estimated trend  :math:`t \mapsto \mu(t)` with the data: the graph confirms the increase of the annual maximum sea-levels through time.
@@ -208,6 +208,12 @@ graph = result_NonStatLL.drawParameterFunction(0)
 cloud = ot.Cloud(data[:, :2])
 cloud.setColor("red")
 graph.add(cloud)
+graph.setIntegerXTick(True)
+graph.setTitle('Maximum annual sea-levels')
+graph.setYTitle('level (m)')
+graph.setXTitle('year')
+graph.setLegends(['linear trend', 'data'])
+graph.setLegendPosition('topright')
 view = otv.View(graph)
 
 # %%
@@ -225,7 +231,7 @@ llh_LL = result_LL.getLogLikelihood()
 llh_NonStatLL = result_NonStatLL.getLogLikelihood()
 resultLikRatioTest = ot.HypothesisTest.LikelihoodRatioTest(llh_LL, llh_NonStatLL, 0.05)
 accepted = resultLikRatioTest.getBinaryQualityMeasure()
-print(f"Hypothesis H0 (stationary model):  accepted ? = {accepted}")
+print(f"Hypothesis H0 (stationary model) vs linear model:  accepted ? = {accepted}")
 
 # %%
 # We detail the statistics of the Likelihood Ratio test: the deviance statistics :math:`\mathcal{D}_p` follows
@@ -259,7 +265,7 @@ print(f"cAlpha={resultLikRatioTest.getThreshold():.2f}")
 #     \xi(t) & = \beta_5
 #     \end{align*}
 #
-# We notice that there is no evidence to adopt a quadratic trend in :math:`\mu` nor a linear trend
+# We could notice that there is no evidence to adopt a quadratic trend in :math:`\mu` nor a linear trend
 # in :math:`\sigma`: the optimal log-likelihood for each model is very near the likelihood we obtained
 # with a linear trend in :math:`\mu` only. It means that these both models do not bring significant
 # improvements with respect to model tested before.
@@ -280,6 +286,15 @@ basis_coll_3 = [basis_mu, basis_sigma_2, basis_xi]
 # Here, :math:`\mu(t)` is a linear function and the other parameters are constant, so the quantile function is
 # also a linear function in time.
 graph = result_NonStatLL.drawQuantileFunction(0.5)
+cloud = ot.Cloud(data[:, :2])
+cloud.setColor("red")
+graph.add(cloud)
+graph.setIntegerXTick(True)
+graph.setTitle('Maximum annual sea-levels at Port Pirie')
+graph.setYTitle('level (m)')
+graph.setXTitle('year')
+graph.setLegends(['quantile linear trend', 'data'])
+graph.setLegendPosition('topright')
 view = otv.View(graph)
 
 # %%

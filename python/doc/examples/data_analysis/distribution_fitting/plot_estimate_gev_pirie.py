@@ -1,6 +1,6 @@
 """
-Estimate a GEV on the annual maximum Pirie sea-levels data
-==========================================================
+Estimate a GEV on the annual maximum Port Pirie sea-levels data
+===============================================================
 """
 # %%
 # In this example, we illustrate various techniques of extreme value modeling applied
@@ -27,13 +27,13 @@ from openturns.usecases import coles
 
 data = coles.Coles().portpirie
 print(data[:5])
-graph = ot.Graph()
-graph.setTitle('Annual maximum sea-levels at Port Pirie')
-graph.setAxes(True)
-graph.setGrid(True)
+graph = ot.Graph(
+    "Annual maximum sea-levels at Port Pirie", "year", "level (m)", True, ""
+)
 cloud = ot.Cloud(data[:, :2])
 cloud.setColor("red")
 graph.add(cloud)
+graph.setIntegerXTick(True)
 view = otv.View(graph)
 
 # %%
@@ -202,7 +202,7 @@ for i in range(beta.getSize()):
 # stationary model does not really improve the quality of the modeling.
 print('Max log-likelihood: ')
 print('Stationary model =  ', result_LL.getLogLikelihood())
-print('Non stationary model =  ', result_NonStatLL.getLogLikelihood())
+print('Non stationary linear model =  ', result_NonStatLL.getLogLikelihood())
 
 # %%
 # We can draw the estimated trend  :math:`t \mapsto \mu(t)` with the data: there is still no evidence strong
@@ -211,6 +211,12 @@ graph = result_NonStatLL.drawParameterFunction(0)
 cloud = ot.Cloud(data)
 cloud.setColor("red")
 graph.add(cloud)
+graph.setIntegerXTick(True)
+graph.setTitle('Maximum annual sea-levels at Port Pirie')
+graph.setYTitle('level (m)')
+graph.setXTitle('year')
+graph.setLegends(['linear trend', 'data'])
+graph.setLegendPosition('topright')
 view = otv.View(graph)
 
 # %%
@@ -227,7 +233,7 @@ llh_LL = result_LL.getLogLikelihood()
 llh_NonStatLL = result_NonStatLL.getLogLikelihood()
 resultLikRatioTest = ot.HypothesisTest.LikelihoodRatioTest(llh_LL, llh_NonStatLL, 0.05)
 accepted = resultLikRatioTest.getBinaryQualityMeasure()
-print(f"Hypothesis H0 (stationary model):  accepted ? = {accepted}")
+print(f"Hypothesis H0 (stationary model) vs linear model:  accepted ? = {accepted}")
 
 # %%
 # We detail the statistics of the Likelihood Ratio test: the deviance statistics
@@ -242,6 +248,15 @@ print(f"cAlpha={resultLikRatioTest.getThreshold():.2f}")
 # :math:`p` of the GEV distribution at time :math:`t`.
 # Here, :math:`\mu(t)` is a linear function and the other parameters are constant, so the quantile function is also a linear function in time.
 graph = result_NonStatLL.drawQuantileFunction(0.5)
+cloud = ot.Cloud(data[:, :2])
+cloud.setColor("red")
+graph.add(cloud)
+graph.setIntegerXTick(True)
+graph.setTitle('Maximum annual sea-levels at Port Pirie')
+graph.setYTitle('level (m)')
+graph.setXTitle('year')
+graph.setLegends(['quantile linear trend', 'data'])
+graph.setLegendPosition('topright')
 view = otv.View(graph)
 
 # %%
