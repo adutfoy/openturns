@@ -215,7 +215,7 @@ r : int, :math:`1 \leq r \leq R`,
 
 Returns
 -------
-distribution : :class:`~openturns.GeneralizedExtremeValueFactory`
+distribution : :class:`~openturns.GeneralizedExtremeValue`
     The estimated distribution."
 
 // ----------------------------------------------------------------------------

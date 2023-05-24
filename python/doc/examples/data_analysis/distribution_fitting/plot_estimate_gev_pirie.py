@@ -4,7 +4,7 @@ Estimate a GEV on the annual maximum Port Pirie sea-levels data
 """
 # %%
 # In this example, we illustrate various techniques of extreme value modeling applied
-# on the annual maximum sea-levels recorded at Port Pirie, north of Adelaide, south Australia, over the period
+# to the annual maximum sea-levels recorded in Port Pirie, north of Adelaide, south Australia, over the period
 # 1923-1987.
 # Readers should refer to [coles2001]_ to get more details.
 #
@@ -202,7 +202,7 @@ for i in range(beta.getSize()):
 # stationary model does not really improve the quality of the modeling.
 print('Max log-likelihood: ')
 print('Stationary model =  ', result_LL.getLogLikelihood())
-print('Non stationary linear model =  ', result_NonStatLL.getLogLikelihood())
+print('Non stationary linear trend model =  ', result_NonStatLL.getLogLikelihood())
 
 # %%
 # We can draw the estimated trend  :math:`t \mapsto \mu(t)` with the data: there is still no evidence strong
@@ -233,7 +233,7 @@ llh_LL = result_LL.getLogLikelihood()
 llh_NonStatLL = result_NonStatLL.getLogLikelihood()
 resultLikRatioTest = ot.HypothesisTest.LikelihoodRatioTest(llh_LL, llh_NonStatLL, 0.05)
 accepted = resultLikRatioTest.getBinaryQualityMeasure()
-print(f"Hypothesis H0 (stationary model) vs linear model:  accepted ? = {accepted}")
+print(f"Hypothesis H0 (stationary model) vs  H1 (linear trend model):  accepted ? = {accepted}")
 
 # %%
 # We detail the statistics of the Likelihood Ratio test: the deviance statistics

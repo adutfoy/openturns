@@ -1,11 +1,14 @@
 """
-Estimate a GEV on the Fremantle sea levels data
+Estimate a GEV on the Fremantle sea-levels data
 ===============================================
 """
 # %%
 # In this example, we illustrate various techniques of extreme value modeling applied
-# on the annual maximum sea-levels recorded at Fremantle, near Perth, western Australia, over the period
-# 1897-1987.
+# to the annual maximum sea-levels recorded in Fremantle, near Perth, western Australia, over the period
+# 1897-198
+#
+# First, we load the Fremantle dataset of the annual maximum sea-levels. We start by looking at them
+# through time.7.
 # Readers should refer to [coles2001]_ to get more details.
 #
 # We illustrate techniques to:
@@ -27,9 +30,7 @@ from openturns.usecases import coles
 
 data = coles.Coles().fremantle
 print(data[:5])
-graph = ot.Graph(
-        "Annual maximum sea-levels at Fremantle","year", "level (m)", True, ""
-)
+graph = ot.Graph("Annual maximum sea-levels at Fremantle", "year", "level (m)", True, "")
 cloud = ot.Cloud(data[:, :2])
 cloud.setColor("red")
 graph.add(cloud)
@@ -200,7 +201,7 @@ for i in range(beta.getSize()):
 # and non stationary models. The difference is significant enough to be in favor of the non stationary model.
 print('Max log-likelihood: ')
 print('Stationary model =  ', result_LL.getLogLikelihood())
-print('Non stationary linear model =  ', result_NonStatLL.getLogLikelihood())
+print('Non stationary linear trend model =  ', result_NonStatLL.getLogLikelihood())
 
 # %%
 # We can draw the estimated trend  :math:`t \mapsto \mu(t)` with the data: the graph confirms the increase of the annual maximum sea-levels through time.
@@ -231,7 +232,7 @@ llh_LL = result_LL.getLogLikelihood()
 llh_NonStatLL = result_NonStatLL.getLogLikelihood()
 resultLikRatioTest = ot.HypothesisTest.LikelihoodRatioTest(llh_LL, llh_NonStatLL, 0.05)
 accepted = resultLikRatioTest.getBinaryQualityMeasure()
-print(f"Hypothesis H0 (stationary model) vs linear model:  accepted ? = {accepted}")
+print(f"Hypothesis H0 (stationary model) vs H1 (linear trend model):  accepted ? = {accepted}")
 
 # %%
 # We detail the statistics of the Likelihood Ratio test: the deviance statistics :math:`\mathcal{D}_p` follows
@@ -277,8 +278,17 @@ basis_coll_3 = [basis_mu, basis_sigma_2, basis_xi]
 # result_NonStatLL_2 = factory.buildTimeVarying(sample, mesh, basis_coll_2)
 # result_NonStatLL_3 = factory.buildTimeVarying(sample, mesh, basis_coll_3)
 # print('Max log-likelihood = ')
-# print('Quadratic mu = ', result_NonStatLL_2.getLogLikelihood())
-# print('Linear sigma = ', result_NonStatLL_3.getLogLikelihood())
+# print('Non stationary quadratic trend model = ', result_NonStatLL_2.getLogLikelihood())
+# print('Non stationary linear sigma model = ', result_NonStatLL_3.getLogLikelihood())
+# llh_LL = result_LL.getLogLikelihood()
+# llh_NonStatLL_2 = result_NonStatLL_2.getLogLikelihood()
+# llh_NonStatLL_3 = result_NonStatLL_3.getLogLikelihood()
+# resultLikRatioTest_2 = ot.HypothesisTest.LikelihoodRatioTest(llh_LL, llh_NonStatLL_2 , 0.05)
+# resultLikRatioTest_3 = ot.HypothesisTest.LikelihoodRatioTest(llh_LL, llh_NonStatLL_3 , 0.05)
+# accepted_2 = resultLikRatioTest_2.getBinaryQualityMeasure()
+# accepted_3 = resultLikRatioTest_3.getBinaryQualityMeasure()
+# print(f"Hypothesis H0 (stationary model) vs H1 (quadratic trend model):  accepted ? = {accepted_2}")
+# print(f"Hypothesis H0 (stationary model) vs H1 (linear sigma model):  accepted ? = {accepted_3}")
 
 # %%
 # We can also draw the function :math:`t \mapsto q_p(t)` where :math:`q_p(t)` is the quantile of

@@ -4,7 +4,7 @@ Estimate a GEV on fatest annual race times
 """
 # %%
 # In this example, we illustrate various techniques of extreme value modeling applied
-# on the fatest annual race times for the women's 1500 meter event over the period 1975-1992.
+# to the fatest annual race times for the women's 1500 meter event over the period 1975-1992.
 # Readers should refer to [coles2001]_ to get more details.
 #
 # We illustrate techniques to:
@@ -275,7 +275,8 @@ print('Max log-likelihood = ')
 print('Non stationary quadratic model = ', result_NonStatLL_2.getLogLikelihood())
 
 # %%
-# We can draw the estimated trend  :math:`t \mapsto \mu(t)` with the data: the graph confirms the increase of the annual maximum sea-levels through time.
+# We can draw the estimated trend  :math:`t \mapsto \mu(t)` with the data: the graph confirms the
+# increase of the annual maximum sea-levels through time.
 graph = result_NonStatLL_2.drawParameterFunction(0)
 dataModified = data * ot.Point([1.0, -1.0])
 cloud = ot.Cloud(dataModified)
@@ -300,7 +301,8 @@ view = otv.View(graph)
 # We use the Likelihood Ratio test. The null hypothesis is the stationary model :math:`\mathcal{M}_0`.
 # The Type I error :math:`\alpha` is taken equal to 0.05.
 #
-# This test confirms that the dependence through time is not negligible: it means that the linear trend component explains a large variation in the data.
+# This test confirms that the dependence through time is not negligible: it means that the quadratic trend
+# explains a large variation in the data.
 llh_LL = result_LL.getLogLikelihood()
 llh_NonStatLL_2 = result_NonStatLL_2.getLogLikelihood()
 resultLikRatioTest = ot.HypothesisTest.LikelihoodRatioTest(llh_LL, llh_NonStatLL_2, 0.05)
@@ -309,6 +311,3 @@ print(f"Hypothesis H0 (stationary model) vs quadratic model:  accepted ? = {acce
 
 # %%
 otv.View.ShowAll()
-
-
-
