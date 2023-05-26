@@ -3252,7 +3252,11 @@ It is defined by:
     \chi^{ij} = \lim_{u \to 1} \chi^{ij}(u)
 
 where  :math:`u \mapsto \chi^{ij}(u)` is the upper tail dependence function of the bivariate distribution
-:math:`(X_i, X_j)` defined by :eq:`upperTailDpceFunc`.
+:math:`(X_i, X_j)` defined by:
+
+.. math::
+
+    \chi(u) = 2 - \frac{\log C(u,u)}{\log u}, \forall u \in [0,1]
 
 Refer to :ref:`tail_dependence` to get more details.
 
@@ -3287,7 +3291,11 @@ It is defined by:
     \bar{\chi}^{ij} = \lim_{u \to 1} \bar{\chi}^{ij}(u)
 
 where  :math:`u \mapsto \bar{\chi}^{ij}(u)` is the upper extremal dependence function of the bivariate
-distribution :math:`(X_i, X_j)` defined by :eq:`upperExtremDpceFunc`.
+distribution :math:`(X_i, X_j)` defined by:
+
+.. math::
+
+    \bar{\chi}(u) = \frac{2 \log 1-u}{\log \bar{C}(u,u)} - 1, \forall u \in [0,1]
 
 Refer to :ref:`tail_dependence` to get more details.
 
@@ -3322,7 +3330,11 @@ It is defined by:
     \chi_L^{ij} = \lim_{u \to 0} \chi_L^{ij}(u)
 
 where  :math:`u \mapsto \chi_L^{ij}(u)` is the lower tail dependence function of the bivariate
-distribution :math:`(X_i, X_j)` defined by :eq:`lowerTailDpceFunc`.
+distribution :math:`(X_i, X_j)` defined by:
+
+.. math::
+
+    \chi_L(u) = \frac{\log (1 - C(u,u))}{\log (1-u)}, \forall u \in [0,1]
 
 Refer to :ref:`tail_dependence` to get more details.
 
@@ -3357,7 +3369,11 @@ It is defined by:
     \bar{\chi}_L^{ij} = \lim_{u \to 0} \bar{\chi}_L^{ij}(u)
 
 where  :math:`u \mapsto \bar{\chi}_L^{ij}(u)` is the lower extremal dependence function
-of the bivariate distribution :math:`(X_i, X_j)` defined by :eq:`lowerExtremDpceFunc`.
+of the bivariate distribution :math:`(X_i, X_j)` defined by:
+
+.. math::
+    
+    \bar{\chi}_L(u) = \frac{2 \log u}{\log C(u,u)} - 1, \forall u \in [0,1]
 
 Refer to :ref:`tail_dependence` to get more details.
 
@@ -3384,7 +3400,6 @@ We assume that the distribution is bivariate and that its copula is denoted by :
 The upper tail dependence function :math:`u \mapsto \chi(u)` is defined by:
 
 .. math::
-    :label: upperTailDpceFunc
 
     \chi(u) = 2 - \frac{\log C(u,u)}{\log u}, \forall u \in [0,1]
 
@@ -3413,7 +3428,6 @@ We assume that the distribution is bivariate and that its copula is denoted by :
 The upper extremal dependence function :math:`u \mapsto \bar{\chi}(u)` is defined by:
 
 .. math::
-    :label: upperExtremDpceFunc
 
     \bar{\chi}(u) = \frac{2 \log 1-u}{\log \bar{C}(u,u)} - 1, \forall u \in [0,1]
 
@@ -3442,7 +3456,6 @@ We assume that the distribution is bivariate and that its copula is denoted by :
 The lower tail dependence  function :math:`u \mapsto \chi_L(u)` is defined by:
 
 .. math::
-    :label: lowerTailDpceFunc
 
     \chi_L(u) = \frac{\log (1 - C(u,u))}{\log (1-u)}, \forall u \in [0,1]
 
@@ -3471,7 +3484,6 @@ We assume that the distribution is bivariate and that its copula is denoted by :
 The lower extremal dependence function :math:`u \mapsto \bar{\chi}(u)` is defined by:
 
 .. math::
-    :label: lowerExtremDpceFunc
     
     \bar{\chi}_L(u) = \frac{2 \log u}{\log C(u,u)} - 1, \forall u \in [0,1]
     

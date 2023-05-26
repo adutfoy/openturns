@@ -9,7 +9,7 @@ Estimate a GEV on fatest annual race times
 #
 # We illustrate techniques to:
 #
-# - estimate a stationary GEV,
+# - estimate a stationary and a non stationary GEV,
 # - estimate a return level,
 #
 # using:

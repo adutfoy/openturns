@@ -128,11 +128,4 @@ for i in range(3):
     print(f"r={r_candidate[i]} likelihood={llh[i]}")
 
 # %%
-# We can also get the associated parameter distribution
-result5 = factory.buildRMaximaEstimator(sample_rmax, 1)
-print('r=1 et factory.buildRMaxima : ', factory.buildRMaxima(sample_rmax, 1))
-print('fitted_GEV : ', fitted_GEV)
-print(result5.getParameterDistribution())
-
-# %%
 otv.View.ShowAll()
