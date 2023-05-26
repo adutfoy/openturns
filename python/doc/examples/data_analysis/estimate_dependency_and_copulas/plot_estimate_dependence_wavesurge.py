@@ -24,10 +24,10 @@ graph.add(cloud)
 view = otv.View(graph)
 
 # %%
-# We plot the graph of the function :math:`u \maps to \chi(u)` and the graph of the function
-# :math:`u \maps to \bar{\chi}(u)`. We conclude that both variables are asymptotially dependent
-# as :math:`\chi > 0` and that they are positively correlated as :math:`\het{\chi} > 0`.
-# We cn visually deduce the upper tail dependence coefficient :math:`\chi \simeq 0.26` and
+# We plot the graph of the function :math:`u \mapsto \chi(u)` and the graph of the function
+# :math:`u \mapsto \bar{\chi}(u)`. We conclude that both variables are asymptotially dependent
+# as :math:`\chi > 0` and that they are positively correlated as :math:`\hat{\chi} > 0`.
+# We can visually deduce the upper tail dependence coefficient :math:`\chi \simeq 0.26` and
 # the upper extremal dependence coefficient :math:`\bar{\chi} \simeq 0.5`.
 graph1 = ot.VisualTest.DrawUpperTailDependenceFunction(data)
 graph2 = ot.VisualTest.DrawUpperExtremalDependenceFunction(data)

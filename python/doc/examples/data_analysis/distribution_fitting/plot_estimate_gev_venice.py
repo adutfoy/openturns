@@ -17,7 +17,9 @@ Estimate a GEV on the Venice sea-levels data
 # - the profile log-likelihood function.
 #
 # First, we load the 10 largest annual sea-levels in Venice. We start by looking at them
-# through time. Note that for the year 1935, only the largest 6 observations are available. For simplicity of the example, we removed that year from the data but it could be used for all the analyses beased on the largest :math:`r` annual sea-levels for :math:`r \leq 6`.
+# through time. Note that for the year 1935, only the largest 6 observations are available.
+# For simplicity of the example, we removed that year from the data but it could be
+# used for all the analyses beased on the largest :math:`r` annual sea-levels for :math:`r \leq 6`.
 import openturns as ot
 import openturns.viewer as otv
 import openturns.experimental as otexp
@@ -52,7 +54,7 @@ result_LL_max = factory.buildMethodOfLikelihoodMaximizationEstimator(sample)
 
 # %%
 # We get the fitted GEV and its parameters of :math:`(\hat{\mu}, \hat{\sigma}, \hat{\xi})`.
-fitted_GEV =  result_LL_max.getDistribution()
+fitted_GEV = result_LL_max.getDistribution()
 desc = fitted_GEV.getParameterDescription()
 param = fitted_GEV.getParameter()
 print(", ".join([f"{p}: {value:.3f}" for p, value in zip(desc, param)]))
@@ -104,8 +106,11 @@ print('Confidence interval for xi = ', result_PLL_max.getParameterConfidenceInte
 # **Stationary GEV modeling from the largest :math:`r` annual sea-levels**
 #
 # We still assume that the dependence through time is negligible.  We estimate the parameters of the
-# GEV distribution by maximizing the log-likelihood of the data. Now, we want to model more of the observed extremes than the annual maxima: the additional information contained in the largest :math:`10` observations can be used to improve the estimation of the GEV model.
-# Now drop the year column to keep only the maxima values
+# GEV distribution by maximizing the log-likelihood of the data. Now, we want to model more of the
+# observed extremes than the annual maxima: the additional information contained in the largest
+# :math:`10` observations can be used to improve the estimation of the GEV model.
+#
+# Now, we drop the year column to keep only the maxima values
 sample_rmax = data[:, 1:]
 print(sample_rmax[:5])
 
@@ -121,7 +126,8 @@ for r in r_candidate:
     print(f"r={r:2} {pretty_p}")
 
 # %%
-# If we want to prioritise the models with respect to the log-likelihood value and get the best model, we can use the following method. It also stores the log-likelihood value associated to each model.
+# If we want to prioritise the models with respect to the log-likelihood value and get the best model,
+# we can use the following method. It also stores the log-likelihood value associated to each model.
 best_r, llh = factory.buildBestRMaxima(sample_rmax, r_candidate)
 print('Best model obtained for r = ', best_r)
 for i in range(3):

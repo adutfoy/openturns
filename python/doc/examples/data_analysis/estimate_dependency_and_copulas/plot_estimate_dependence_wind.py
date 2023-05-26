@@ -25,12 +25,12 @@ graph.add(cloud)
 view = otv.View(graph)
 
 # %%
-# We plot the graph of the function :math:`u \maps to \chi(u)` and the graph of the function
-# :math:`u \maps to \bar{\chi}(u)`. We conclude that both variables are asymptotially dependent
-# as :math:`\chi > 0` and that they are positively correlated as :math:`\het{\chi} > 0`.
+# We plot the graph of the function :math:`u \mapsto \chi(u)` and the graph of the function
+# :math:`u \mapsto \bar{\chi}(u)`. We conclude that both variables are asymptotially dependent
+# as :math:`\chi > 0` and that they are positively correlated as :math:`\hat{\chi} > 0`.
 # We cn visually deduce the upper tail dependence coefficient :math:`\chi \simeq 0.26` and
 # the upper extremal dependence coefficient :math:`\bar{\chi} \simeq 0.5`.
-# Note that the number of data points is so small so  the curves seem chaotic. It is difficult, if not impossible, to deduce the value of :math:`\chi` and :math:`\bar{\chi}` from the curves.
+# Note that the number of data points is so small that the curves seem chaotic. It is difficult, if not impossible, to deduce the value of :math:`\chi` and :math:`\bar{\chi}` from the curves.
 graph1 = ot.VisualTest.DrawUpperTailDependenceFunction(data)
 graph2 = ot.VisualTest.DrawUpperExtremalDependenceFunction(data)
 grid = ot.GridLayout(1, 2)
