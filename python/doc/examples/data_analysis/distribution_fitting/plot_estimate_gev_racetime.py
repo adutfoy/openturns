@@ -1,6 +1,6 @@
 """
-Estimate a GEV on fatest annual race times
-==========================================
+Estimate a GEV on race times data
+=================================
 """
 # %%
 # In this example, we illustrate various techniques of extreme value modeling applied
@@ -16,6 +16,40 @@ Estimate a GEV on fatest annual race times
 #
 # - the log-likelihood function,
 # - the profile log-likelihood function.
+#
+# This analyse is particular as we are interested in modeling the annual minimum race times and not
+# the annual maximum race times. In order to transform the minimum modeling into a maximum modeling,
+# we proceeds as follows.
+#
+# We denote by :math:`\tilde{M}_n = \min (X_1, \dots, X_n)` where all the :math:`X_i` are
+# independent and identically distributed variables. We introduce
+# :math:`Y_i = -X_i` for :math:`1 \leq i \leq n`,
+# and :math:`M_n = \min (Y_1, \dots, Y_n)`. Then, we have:
+#
+# .. math::
+#    \tilde{M}_n = - M_n.
+#
+# We can show that if the renormalized maximum :math:`\tilde{M}_n` tends to the GEV distribution
+# parametrized by :math:`(\mu, \sigma, \xi)`, then the renormalized minimum :math:`\tilde{M}_n` tends to
+# the *GEV for minima* distribution parametrized by :math:`(\tilde{\mu}, \tilde{\sigma}, \tilde{\xi})` where:
+#
+# .. math::
+#     :nowrap:
+#
+#     \begin{align*}
+#       \tilde{\mu} & = -\mu \\
+#       \tilde{\sigma} & = \sigma\\
+#       \tilde{\xi} & = \xi
+#     \end{align*}
+#
+# The cumulated distribution function of :math:`\tilde{M}_n`, denoted by :math:`\tilde{G}`, is defined by:
+#
+# .. math::
+#    \tilde{G}(z) = 1-G(-z) = 1-\exp \left( -\left[ 1-\tilde{\xi} \left( \dfrac{z-\tilde{\mu}}{\tilde{\sigma}}\right)\right]^{-1/\tilde{\xi}}\right)
+#
+# for all :math:`z` such that :math:`1-\tilde{\xi}(z-\tilde{\mu})/\tilde{\sigma} > 0`.
+#
+# In that example, we model the :math:`M_n` variable which is the annual maximum of the opposite race times.
 #
 # First, we load the race times dataset. We start by looking at them through time.
 import openturns as ot
@@ -36,8 +70,7 @@ graph.setIntegerXTick(True)
 view = otv.View(graph)
 
 # %%
-# We select the race times column. As we are intersted in modeling the anual minimum of race times, we
-# multiply by -1 each data to transform the minimum modeling into a maximum modeling.
+# We select the race times column. We transform them into their opposite values.
 sample = -1.0 * data[:, 1]
 
 # %%
@@ -50,7 +83,8 @@ factory = ot.GeneralizedExtremeValueFactory()
 result_LL = factory.buildMethodOfLikelihoodMaximizationEstimator(sample)
 
 # %%
-# We get the fitted GEV and its parameters of :math:`(\hat{\mu}, \hat{\sigma}, \hat{\xi})`.
+# We get the fitted GEV for the variable :math:`M_n` and its parameters
+# of :math:`(\hat{\mu}, \hat{\sigma}, \hat{\xi})`.
 fitted_GEV = result_LL.getDistribution()
 desc = fitted_GEV.getParameterDescription()
 param = fitted_GEV.getParameter()
@@ -102,11 +136,12 @@ print('Confidence interval for xi = ', result_PLL.getParameterConfidenceInterval
 # We estimate the :math:`m`-block return level :math:`z_m`: it is computed as a particular quantile of the
 # GEV model estimated using the log-likelihood function. We just have to use the maximum log-likelihood
 # estimator built in the previous section.
+# The return level of :math:`M_n` and :math:`\tilde{M}_n` have opposite values.
 #
 # As the data are annual sea-levels, each block corresponds to one year: the 10-year return level
 # corresponds to :math:`m=10` and the 100-year return level corresponds to :math:`m=100`.
 #
-# The method also provides the asymptotic distribution of the estimator :math:`\hat{z}_m`.
+# The method also provides the asymptotic distribution of the estimator :math:`\hat{z}_m` of :math:`M_n`.
 zm_10 = factory.buildReturnLevelEstimator(result_LL, 10.0)
 return_level_10 = zm_10.getMean()
 print("Maximum log-likelihood function : ")
@@ -151,6 +186,7 @@ view = otv.View(result_zm_10_PLL.drawProfileLikelihoodFunction())
 # We want to model this trend because a slight increase in extreme sea-levels might have
 # a significant impact on the safety of coastal flood defenses.
 #
+# We still work on the :math:`M_n` variable.
 # First we need to get the grid of time values (in years here).
 mesh = ot.Mesh(data[:, 0])
 
