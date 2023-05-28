@@ -236,7 +236,7 @@ print('Non stationary linear model =  ', result_NonStatLL.getLogLikelihood())
 # %%
 # We can draw the mean function  :math:`t \mapsto \Expect{\mbox{GEV}(t)}`. Be careful, it is not the function
 # :math:`t \mapsto \mu(t)`. As a matter of fact, the mean is defined for :math:`\xi <1` only and in that case,
-# for :math:`\xi \neq 0`, we have:  
+# for :math:`\xi \neq 0`, we have:
 #
 # .. math::
 #     \Expect{\mbox{GEV}(t)} = \mu(t) + \dfrac{\sigma(t)}{\xi(t)} (\Gamma(1-\xi(t))-1)
@@ -250,7 +250,7 @@ print('Non stationary linear model =  ', result_NonStatLL.getLogLikelihood())
 #
 # We can also draw the function :math:`t \mapsto q_p(t)` where :math:`q_p(t)` is the quantile of
 # order :math:`p` of the GEV distribution at time :math:`t`.
-# Here, :math:`\mu(t)` is a linear function and the other parameters are constant, so the mean and the quantile 
+# Here, :math:`\mu(t)` is a linear function and the other parameters are constant, so the mean and the quantile
 # functions are also linear functions.
 #
 # The graph confirms the increase of the annual maximum sea-levels through time.
