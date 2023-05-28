@@ -151,7 +151,7 @@ view = otv.View(result_zm_10_PLL.drawProfileLikelihoodFunction())
 #
 # If we look at the data carefully, we see that the pattern of variation has not remained constant over
 # the observation period. There is an increase in the data through time.
-# We want to model this trend because a slight increase in extreme sea-levels might have
+# We want to model this dependence because a slight increase in extreme sea-levels might have
 # a significant impact on the safety of coastal flood defenses.
 #
 # First we need to get the grid of time values (in years here).
@@ -172,6 +172,8 @@ mesh = ot.Mesh(data[:, 0])
 #       \sigma(t) & = \beta_3 \\
 #       \xi(t) & = \beta_4
 #     \end{align*}
+#
+# Note that :math:`\mu(t)` is not the mean of the GEV model at the instant :math:`t`!
 constant = ot.SymbolicFunction(["t"], ["1.0"])
 basis_mu = ot.Basis([constant, ot.SymbolicFunction(["t"], ["t"])])
 basis_sigma = ot.Basis([constant])
@@ -201,21 +203,47 @@ for i in range(beta.getSize()):
 # and non stationary models. The difference is significant enough to be in favor of the non stationary model.
 print('Max log-likelihood: ')
 print('Stationary model =  ', result_LL.getLogLikelihood())
-print('Non stationary linear trend model =  ', result_NonStatLL.getLogLikelihood())
+print('Non stationary linear mu(t) model =  ', result_NonStatLL.getLogLikelihood())
 
 # %%
-# We can draw the estimated trend  :math:`t \mapsto \mu(t)` with the data: the graph confirms the increase of the annual maximum sea-levels through time.
-graph = result_NonStatLL.drawParameterFunction(0)
+# We can draw the mean function  :math:`t \mapsto \Expect{\mbox{GEV}(t)}`. Be careful, it is not the function
+# :math:`t \mapsto \mu(t)`. As a matter of fact, the mean is defined for :math:`\xi <1` only and in that case,
+# for :math:`\xi \neq 0`, we have:  
+#
+# .. math::
+#     \Expect{\mbox{GEV}(t)} = \mu(t) + \dfrac{\sigma(t)}{\xi(t)} (\Gamma(1-\xi(t))-1)
+#
+# and for :math:`\xi = 0`, we have:
+#
+# .. math::
+#     \Expect{\mbox{GEV}(t)} = \mu(t) + \sigma(t)\gamma
+#
+# where :math:`\gamma` is the Euler constant.
+#
+# We can also draw the function :math:`t \mapsto q_p(t)` where :math:`q_p(t)` is the quantile of
+# order :math:`p` of the GEV distribution at time :math:`t`.
+# Here, :math:`\mu(t)` is a linear function and the other parameters are constant, so the mean and the quantile 
+# functions are also linear functions.
+graph = ot.Graph(r"Annual maximum sea-levels at Fremantle - Linear $\mu(t)$", "year", "level (m)", True, "")
+graph.setIntegerXTick(True)
+# data
 cloud = ot.Cloud(data[:, :2])
 cloud.setColor("red")
 graph.add(cloud)
-graph.setIntegerXTick(True)
-graph.setTitle('Maximum annual sea-levels')
-graph.setYTitle('level (m)')
-graph.setXTitle('year')
-graph.setLegends(['linear trend', 'data'])
-graph.setLegendPosition('topright')
+# mean function
+meandata = [result_NonStatLL.getDistribution(t).getMean()[0] for t in data[:, 0].asPoint()]
+curve_meanPoints = ot.Curve(data[:, 0].asPoint(), meandata)
+graph.add(curve_meanPoints)
+# quantile function
+graphQuantile = result_NonStatLL.drawQuantileFunction(0.95)
+drawQuant = graphQuantile.getDrawable(0)
+drawQuant = graphQuantile.getDrawable(0)
+drawQuant.setLineStyle('dashed')
+graph.add(drawQuant)
+graph.setLegends(['data', 'mean function', 'quantile 0.95  function'])
+graph.setLegendPosition('bottomright')
 view = otv.View(graph)
+
 
 # %%
 # At last, we can test the validity of the stationary model :math:`\mathcal{M}_0`
@@ -227,12 +255,13 @@ view = otv.View(graph)
 # We use the Likelihood Ratio test. The null hypothesis is the stationary model :math:`\mathcal{M}_0`.
 # The Type I error :math:`\alpha` is taken equal to 0.05.
 #
-# This test confirms that the dependence through time is not negligible: it means that the linear trend component explains a large variation in the data.
+# This test confirms that the dependence through time is not negligible: it means that the linear :math:`mu(t)`
+# component explains a large variation in the data.
 llh_LL = result_LL.getLogLikelihood()
 llh_NonStatLL = result_NonStatLL.getLogLikelihood()
 resultLikRatioTest = ot.HypothesisTest.LikelihoodRatioTest(llh_LL, llh_NonStatLL, 0.05)
 accepted = resultLikRatioTest.getBinaryQualityMeasure()
-print(f"Hypothesis H0 (stationary model) vs H1 (linear trend model):  accepted ? = {accepted}")
+print(f"Hypothesis H0 (stationary model) vs H1 (linear mu(t) model):  accepted ? = {accepted}")
 
 # %%
 # We detail the statistics of the Likelihood Ratio test: the deviance statistics :math:`\mathcal{D}_p` follows
@@ -243,8 +272,8 @@ print(f"Dp={resultLikRatioTest.getStatistic():.2f}")
 print(f"cAlpha={resultLikRatioTest.getThreshold():.2f}")
 
 # %%
-# We can perform the same study with a quadratic trend in :math:`\mu` or a linear trend in
-# :math:`\sigma`:
+# We can perform the same study with a quadratic model for :math:`\mu(t)` or a linear model for
+# :math:`\sigma(t)`:
 #
 # .. math::
 #     :nowrap:
@@ -266,9 +295,9 @@ print(f"cAlpha={resultLikRatioTest.getThreshold():.2f}")
 #     \xi(t) & = \beta_5
 #     \end{align*}
 #
-# We could notice that there is no evidence to adopt a quadratic trend in :math:`\mu` nor a linear trend
-# in :math:`\sigma`: the optimal log-likelihood for each model is very near the likelihood we obtained
-# with a linear trend in :math:`\mu` only. It means that these both models do not bring significant
+# We could notice that there is no evidence to adopt a quadratic model for :math:`\mu(t)` nor a linear model
+# for :math:`\sigma(t)`: the optimal log-likelihood for each model is very near the likelihood we obtained
+# with a linear model for :math:`\mu(t)` only. It means that these both models do not bring significant
 # improvements with respect to model tested before.
 basis_mu_2 = ot.Basis([constant, ot.SymbolicFunction(["t"], ["t"]), ot.SymbolicFunction(["t"], ["t^2"])])
 basis_sigma = ot.Basis([constant])
@@ -278,8 +307,8 @@ basis_coll_3 = [basis_mu, basis_sigma_2, basis_xi]
 # result_NonStatLL_2 = factory.buildTimeVarying(sample, mesh, basis_coll_2)
 # result_NonStatLL_3 = factory.buildTimeVarying(sample, mesh, basis_coll_3)
 # print('Max log-likelihood = ')
-# print('Non stationary quadratic trend model = ', result_NonStatLL_2.getLogLikelihood())
-# print('Non stationary linear sigma model = ', result_NonStatLL_3.getLogLikelihood())
+# print('Non stationary quadratic mu(t) model = ', result_NonStatLL_2.getLogLikelihood())
+# print('Non stationary linear sigma(t) model = ', result_NonStatLL_3.getLogLikelihood())
 # llh_LL = result_LL.getLogLikelihood()
 # llh_NonStatLL_2 = result_NonStatLL_2.getLogLikelihood()
 # llh_NonStatLL_3 = result_NonStatLL_3.getLogLikelihood()
@@ -287,25 +316,8 @@ basis_coll_3 = [basis_mu, basis_sigma_2, basis_xi]
 # resultLikRatioTest_3 = ot.HypothesisTest.LikelihoodRatioTest(llh_LL, llh_NonStatLL_3 , 0.05)
 # accepted_2 = resultLikRatioTest_2.getBinaryQualityMeasure()
 # accepted_3 = resultLikRatioTest_3.getBinaryQualityMeasure()
-# print(f"Hypothesis H0 (stationary model) vs H1 (quadratic trend model):  accepted ? = {accepted_2}")
-# print(f"Hypothesis H0 (stationary model) vs H1 (linear sigma model):  accepted ? = {accepted_3}")
-
-# %%
-# We can also draw the function :math:`t \mapsto q_p(t)` where :math:`q_p(t)` is the quantile of
-# order :math:`p` of the GEV distribution at time :math:`t`.
-# Here, :math:`\mu(t)` is a linear function and the other parameters are constant, so the quantile function is
-# also a linear function in time.
-graph = result_NonStatLL.drawQuantileFunction(0.5)
-cloud = ot.Cloud(data[:, :2])
-cloud.setColor("red")
-graph.add(cloud)
-graph.setIntegerXTick(True)
-graph.setTitle('Maximum annual sea-levels at Port Pirie')
-graph.setYTitle('level (m)')
-graph.setXTitle('year')
-graph.setLegends(['quantile linear trend', 'data'])
-graph.setLegendPosition('topright')
-view = otv.View(graph)
+# print(f"Hypothesis H0 (stationary model) vs H1 (quadratic mu(t) model):  accepted ? = {accepted_2}")
+# print(f"Hypothesis H0 (stationary model) vs H1 (linear sigma(t) model):  accepted ? = {accepted_3}")
 
 # %%
 otv.View.ShowAll()

@@ -234,18 +234,45 @@ print('Stationary model =  ', result_LL.getLogLikelihood())
 print('Non stationary linear model =  ', result_NonStatLL.getLogLikelihood())
 
 # %%
-# We can draw the estimated trend  :math:`t \mapsto \mu(t)` with the data: the graph confirms the increase of the annual maximum sea-levels through time.
-graph = result_NonStatLL.drawParameterFunction(0)
+# We can draw the mean function  :math:`t \mapsto \Expect{\mbox{GEV}(t)}`. Be careful, it is not the function
+# :math:`t \mapsto \mu(t)`. As a matter of fact, the mean is defined for :math:`\xi <1` only and in that case,
+# for :math:`\xi \neq 0`, we have:  
+#
+# .. math::
+#     \Expect{\mbox{GEV}(t)} = \mu(t) + \dfrac{\sigma(t)}{\xi(t)} (\Gamma(1-\xi(t))-1)
+#
+# and for :math:`\xi = 0`, we have:
+#
+# .. math::
+#     \Expect{\mbox{GEV}(t)} = \mu(t) + \sigma(t)\gamma
+#
+# where :math:`\gamma` is the Euler constant.
+#
+# We can also draw the function :math:`t \mapsto q_p(t)` where :math:`q_p(t)` is the quantile of
+# order :math:`p` of the GEV distribution at time :math:`t`.
+# Here, :math:`\mu(t)` is a linear function and the other parameters are constant, so the mean and the quantile 
+# functions are also linear functions.
+#
+# The graph confirms the increase of the annual maximum sea-levels through time.
+graph = ot.Graph(r"Fatest annual race times - Linear $\mu(t)$", "year", "race time (m)", True, "")
 dataModified = data * ot.Point([1.0, -1.0])
+graph.setIntegerXTick(True)
+# data
 cloud = ot.Cloud(dataModified)
 cloud.setColor("red")
 graph.add(cloud)
-graph.setIntegerXTick(True)
-graph.setTitle('Fatest annual race times')
-graph.setYTitle('race times')
-graph.setXTitle('year')
-graph.setLegends(['linear trend', 'data'])
-graph.setLegendPosition('topright')
+# mean function
+meandata = [result_NonStatLL.getDistribution(t).getMean()[0] for t in data[:, 0].asPoint()]
+curve_meanPoints = ot.Curve(data[:, 0].asPoint(), meandata)
+graph.add(curve_meanPoints)
+# quantile function
+graphQuantile = result_NonStatLL.drawQuantileFunction(0.95)
+drawQuant = graphQuantile.getDrawable(0)
+drawQuant = graphQuantile.getDrawable(0)
+drawQuant.setLineStyle('dashed')
+graph.add(drawQuant)
+graph.setLegends(['data', 'mean function', 'quantile 0.95  function'])
+graph.setLegendPosition('bottomright')
 view = otv.View(graph)
 
 # %%
@@ -258,7 +285,8 @@ view = otv.View(graph)
 # We use the Likelihood Ratio test. The null hypothesis is the stationary model :math:`\mathcal{M}_0`.
 # The Type I error :math:`\alpha` is taken equal to 0.05.
 #
-# This test confirms that the dependence through time is not negligible: it means that the linear trend component explains a large variation in the data.
+# This test confirms that the dependence through time is not negligible: it means that the linear
+# model:math:`mu(t)` component explains a large variation in the data.
 llh_LL = result_LL.getLogLikelihood()
 llh_NonStatLL = result_NonStatLL.getLogLikelihood()
 resultLikRatioTest = ot.HypothesisTest.LikelihoodRatioTest(llh_LL, llh_NonStatLL, 0.05)
@@ -275,8 +303,8 @@ print(f"Dp={resultLikRatioTest.getStatistic():.2f}")
 print(f"cAlpha={resultLikRatioTest.getThreshold():.2f}")
 
 # %%
-# We can perform the same study with a quadratic trend in :math:`\mu` or a linear trend in
-# :math:`\sigma`:
+# We can perform the same study with a quadratic model for :math:`\mu(t)` or a linear model
+# for :math:`\sigma(t)`:
 #
 # .. math::
 #     :nowrap:
@@ -311,23 +339,6 @@ print('Max log-likelihood = ')
 print('Non stationary quadratic model = ', result_NonStatLL_2.getLogLikelihood())
 
 # %%
-# We can draw the estimated trend  :math:`t \mapsto \mu(t)` with the data: the graph confirms the
-# increase of the annual maximum sea-levels through time.
-graph = result_NonStatLL_2.drawParameterFunction(0)
-dataModified = data * ot.Point([1.0, -1.0])
-cloud = ot.Cloud(dataModified)
-cloud.setColor("red")
-graph.add(cloud)
-graph.setIntegerXTick(True)
-graph.setIntegerXTick(True)
-graph.setTitle('Fatest annual race times')
-graph.setYTitle('race times')
-graph.setXTitle('year')
-graph.setLegends(['quadratic trend', 'data'])
-graph.setLegendPosition('topright')
-view = otv.View(graph)
-
-# %%
 # At last, we can test the validity of the stationary model :math:`\mathcal{M}_0`
 # relative to the model with time varying parameters  :math:`\mathcal{M}_1`. The
 # model :math:`\mathcal{M}_0` is parametrized by :math:`(\beta_1, \beta_3, \beta_4)` and the model
@@ -337,8 +348,8 @@ view = otv.View(graph)
 # We use the Likelihood Ratio test. The null hypothesis is the stationary model :math:`\mathcal{M}_0`.
 # The Type I error :math:`\alpha` is taken equal to 0.05.
 #
-# This test confirms that the dependence through time is not negligible: it means that the quadratic trend
-# explains a large variation in the data.
+# This test confirms that the dependence through time is not negligible: it means that the :math:`\mu(t)`
+# quadratic model explains a large variation in the data.
 llh_LL = result_LL.getLogLikelihood()
 llh_NonStatLL_2 = result_NonStatLL_2.getLogLikelihood()
 resultLikRatioTest = ot.HypothesisTest.LikelihoodRatioTest(llh_LL, llh_NonStatLL_2, 0.05)
