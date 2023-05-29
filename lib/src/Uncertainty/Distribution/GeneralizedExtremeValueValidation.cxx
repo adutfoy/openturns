@@ -81,7 +81,7 @@ Graph GeneralizedExtremeValueValidation::drawReturnLevel() const
   rlPlot.add(curveUP);
   rlPlot.add(cloudRl);
   rlPlot.setLegends({"return level", "CI low", "CI up", "data"});
-  rlPlot.setTitle("Return level");
+  rlPlot.setTitle("Return level plot");
   return rlPlot;
 }
 
@@ -104,9 +104,11 @@ GridLayout GeneralizedExtremeValueValidation::drawDiagnosticPlot() const
 
   // pp/qq plots
   Graph ppPlot(VisualTest::DrawPPplot(sample_, result_.getDistribution()));
-  ppPlot.setYTitle("percentile");
+  ppPlot.setYTitle("model probability");
+  ppPlot.setXTitle("sample probability");
   Graph qqPlot(VisualTest::DrawQQplot(sample_, result_.getDistribution()));
-  qqPlot.setYTitle("quantile");
+  qqPlot.setYTitle("model quantile");
+  qqPlot.setXTitle("sample quantile");
   grid.setGraph(0, 0, ppPlot);
   grid.setGraph(0, 1, qqPlot);
 

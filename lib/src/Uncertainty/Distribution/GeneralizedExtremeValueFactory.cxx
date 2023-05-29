@@ -381,8 +381,8 @@ ProfileLikelihoodResult GeneralizedExtremeValueFactory::buildMethodOfProfileLike
   // If xi < 0, one must have z[i] < mu - sigma / xi so z_max < mu - sigma / xi, ie sigma / xi < mu - z_max, xi > -sigma / (z_max - mu)
   const Scalar mu = optimalParameter[0];
   const Scalar sigma = optimalParameter[1];
-  const Scalar xiMin = -sigma / (zMax - mu);
-  const Scalar xiMax =  sigma / (mu - zMin);
+  const Scalar xiMin = -5 * sigma / (zMax - mu);
+  const Scalar xiMax =  5 * sigma / (mu - zMin);
   ProfileLikelihoodResult result(distribution, parameterDistribution, logLikelihood, objective, xi, xiMin, xiMax);
   return result;
 }
@@ -591,7 +591,6 @@ public:
   GeneralizedExtremeValueTimeVaryingLikelihoodEvaluation(const Sample & sample,
       const Sample & meshValues,
       const Function & thetaFunction,
-      const GeneralizedExtremeValueFactory::BasisCollection & basisCollection,
       const Scalar startingValue)
     : EvaluationImplementation()
     , sample_(sample)
@@ -752,7 +751,7 @@ TimeVaryingResult GeneralizedExtremeValueFactory::buildTimeVarying(const Sample 
   if (inverseLinkFunction.getEvaluation().getImplementation()->isActualImplementation())
     thetaFunction = ComposedFunction(inverseLinkFunction, thetaFunction);
 
-  GeneralizedExtremeValueTimeVaryingLikelihoodEvaluation evaluation(sample, grid, thetaFunction, basisCollection, 0.0);
+  GeneralizedExtremeValueTimeVaryingLikelihoodEvaluation evaluation(sample, grid, thetaFunction, 0.0);
   // heuristic for feasible mu
   UnsignedInteger i = 0;
   const UnsignedInteger maxIter = ResourceMap::GetAsUnsignedInteger("GeneralizedExtremeValueFactory-FeasibilityMaximumIterationNumber");
@@ -766,7 +765,7 @@ TimeVaryingResult GeneralizedExtremeValueFactory::buildTimeVarying(const Sample 
   }
   LOGINFO(OSS(false) << "Starting points for the coefficients=" << x0); 
   const Scalar startingValue = -evaluation(x0)[0];
-  evaluation = GeneralizedExtremeValueTimeVaryingLikelihoodEvaluation(sample, grid, thetaFunction, basisCollection, startingValue);
+  evaluation = GeneralizedExtremeValueTimeVaryingLikelihoodEvaluation(sample, grid, thetaFunction, startingValue);
 
   const Function objectiveAndConstraints(evaluation.clone());
   const Function objective(objectiveAndConstraints.getMarginal(0));
@@ -781,7 +780,8 @@ TimeVaryingResult GeneralizedExtremeValueFactory::buildTimeVarying(const Sample 
   solver.setStartingPoint(x0);
   solver.run();
   const Point optimalParameter(solver.getResult().getOptimalPoint());
-  LOGINFO(OSS(false) << "Optimal coefficients=" << optimalParameter << ", optimal log-likelihood=" << solver.getResult().getOptimalValue()[0] - startingValue);
+  const Scalar logLikelihood = solver.getResult().getOptimalValue()[0] - startingValue;
+  LOGINFO(OSS(false) << "Optimal coefficients=" << optimalParameter << ", optimal log-likelihood=" << logLikelihood);
   // estimate parameter distribution via the Fisher information matrix
   const UnsignedInteger size = sample.getSize();
   Matrix fisher(nP, nP);
@@ -809,7 +809,6 @@ TimeVaryingResult GeneralizedExtremeValueFactory::buildTimeVarying(const Sample 
 
   const CovarianceMatrix covariance(SymmetricMatrix(fisher.getImplementation()).solveLinearSystem(IdentityMatrix(nP) / size).getImplementation());
   const Normal parameterDistribution(optimalParameter, covariance);
-  const Scalar logLikelihood = solver.getResult().getOptimalValue()[0];
   const TimeVaryingResult result(*this, thetaFunction, mesh, parameterDistribution, logLikelihood);
   return result;
 }
@@ -1049,10 +1048,10 @@ ProfileLikelihoodResult GeneralizedExtremeValueFactory::buildReturnLevelProfileL
   // zmMax = mu - sigma * (1 - exp(xiMax * log(m))) / xiMax
   const Scalar zMin = sample.getMin()[0];
   const Scalar zMax = sample.getMax()[0];
-  const Scalar xiMin = -sigma / (zMax - mu);
-  const Scalar xiMax =  sigma / (mu - zMin);
-  const Scalar zmMin = mu + sigma * std::expm1(xiMax * logLog1pM) / xiMax;
-  const Scalar zmMax = mu + sigma * std::expm1(xiMin * logLog1pM) / xiMin;
+  const Scalar xiMin = -5 * sigma / (zMax - mu);
+  const Scalar xiMax =  5 * sigma / (mu - zMin);
+  const Scalar zmMin = mu + sigma * std::expm1(xiMin * logLog1pM) / xiMin;
+  const Scalar zmMax = mu + sigma * std::expm1(xiMax * logLog1pM) / xiMax;
   std::cout << "mu=" << mu << ", sigma=" << sigma << ", xi=" << xi << ", zm=" << zm << ", zMin=" << zMin << ", zMax=" << zMax << ", xiMin=" << xiMin << ", xiMax=" << xiMax << ", zmMin=" << zmMin << ", zmMax=" << zmMax << std::endl;
   ProfileLikelihoodResult result(distribution, parameterDistribution, logLikelihood, objective, zm, zmMin, zmMax);
   return result;
