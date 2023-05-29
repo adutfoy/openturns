@@ -58,6 +58,7 @@ fitted_GEV = result_LL_max.getDistribution()
 desc = fitted_GEV.getParameterDescription()
 param = fitted_GEV.getParameter()
 print(", ".join([f"{p}: {value:.3f}" for p, value in zip(desc, param)]))
+print('Max log-likelihood (one max): ', result_LL_max.getLogLikelihood())
 
 # %%
 # We get the asymptotic distribution of the estimator :math:`(\hat{\mu}, \hat{\sigma}, \hat{\xi})`.
@@ -79,7 +80,12 @@ for i in range(3):
     print(desc[i] + ":", ci)
 
 # %%
-# At last, we can validate the inference result thanks the 4 usual diagnostic plots.
+# At last, we can validate the inference result thanks the 4 usual diagnostic plots:
+#
+# - the probability-probability pot,
+# - the quantile-quantile pot,
+# - the return level plot,
+# - the empirical distribution function.
 validation = otexp.GeneralizedExtremeValueValidation(result_LL_max, sample)
 graph = validation.drawDiagnosticPlot()
 view = otv.View(graph)
@@ -99,8 +105,10 @@ print(result_PLL_max.getParameterConfidenceInterval())
 # %%
 # We can get the numerical values of the confidence interval: it appears to be a bit smaller
 # with the interval obtained from the profile log-likelihood function than with the log-likelihood function.
-print('Confidence interval for xi = ', result_PLL_max.getParameterConfidenceInterval())
-
+try:
+    print('Confidence interval for xi = ', result_PLL_max.getParameterConfidenceInterval())
+except:
+    pass
 
 # %%
 # **Stationary GEV modeling from the largest :math:`r` annual sea-levels**
