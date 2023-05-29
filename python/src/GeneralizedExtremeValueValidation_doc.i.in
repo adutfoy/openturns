@@ -40,15 +40,15 @@ The *quantile-quantile* plot consists of the points:
 The *return level* plot consists of the points:
 
 .. math::
-    \left\{ \left( \log(-\log(1-p)), \hat{z}_p\right), i=1, \dots , n\right\}
+    \left\{ \left( \log(m), \hat{z}_m\right),m> 0\right\}
 
 and the points:
 
 .. math::
-    \left\{ \left( \log(-\log(1-p)), z_{p}^{emp}\right), i=1, \dots , n\right\}
+    \left\{ \left( \log(m), z_{m}^{emp}\right), m> 0\right\}
 
-where :math:`z_{p}^{emp}` is the empirical return level and :math:`\hat{z}_{p}` the 
-return level calculated with the fitted GEV.
+where :math:`z_{m}^{emp}` is the empirical :math:`m`-block return level and :math:`\hat{z}_{m}` the 
+:math:`m`-block return level calculated with the fitted GEV.
 
 Returns
 -------
@@ -68,12 +68,15 @@ grid : :class:`~openturns.GridLayout`
 The *return level* plot consists of the points:
 
 .. math::
-    \left\{ \left( \log(-\log(1-p)), \hat{z}_p\right), i=1, \dots , n\right\}
+    \left\{ \left( \log(m), \hat{z}_m\right), 0 < p < 1\right\}
 
 and the points:
 
 .. math::
-    \left\{ \left( \log(-\log(1-p)), z_{p}^{emp}\right), i=1, \dots , n\right\}
+    \left\{ \left( \log(m), z_{m}^{emp}\right), m> 0\right\}
+
+where :math:`z_{m}^{emp}` is the empirical :math:`m`-block return level and :math:`\hat{z}_{m}` the 
+:math:`m`-block return level calculated with the fitted GEV.
 
 Returns
 -------

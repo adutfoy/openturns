@@ -118,12 +118,13 @@ except:
 # observed extremes than the annual maxima: the additional information contained in the largest
 # :math:`10` observations can be used to improve the estimation of the GEV model.
 #
-# Now, we drop the year column to keep only the maxima values
+# Now, we drop the year column to keep only the maxima values.
 sample_rmax = data[:, 1:]
 print(sample_rmax[:5])
 
 # %%
-# We estimate the parameters from the largest :math:`r` annual sea-levels for :math:`r=1,5,10`. For each :math:`r` value, we get the estimated parameters.
+# We estimate the parameters from the largest :math:`r` annual sea-levels for :math:`r=1,5,10`.
+# For each :math:`r` value, we get the estimated parameters.
 factory = ot.GeneralizedExtremeValueFactory()
 r_candidate = [1, 5, 10]
 for r in r_candidate:

@@ -106,7 +106,7 @@ view = otv.View(result_PLL.drawProfileLikelihoodFunction())
 # one of its bound is out of the definition domain of the log-likelihood function.
 try:
     print('Confidence interval for xi = ', result_PLL.getParameterConfidenceInterval())
-except:
+except :
     pass
 
 # %%
@@ -119,7 +119,7 @@ except:
 # As the data are annual sea-levels, each block corresponds to one year: the 10-year return level
 # corresponds to :math:`m=10` and the 100-year return level corresponds to :math:`m=100`.
 #
-# The method provides the asymptotic distribution of the estimator :math:`\hat{z}_m` 
+# The method provides the asymptotic distribution of the estimator :math:`\hat{z}_m`
 # which mean is the return-level estimate.
 zm_10 = factory.buildReturnLevelEstimator(result_LL, 10.0)
 return_level_10 = zm_10.getMean()
