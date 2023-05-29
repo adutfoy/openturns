@@ -106,7 +106,7 @@ view = otv.View(result_PLL.drawProfileLikelihoodFunction())
 # one of its bound is out of the definition domain of the log-likelihood function.
 try:
     print('Confidence interval for xi = ', result_PLL.getParameterConfidenceInterval())
-except :
+except:
     pass
 
 # %%
