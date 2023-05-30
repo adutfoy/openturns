@@ -694,35 +694,25 @@ TimeVaryingResult GeneralizedExtremeValueFactory::buildTimeVarying(const Sample 
   }
 
   // Get an initial guest for (mu, sigma, xi) as if they were constant
-  const Point initialGuess(buildMethodOfLikelihoodMaximization(sample).getParameter());
+  // const Point initialGuess(buildMethodOfLikelihoodMaximization(sample).getParameter());
+  const Scalar mean = sample.computeMean()[0];
+  const Scalar std = sample.computeStandardDeviation()[0];
+  Point initialGuess(3);
+  initialGuess[0] = mean - SpecFunc::EULERSQRT6_PI * std;
+  initialGuess[1] = std / SpecFunc::PI_SQRT6;
+  initialGuess[2] = 0.1;
   LOGINFO(OSS(false) << "In buildTimeVarying, initial guess=" << initialGuess);
   // build the parametric function [beta],t->theta(t)=mu(t),sigma(t),xi(t)
   Collection<Function> thetaFunctions(3);
   UnsignedInteger nP = 0;
   Point x0;
-  const Sample vertices(mesh.getVertices());
-  const UnsignedInteger verticesNumber = vertices.getSize();
-  Point weights(verticesNumber);
-  weights[0] = 0.5 * (vertices(1, 0) - vertices(0, 0));
-  for (UnsignedInteger i = 1; i < verticesNumber - 1; ++i)
-    weights[i] = 0.5 * (vertices(i + 1, 0) - vertices(i - 1, 0));
-  weights[verticesNumber - 1] = 0.5 * (vertices(verticesNumber - 1, 0) - vertices(verticesNumber - 2, 0));
-  weights /= (vertices(verticesNumber - 1, 0) - vertices(0, 0));
   for (UnsignedInteger i = 0; i < 3; ++ i)
   {
     const UnsignedInteger nI = basisCollection[i].getSize();
     nP += nI;
     // initialize first coefficient of basis to 1, 0 elsewhere
     Point x0i(nI);
-    for (UnsignedInteger j = 0; j < nI; ++j)
-      {
-        const Function phi(basisCollection[i][j]);
-        const Point values(phi(vertices).asPoint());
-        const Scalar meanValue = values.dot(weights);
-        x0i[j] = initialGuess[i] / nI;
-        if (meanValue != 0.0)
-          x0i[j] /= meanValue;
-      }
+    x0i[0] = initialGuess[i];
     x0.add(x0i);
     const Description betaVars(Description::BuildDefault(nI, "beta"));
     const Description fVars(Description::BuildDefault(nI, "f"));
