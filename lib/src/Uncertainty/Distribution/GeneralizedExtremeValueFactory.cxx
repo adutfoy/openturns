@@ -34,6 +34,7 @@
 #include "openturns/Brent.hxx"
 #include "openturns/AggregatedFunction.hxx"
 #include "openturns/ComposedFunction.hxx"
+#include "openturns/LinearFunction.hxx"
 #include "openturns/Normal.hxx"
 
 BEGIN_NAMESPACE_OPENTURNS
@@ -694,14 +695,56 @@ TimeVaryingResult GeneralizedExtremeValueFactory::buildTimeVarying(const Sample 
   }
 
   // Get an initial guest for (mu, sigma, xi) as if they were constant
-  // const Point initialGuess(buildMethodOfLikelihoodMaximization(sample).getParameter());
-  const Scalar mean = sample.computeMean()[0];
-  const Scalar std = sample.computeStandardDeviation()[0];
   Point initialGuess(3);
-  initialGuess[0] = mean - SpecFunc::EULERSQRT6_PI * std;
-  initialGuess[1] = std / SpecFunc::PI_SQRT6;
-  initialGuess[2] = 0.1;
+  const String initializationMethod = ResourceMap::GetAsString("GeneralizedExtremeValueFactory-InitializationMethod");
+  LOGINFO(OSS() << "Initialization method is \"" << initializationMethod << "\"");
+  if (initializationMethod == "Gumbel")
+    {
+      const Scalar mean = sample.computeMean()[0];
+      const Scalar std = sample.computeStandardDeviation()[0];
+      initialGuess[0] = mean - SpecFunc::EULERSQRT6_PI * std;
+      initialGuess[1] = std / SpecFunc::PI_SQRT6;
+      initialGuess[2] = 0.1;
+    }
+  else if (initializationMethod == "Static")
+    {
+      initialGuess = buildMethodOfLikelihoodMaximization(sample).getParameter();
+    }
+  else throw InvalidArgumentException(HERE) << "Error: the value " << initializationMethod << " is invalid for the \"GeneralizedExtremeValueFactory-InitializationMethod\" key in ResourceMap. Valid values are \"Static\" and \"Gumbel\"";
   LOGINFO(OSS(false) << "In buildTimeVarying, initial guess=" << initialGuess);
+  // Check if the covariates have to be normalized
+  const String normalizationMethod(ResourceMap::GetAsString("GeneralizedExtremeValueFactory-NormalizationMethod"));
+  Bool mustNormalize = false;
+  Function normalizationCovariates;
+  if (normalizationMethod == "CenterReduce")
+    {
+      mustNormalize = true;
+      const Sample vertices(mesh.getVertices());
+      const Point meanCovariates(vertices.computeMean());
+      const Point stdCovariates(vertices.computeStandardDeviation());
+      const UnsignedInteger covariateNumber = vertices.getDimension();
+      SymmetricMatrix matrix(covariateNumber);
+      for (UnsignedInteger i = 0; i < covariateNumber; ++i)
+        matrix(i, i) = (stdCovariates[i] > 0.0 ? 1.0 / stdCovariates[i] : 1.0);
+      normalizationCovariates = LinearFunction(meanCovariates, Point(covariateNumber), matrix);
+      LOGINFO(OSS() << "Normalization method=" << normalizationMethod << ", transformation=" << normalizationCovariates);
+    }
+  else if (normalizationMethod == "MinMax")
+    {
+      mustNormalize = true;
+      const Sample vertices(mesh.getVertices());
+      const Point minCovariates(vertices.getMin());
+      const Point maxCovariates(vertices.getMax());
+      const UnsignedInteger covariateNumber = vertices.getDimension();
+      SymmetricMatrix matrix(covariateNumber);
+      for (UnsignedInteger i = 0; i < covariateNumber; ++i)
+        matrix(i, i) = (minCovariates[i] < maxCovariates[i] ? 1.0 / (maxCovariates[i] - minCovariates[i]) : 1.0);
+      normalizationCovariates = LinearFunction(minCovariates, Point(covariateNumber), matrix);
+      LOGINFO(OSS() << "Normalization method=" << normalizationMethod << ", transformation=" << normalizationCovariates);
+    }
+  else if (normalizationMethod == "None")
+    LOGINFO("No normalization of the covariates");
+  else throw InvalidArgumentException(HERE) << "Error: the value " << normalizationMethod << " is invalid for the \"GeneralizedExtremeValueFactory-NormalizationMethod\" key in ResourceMap. Valid values are \"MinMax\", \"CenterReduce\", \"None\"";
   // build the parametric function [beta],t->theta(t)=mu(t),sigma(t),xi(t)
   Collection<Function> thetaFunctions(3);
   UnsignedInteger nP = 0;
@@ -731,7 +774,12 @@ TimeVaryingResult GeneralizedExtremeValueFactory::buildTimeVarying(const Sample 
     const ParametricFunction parametric(linearCombination, betaIndices, Point(nI));
     Collection<Function> coll(nI);
     for (UnsignedInteger j = 0; j < nI; ++ j)
-      coll[j] = basisCollection[i][j];
+      {
+        if (mustNormalize)
+          coll[j] = ComposedFunction(basisCollection[i][j], normalizationCovariates);
+        else
+          coll[j] = basisCollection[i][j];
+      }
     const AggregatedFunction aggregated(coll);
     ComposedFunction composed(parametric, aggregated);
     composed.setOutputDescription({build().getParameterDescription()[i] + "(t)"});
