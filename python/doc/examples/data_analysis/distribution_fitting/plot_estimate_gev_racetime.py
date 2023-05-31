@@ -389,8 +389,8 @@ beta = result_NonStatLL_2.getOptimalParameter()
 print('Quadratic mu(t) model : ')
 print('beta1, beta2, beta3, beta4, beta5 = ', beta)
 print(f"mu(t) = {beta[0]:.4f} + {beta[1]:.4f} * tau + {beta[2]:.4f} * tau^2")
-print(f"sigma = {beta[3]:.4f}") 
-print(f"xi = {beta[4]:.4f}") 
+print(f"sigma = {beta[3]:.4f}")
+print(f"xi = {beta[4]:.4f}")
 
 # %%
 # We get the asymptotic distribution of :math:`\vect{\beta}` to compute some confidence intervals of
