@@ -178,13 +178,26 @@ mesh = ot.Mesh(data[:, 0])
 # the possibility to affect a time-varying model to each of the 3 parameters :math:`(\mu, \sigma, \xi)`,
 # it is strongly recommended not to vary the parameter :math:`\xi` and to let it constant.
 #
-# We suppose that :math:`\mu` is linear with time, and that the other parameters remain constant:
+# For numerical reasons, it is strongly recommended to normalize all the data as follows:
+#
+# .. math::
+#
+#     \tau(t) = \dfrac{t-c}{d}
+#
+# where:
+#
+# - the *CenterReduce* method where :math:`c = \dfrac{1}{m} \sum_{i=1}^m t_i` is the mean time labels
+#   and :math:`d = \sqrt{\dfrac{1}{m} \sum_{i=1}^m (t_i-c)^2}` is the standard deviation of the time labels;
+# - the *MinMax* method where :math:`c = t_1` is the first time and :math:`d =  = t_m-t_1` the final time;
+# - the *None* method where :math:`c = 0` and :math:`d = 1`: in that case, data are not normalized.
+#
+# We suppose that :math:`\mu` is linear in time, and that the other parameters remain constant:
 #
 # .. math::
 #     :nowrap:
 #
 #     \begin{align*}
-#       \mu(t) & = \beta_1 + \beta_2t \\
+#       \mu(t) & = \beta_1 + \beta_2\tau(t) \\
 #       \sigma(t) & = \beta_3 \\
 #       \xi(t) & = \beta_4
 #     \end{align*}
@@ -198,11 +211,43 @@ basis_coll = [basis_lin, basis_cst, basis_cst]
 
 # %%
 # We can now estimate the list of coefficients :math:`\vect{\beta} = (\beta_1, \beta_2, \beta_3, \beta_4)` using the log-likelihood of the data.
-result_NonStatLL = factory.buildTimeVarying(sample, mesh, basis_coll)
+# We test the 3 normalizing methods and both intial points in order to evaluate their impact on the results.
+# We can see that:
+# - both normalization methods lead to the same result,
+# - both initial points lead to the same result when the data have been normalized,
+# - it is very important to normalize all the data: if not, the result strongly depends on the initial point
+# and it differs from the result obtained with normalized data. The results are not optimal in that case
+# since the associated log-likelihood are much smaller than those obtained whith normalized data.
+initiPoint_list = list()
+initiPoint_list.append("Gumbel")
+initiPoint_list.append("Static")
+normMethod_list = list()
+normMethod_list.append("MinMax")
+normMethod_list.append("CenterReduce")
+normMethod_list.append("None")
+
+print('Linear mu(t) model : ')
+for normMeth in normMethod_list:
+    for initPoint in initiPoint_list:
+        print('normMeth, initPoint = ', normMeth, initPoint)
+        # The ot.Function() is the identity function.
+        result = factory.buildTimeVarying(sample, mesh, basis_coll, ot.Function(), initPoint, normMeth)
+        beta = result.getOptimalParameter()
+        print('beta1, beta2, beta3, beta4 = ', beta)
+        print('Max log-likelihood =  ', result.getLogLikelihood())
+
+# %% 
+# According to the previous results, we choose the *MinMax* normalization method and the *Gumbel* initial point. This initial point is cheaper than the *Static* one as it requires no optimization computation. 
+result_NonStatLL = factory.buildTimeVarying(sample, mesh, basis_coll, ot.Function(), "Gumbel", "MinMax")
 beta = result_NonStatLL.getOptimalParameter()
-beta_1, beta_2 = beta[:2]
-print('beta1, beta2, beta3, beta4 = ', beta)
-print(f"mu(t) = {beta_1:.4f} + {beta_2:.4f} * t")
+print('beta1, beta2, beta3, beta_4 = ', beta)
+print(f"mu(t) = {beta[0]:.4f} + {beta[1]:.4f} * tau")
+print(f"sigma = = {beta[2]:.4f}") 
+print(f"xi = = {beta[3]:.4f}") 
+
+# %%
+# You can get the expression of the function :math:`\mu(t)`: 
+#print('Function mu(t): ', result_NonStatLL.getParameterFunction())
 
 # %%
 # We get the asymptotic distribution of :math:`\vect{\beta}` to compute some confidence intervals of
@@ -289,13 +334,13 @@ print(f"cAlpha={resultLikRatioTest.getThreshold():.2f}")
 
 # %%
 # We can perform the same study with a quadratic model for :math:`\mu(t)` or a linear model for
-# :math:`\sigma(t)`:
+# :math:`\mu(t)` and :math:`\sigma(t)`:
 #
 # .. math::
 #     :nowrap:
 #
 #     \begin{align*}
-#       \mu(t) & = \beta_1 + \beta_2t + \beta_3t^2 \\
+#       \mu(t) & = \beta_1 + \beta_2 \tau(t) + \beta_3\tau(t)^2 \\
 #       \sigma(t) & = \beta_4 \\
 #       \xi(t) & = \beta_5
 #     \end{align*}
@@ -306,23 +351,23 @@ print(f"cAlpha={resultLikRatioTest.getThreshold():.2f}")
 #     :nowrap:
 #
 #     \begin{align*}
-#     \mu(t) & = \beta_1  \\
-#     \sigma(t) & = \beta_2 + \beta_3t\\
-#     \xi(t) & = \beta_4
+#     \mu(t) & = \beta_1 + \beta_2 \tau(t) \\
+#     \sigma(t) & = \beta_3 + \beta_4\tau(t)\\
+#     \xi(t) & = \beta_5
 #     \end{align*}
 #
-# We could notice that there is no evidence to adopt a quadratic model for :math:`\mu(t)` nor a linear model
-# for :math:`\sigma(t)`: the optimal log-likelihood for each model is very near the likelihood we obtained
-# with a linear model for :math:`\mu(t)` only. It means that these both models do not bring significant
+# For each model, we give the log-likelihood values and we test the validity of each model with respect to the stationary first model.
+# We notice that there is no evidence to adopt a quadratic model for :math:`\mu(t)` nor a linear model
+# for :math:`\mu(t)` and :math:`\sigma(t)`: the optimal log-likelihood for each model is very near the likelihood we obtained with a linear model for :math:`\mu(t)` only. It means that these both models do not bring significant
 # improvements with respect to model tested before.
 basis_quad = ot.Basis([constant, ot.SymbolicFunction(["t"], ["t"]), ot.SymbolicFunction(["t"], ["t^2"])])
 basis_coll_2 = [basis_quad, basis_cst, basis_cst]
-basis_coll_3 = [basis_cst, basis_lin, basis_cst]
-result_NonStatLL_2 = factory.buildTimeVarying(sample, mesh, basis_coll_2)
-result_NonStatLL_3 = factory.buildTimeVarying(sample, mesh, basis_coll_3)
+basis_coll_3 = [basis_lin, basis_lin, basis_cst]
+result_NonStatLL_2 = factory.buildTimeVarying(sample, mesh, basis_coll_2, ot.Function(), "Gumbel", "MinMax")
+result_NonStatLL_3 = factory.buildTimeVarying(sample, mesh, basis_coll_3, ot.Function(), "Gumbel", "MinMax")
 print('Max log-likelihood = ')
 print('Non stationary quadratic mu(t) model = ', result_NonStatLL_2.getLogLikelihood())
-print('Non stationary linear sigma(t) model = ', result_NonStatLL_3.getLogLikelihood())
+print('Non stationary linear mu(t) and sigma(t) model = ', result_NonStatLL_3.getLogLikelihood())
 llh_LL = result_LL.getLogLikelihood()
 llh_NonStatLL_2 = result_NonStatLL_2.getLogLikelihood()
 llh_NonStatLL_3 = result_NonStatLL_3.getLogLikelihood()
@@ -331,7 +376,7 @@ resultLikRatioTest_3 = ot.HypothesisTest.LikelihoodRatioTest(llh_LL, llh_NonStat
 accepted_2 = resultLikRatioTest_2.getBinaryQualityMeasure()
 accepted_3 = resultLikRatioTest_3.getBinaryQualityMeasure()
 print(f"Hypothesis H0 (stationary model) vs H1 (quadratic mu(t) model):  accepted ? = {accepted_2}")
-print(f"Hypothesis H0 (stationary model) vs H1 (linear sigma(t) model):  accepted ? = {accepted_3}")
+print(f"Hypothesis H0 (stationary model) vs H1 (linear mu(t) and sigma(t) model):  accepted ? = {accepted_3}")
 
 # %%
 otv.View.ShowAll()
