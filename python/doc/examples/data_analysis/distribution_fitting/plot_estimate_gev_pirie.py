@@ -100,7 +100,13 @@ view = otv.View(result_PLL.drawProfileLikelihoodFunction())
 # We can get the numerical values of the confidence interval: it appears to be a bit smaller
 # with the interval obtained from the profile log-likelihood function than with the log-likelihood
 # function.
-print('Confidence interval for xi = ', result_PLL.getParameterConfidenceInterval())
+# Note that if the order requested is too high, the confidence interval might not be calculated because
+# one of its bound is out of the definition domain of the log-likelihood function.
+try:
+    print('Confidence interval for xi = ', result_PLL.getParameterConfidenceInterval())
+except Exception as ex:
+    print(type(ex))
+    pass
 
 # %%
 # **Return level estimate from the estimated stationary GEV**
@@ -196,13 +202,13 @@ basis_coll = [basis_lin, basis_cst, basis_cst]
 # %%
 # We can now estimate the list of coefficients :math:`\vect{\beta} = (\beta_1, \beta_2, \beta_3, \beta_4)` using
 # the log-likelihood of the data.
-# We test the 3 normalizing methods and both intial points in order to evaluate their impact on the results.
+# We test the 3 normalizing methods and both initial points in order to evaluate their impact on the results.
 # We can see that:
 # - both normalization methods lead to the same result,
 # - both initial points lead to the same result when the data have been normalized,
 # - it is very important to normalize all the data: if not, the result strongly depends on the initial point
 # and it differs from the result obtained with normalized data. The results are not optimal in that case
-# since the associated log-likelihood are much smaller than those obtained whith normalized data.
+# since the associated log-likelihood are much smaller than those obtained with normalized data.
 initiPoint_list = list()
 initiPoint_list.append("Gumbel")
 initiPoint_list.append("Static")
