@@ -106,7 +106,8 @@ view = otv.View(result_PLL.drawProfileLikelihoodFunction())
 # one of its bound is out of the definition domain of the log-likelihood function.
 try:
     print('Confidence interval for xi = ', result_PLL.getParameterConfidenceInterval())
-except:
+except Exception as ex:
+    print(type(ex))
     pass
 
 # %%
@@ -152,7 +153,8 @@ print(f"10-year return level (profile) = {zm_10_PLL}")
 result_zm_10_PLL.setConfidenceLevel(0.95)
 try:
     return_level_ci10 = result_zm_10_PLL.getParameterConfidenceInterval()
-except:
+except Exception as ex:
+    print(type(ex))
     pass
 print("Maximum profile log-likelihood function : ")
 print(f"CI={return_level_ci10}")
@@ -226,7 +228,7 @@ normMethod_list.append("MinMax")
 normMethod_list.append("CenterReduce")
 normMethod_list.append("None")
 
-print('Linear mu(t) model : ')
+print('Linear mu(t) model: ')
 for normMeth in normMethod_list:
     for initPoint in initiPoint_list:
         print('normMeth, initPoint = ', normMeth, initPoint)
@@ -236,17 +238,18 @@ for normMeth in normMethod_list:
         print('beta1, beta2, beta3, beta4 = ', beta)
         print('Max log-likelihood =  ', result.getLogLikelihood())
 
-# %% 
-# According to the previous results, we choose the *MinMax* normalization method and the *Gumbel* initial point. This initial point is cheaper than the *Static* one as it requires no optimization computation. 
+# %%
+# According to the previous results, we choose the *MinMax* normalization method and the *Gumbel* initial point.
+# This initial point is cheaper than the *Static* one as it requires no optimization computation. 
 result_NonStatLL = factory.buildTimeVarying(sample, mesh, basis_coll, ot.Function(), "Gumbel", "MinMax")
 beta = result_NonStatLL.getOptimalParameter()
 print('beta1, beta2, beta3, beta_4 = ', beta)
 print(f"mu(t) = {beta[0]:.4f} + {beta[1]:.4f} * tau")
-print(f"sigma = = {beta[2]:.4f}") 
-print(f"xi = = {beta[3]:.4f}") 
+print(f"sigma = {beta[2]:.4f}")
+print(f"xi = {beta[3]:.4f}")
 
 # %%
-# You can get the expression of the function :math:`\mu(t)`: 
+# You can get the expression of the function :math:`\mu(t)`:
 #print('Function mu(t): ', result_NonStatLL.getParameterFunction())
 
 # %%
@@ -356,9 +359,11 @@ print(f"cAlpha={resultLikRatioTest.getThreshold():.2f}")
 #     \xi(t) & = \beta_5
 #     \end{align*}
 #
-# For each model, we give the log-likelihood values and we test the validity of each model with respect to the stationary first model.
+# For each model, we give the log-likelihood values and we test the validity of each model with respect
+# to the stationary first model.
 # We notice that there is no evidence to adopt a quadratic model for :math:`\mu(t)` nor a linear model
-# for :math:`\mu(t)` and :math:`\sigma(t)`: the optimal log-likelihood for each model is very near the likelihood we obtained with a linear model for :math:`\mu(t)` only. It means that these both models do not bring significant
+# for :math:`\mu(t)` and :math:`\sigma(t)`: the optimal log-likelihood for each model is very near the likelihood
+# we obtained with a linear model for :math:`\mu(t)` only. It means that these both models do not bring significant
 # improvements with respect to model tested before.
 basis_quad = ot.Basis([constant, ot.SymbolicFunction(["t"], ["t"]), ot.SymbolicFunction(["t"], ["t^2"])])
 basis_coll_2 = [basis_quad, basis_cst, basis_cst]

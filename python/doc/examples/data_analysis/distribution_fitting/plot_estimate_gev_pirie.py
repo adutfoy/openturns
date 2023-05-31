@@ -211,7 +211,7 @@ normMethod_list.append("MinMax")
 normMethod_list.append("CenterReduce")
 normMethod_list.append("None")
 
-print('Linear mu(t) model : ')
+print('Linear mu(t) model: ')
 for normMeth in normMethod_list:
     for initPoint in initiPoint_list:
         print('normMeth, initPoint = ', normMeth, initPoint)
@@ -221,13 +221,16 @@ for normMeth in normMethod_list:
         print('beta1, beta2, beta3, beta4 = ', beta)
         print('Max log-likelihood =  ', result.getLogLikelihood())
 
-# %% 
-# According to the previous results, we choose the *MinMax* normalization method and the *Gumbel* initial point. This initial point is cheaper than the *Static* one as it requires no optimization computation. 
+# %%
+# According to the previous results, we choose the *MinMax* normalization method and the *Gumbel* initial point.
+# This initial point is cheaper than the *Static* one as it requires no optimization computation. 
 result_NonStatLL = factory.buildTimeVarying(sample, mesh, basis_coll)
 beta = result_NonStatLL.getOptimalParameter()
-beta_1, beta_2 = beta[:2]
-print('beta1, beta2, beta3, beta4 = ', beta)
-print(f"mu(t) = {beta_1:.4f} + {beta_2:.4f} * t")
+print('beta1, beta2, beta3, beta_4 = ', beta)
+print(f"mu(t) = {beta[0]:.4f} + {beta[1]:.4f} * tau")
+print(f"sigma = {beta[2]:.4f}")
+print(f"xi = {beta[3]:.4f}")
+
 
 # %%
 # We get the asymptotic distribution of :math:`\vect{\beta}` to compute some confidence intervals of
@@ -240,7 +243,7 @@ for i in range(beta.getSize()):
     print('Conf interval for beta_' + str(i + 1) + ' = [' + str(lower_bound) + '; ' + str(upper_bound) + ']')
 
 # %%
-# You can get the expression of the function :math:`\mu(t)`: 
+# You can get the expression of the function :math:`\mu(t)`:
 #print('Function mu(t): ', result_NonStatLL.getParameterFunction())
 
 # %%
@@ -292,7 +295,8 @@ view = otv.View(graph)
 
 # %%
 # At last, we can test the validity of the stationary model :math:`\mathcal{M}_0`
-# relative to the model with time varying parameters  :math:`\mathcal{M}_1`. The model :math:`\mathcal{M}_0` is parametrized
+# relative to the model with time varying parameters  :math:`\mathcal{M}_1`. The
+# model :math:`\mathcal{M}_0` is parametrized
 # by :math:`(\beta_1, \beta_3, \beta_4)` and the model :math:`\mathcal{M}_1` is parametrized
 # by :math:`(\beta_1, \beta_2, \beta_3, \beta_4)`: so we have :math:`\mathcal{M}_0 \subset \mathcal{M}_1`.
 #

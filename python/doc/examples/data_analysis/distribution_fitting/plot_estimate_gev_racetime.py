@@ -136,7 +136,8 @@ view = otv.View(result_PLL.drawProfileLikelihoodFunction())
 # one of its bound is out of the definition domain of the log-likelihood function.
 try:
     print('Confidence interval for xi = ', result_PLL.getParameterConfidenceInterval())
-except:
+except Exception as ex:
+    print(type(ex))
     pass
 
 # %%
@@ -254,7 +255,7 @@ normMethod_list.append("MinMax")
 normMethod_list.append("CenterReduce")
 normMethod_list.append("None")
 ot.ResourceMap.SetAsUnsignedInteger("GeneralizedExtremeValueFactory-MaximumEvaluationNumber", 1000000)
-print('Linear mu(t) model : ')
+print('Linear mu(t) model: ')
 for normMeth in normMethod_list:
     for initPoint in initiPoint_list:
         print('normMeth, initPoint = ', normMeth, initPoint)
@@ -264,18 +265,19 @@ for normMeth in normMethod_list:
         print('beta1, beta2, beta3, beta4 = ', beta)
         print('Max log-likelihood =  ', result.getLogLikelihood())
 
-# %% 
-# According to the previous results, we choose the *MinMax* normalization method and the *Gumbel* initial point. This initial point is cheaper than the *Static* one as it requires no optimization computation.  
+# %%
+# According to the previous results, we choose the *MinMax* normalization method and the *Gumbel* initial point.
+# This initial point is cheaper than the *Static* one as it requires no optimization computation.  
 result_NonStatLL = factory.buildTimeVarying(sample, mesh, basis_coll, ot.Function(), "Gumbel", "MinMax")
 beta = result_NonStatLL.getOptimalParameter()
 print('Linear mu(t) model : ')
 print('beta1, beta2, beta3, beta_4 = ', beta)
 print(f"mu(t) = {beta[0]:.4f} + {beta[1]:.4f} * tau")
-print(f"sigma = = {beta[2]:.4f}") 
-print(f"xi = = {beta[3]:.4f}") 
+print(f"sigma = = {beta[2]:.4f}")
+print(f"xi = = {beta[3]:.4f}")
 
 # %%
-# You can get the expression of the function :math:`\mu(t)`: 
+# You can get the expression of the function :math:`\mu(t)`:
 #print('Function mu(t): ', result_NonStatLL.getParameterFunction())
 
 # %%
