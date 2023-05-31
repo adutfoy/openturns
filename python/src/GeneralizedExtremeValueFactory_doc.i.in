@@ -17,24 +17,21 @@ DistributionFactory, GeneralizedExtremeValue, FrechetFactory, GumbelFactory, Wei
 
     build(*param*)
 
-
 Parameters
 ----------
-sample : :class:`~openturns.Sample`
+sample : 2-d sequence of float
     The block maxima sample of dimension 1.
-param : Collection of  :class:`~openturns.PointWithDescription`
+param : Collection of :class:`~openturns.PointWithDescription`
     A vector of parameters of the distribution.
-
 
 Returns
 -------
 distribution : :class:`~openturns.GeneralizedExtremeValueFactory`
-    The estimated distribution
+    The estimated distribution.
 
 Notes
 -----
 The strategy consists in fitting the three models :class:`~openturns.Frechet`, :class:`~openturns.Gumbel` and :class:`~openturns.WeibullMax` on the data. Then, the three models are classified with respect to the BIC criterion. The best one is returned."
-
 
 // ----------------------------------------------------------------------------
 
@@ -43,7 +40,6 @@ The strategy consists in fitting the three models :class:`~openturns.Frechet`, :
 
 Same as :meth:`build`.
 "
-
 
 // ----------------------------------------------------------------------------
 
@@ -70,7 +66,7 @@ If :math:`\xi = 0`, then:
 
 Parameters
 ----------
-sample : :class:`~openturns.Sample`
+sample : 2-d sequence of float
     The block maxima sample of dimension 1.
 
 Returns
@@ -86,7 +82,6 @@ distribution : :class:`~openturns.GeneralizedExtremeValueFactory`
 
 The estimators are defined in :meth:`buildMethodOfLikelihoodMaximization`.
 
-
 The result class produced by the method provides:
 
 - the GEV distribution associated to :math:`(\hat{\mu}, \hat{\sigma}, \hat{\xi})`,
@@ -96,7 +91,7 @@ The result class produced by the method provides:
 
 Parameters
 ----------
-sample : :class:`~openturns.Sample`
+sample : 2-d sequence of float
     The block maxima sample of dimension 1.
 
 Returns
@@ -130,7 +125,7 @@ The estimator  is given by:
     
 Parameters
 ----------
-sample : :class:`~openturns.Sample`
+sample : 2-d sequence of float
     The block maxima sample of dimension 1.
 
 Returns
@@ -160,7 +155,7 @@ The result class produced by the method provides:
 
 Parameters
 ----------
-sample : :class:`~openturns.Sample`
+sample : 2-d sequence of float
     The block maxima sample of dimension 1.
 
 Returns
@@ -203,7 +198,7 @@ If :math:`\xi = 0`, then:
 
 Parameters
 ----------
-sampleM : :class:`~openturns.Sample`
+sampleM : 2-d sequence of float
     Block maxima grouped in a sample of size :math:`m` and dimension :math:`R`.
     
     The :math:`i`-th point of the sample contains the :math:`R` largest order statistics of block :math:`i`.
@@ -234,7 +229,7 @@ The result class produced by the method provides:
 
 Parameters
 ----------
-sampleM : :class:`~openturns.Sample`
+sampleM : 2-d sequence of float
     Block maxima  grouped in a sample of size :math:`m` and dimension :math:`R`.
     
     The :math:`i`-th point of the sample contains the :math:`R` largest order statistics of block :math:`i`.
@@ -259,7 +254,7 @@ The estimators are computed using the profile log-likelihood  as detailed in
 
 Parameters
 ----------
-sample : :class:`~openturns.Sample`
+sample : 2-d sequence of float
     Block largest order statistics grouped in a sample of size :math:`m` and dimension :math:`R`.
 
     The :math:`i`-th point of the sample contains the :math:`R` largest order statistics of the block :math:`i`.
@@ -286,7 +281,7 @@ We consider a non stationary GEV model to describe the distribution of :math:`Z_
 
 We have the values of :math:`Z_t` on the time grid :math:`(t_1, \dots, t_m)`.
 
-For numerical reasons, it is recommended to normalize the time grid. OpenTURNS normalizes data as follows:
+For numerical reasons, it is recommended to normalize the time grid. OpenTURNS applies the following mapping:
 
 .. math::
 
@@ -309,7 +304,7 @@ Each of :math:`\mu(t), \sigma(t), \xi(t)`  has an expression in terms of a param
 where:
 
 - :math:`h: \Rset \mapsto \Rset` is usually as the *inverse-link function*. The function :math:`\theta(t)` denotes
-either :math:`\mu(t)`, :math:`\sigma(t)` or :math:`\xi(t)`,
+  either :math:`\mu(t)`, :math:`\sigma(t)` or :math:`\xi(t)`,
 - each :math:`\varphi_i^{\theta}` is a scalar function :math:`\Rset \mapsto \Rset`,
 - each :math:`\beta_i^{j} \in \Rset`.
 
@@ -324,7 +319,7 @@ The estimator of  :math:`\vect{\beta}` maximizes  the likelihood of the non stat
 .. math::
 
     L(\vect{\beta}) = \prod_{t=1}^{m} g(z_{t};\mu(t), \sigma(t), \xi(t))
-    
+
 where :math:`g(z_{t};\mu(t), \sigma(t), \xi(t))` denotes the GEV density function with parameters
 :math:`\mu(t), \sigma(t), \xi(t)` evaluated at :math:`z_t`.
 
@@ -342,14 +337,16 @@ And if any of the :math:`\xi(t)` is equal to 0, the log-likelihood is defined as
 .. math::
 
     \ell (\vect{\beta}) = -\sum_{t=1}^{m} \left\{ \log(\sigma(t)) + \frac{z_t - \mu(t)}{\sigma(t)} + \exp \left\{ - \frac{z_t - \mu(t)}{\sigma(t)} \right\} \right\}
-    
+
 The initialization of the optimization problem is crucial. OpenTURNS proposes two initial points :math:`(\mu_0, \sigma_0, \xi_0)`:
 
-- the *Gumbel* initial point: in that case, we assume that the GEV is a stationary Gumbel distribution and we deduce
-:math:`(\mu_0, \sigma_0)` from the mean :math:`\hat{M}` and standard variation :math:`\hat{\sigma}` of the data:
-:math:`\sigma_0 = \dfrac{\sqrt{6}}{\pi} \hat{\sigma}` and :math:`\mu_0 = \hat{M} - \gamma \sigma_0` where :math:`\gamma` is Euler's constant;
+- the *Gumbel* initial point: in that case, we assume that the GEV is a stationary Gumbel distribution and we deduce 
+  :math:`(\mu_0, \sigma_0)` from the mean :math:`\hat{M}` and standard variation :math:`\hat{\sigma}` of the data:
+  :math:`\sigma_0 = \dfrac{\sqrt{6}}{\pi} \hat{\sigma}` and :math:`\mu_0 = \hat{M} - \gamma \sigma_0` where
+  :math:`\gamma` is Euler's constant;
 - the *Static* initial point: in that case, we assume that the GEV is stationary and :math:`(\mu_0, \sigma_0, \xi_0)`
-is the maximum likelihood estimate resulting from that assumption.
+  is the maximum likelihood estimate resulting from that assumption.
+
 
 The result class produced by the method provides:
 
@@ -363,7 +360,7 @@ The result class produced by the method provides:
 
 Parameters
 ----------
-sample : :class:`~openturns.Sample`
+sample : 2-d sequence of float
     The block maxima grouped in a sample of size :math:`m` and one dimension.
 timeGrid : :class:`~openturns.Mesh`
     Mesh for :math:`t` values.
@@ -371,13 +368,13 @@ basisCollection : sequence of class:`~openturns.Basis`s
     Collection of three functional basis respectively for :math:`\mu(t)`, :math:`\sigma(t)` and :math:`\xi(t)`.
 inverseLinkFunction : :class:`~openturns.Function`, optional
     The :math:`h` function.
-initializationMethod : str
+initializationMethod : str, optional
     The initialization method for the optimization problem: *Gumbel* or *Static*.
-    
+
     By default, the *Gumbel* initial point is used.
-normalizationMethod : str
+normalizationMethod : str, optional
     The data normalization method: *CenterReduce*, *MinMax* or *None*.
-    
+
     By default, the *MinMax* method is used.
 
 Returns
@@ -447,7 +444,7 @@ The parameter estimates  are given by:
 
     \begin{align*}
     \hat{z}_m = \argmax_{z_m} \ell_p(z_m)\\
-    (\hat{\sigma}, \hat{\xi}) = \argmax_{(\sigma, \xi)} \ell(\hat{z}_m, \sigma, \xi)\\
+    (\hat{\sigma}, \hat{\xi}) = \argmax_{(\sigma, \xi)} \ell(\hat{z}_m, \sigma, \xi)
     \end{align*}
 
 The result class produced by the method provides:
@@ -459,7 +456,7 @@ The result class produced by the method provides:
 
 Parameters
 ----------
-sample : :class:`~openturns.Sample`
+sample : 2-d sequence of float
     The block maxima sample of dimension 1.
 m : float
     The return period, defines the level of the quantile as :math:`1-1/m`.
@@ -493,7 +490,7 @@ The asymptotic distribution of :math:`\hat{z}_m` is normal.
 
 Parameters
 ----------
-sample : :class:`~openturns.Sample`
+sample : 2-d sequence of float
     The block maxima sample of dimension 1.
 
 Returns
