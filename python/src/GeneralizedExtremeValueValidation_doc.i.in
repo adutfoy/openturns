@@ -21,7 +21,7 @@ GeneralizedExtremeValueFactory"
 %feature("docstring") OT::GeneralizedExtremeValueValidation::drawDiagnosticPlot
 "Draw the 4 usual diagnostic plots.
 
-The 4 graphs are the *probability-probability* plot, the *quantile-quantile* plot, the *return level* plot, the empirical density of the distibution with the fitted model density.
+The 4 graphs are the *probability-probability* plot, the *quantile-quantile* plot, the *return level* plot, the empirical density of the distribution with the fitted model density.
 
 
 If :math:`(z_{(1)}, \dots, z_{(n)})` denotes the ordered block maximum data, the graphs are defined as follows.
