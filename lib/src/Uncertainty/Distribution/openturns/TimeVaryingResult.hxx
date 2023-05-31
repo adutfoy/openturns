@@ -37,6 +37,7 @@ public:
                     const Function & parameterFunction,
                     const Mesh & mesh,
                     const Distribution & parameterDistribution,
+                    const LinearFunction & normalizationFunction,
                     const Scalar logLikelihood);
 
   TimeVaryingResult * clone() const override;
@@ -46,6 +47,9 @@ public:
 
   /** Accessor to the parameter function */
   Function getParameterFunction() const;
+
+  /** Accessor to the normalization function */
+  LinearFunction getNormalizationFunction() const;
 
   /** Accessor to the distribution of the parameter */
   void setParameterDistribution(const Distribution & parameterDistribution);
@@ -77,6 +81,7 @@ private:
   Function parameterFunction_;
   Mesh mesh_;
   Distribution parameterDistribution_;
+  LinearFunction normalizationFunction_;
   Scalar logLikelihood_ = 0.0;
 
 };

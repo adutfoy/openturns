@@ -40,16 +40,22 @@ TimeVaryingResult::TimeVaryingResult(const DistributionFactory & factory,
                                      const Function & parameterFunction,
                                      const Mesh & mesh,
                                      const Distribution & parameterDistribution,
+                                     const LinearFunction & normalizationFunction,
                                      const Scalar logLikelihood)
   : PersistentObject()
   , factory_(factory)
   , parameterFunction_(parameterFunction)
   , mesh_(mesh)
   , parameterDistribution_(parameterDistribution)
+  , normalizationFunction_(normalizationFunction)
   , logLikelihood_(logLikelihood)
 {
   if (mesh.getDimension() != parameterFunction.getInputDimension())
     throw InvalidArgumentException(HERE) << "the mesh dimension must match the parameter function input dimension";
+  if (mesh.getDimension() != normalizationFunction.getInputDimension())
+    throw InvalidArgumentException(HERE) << "the mesh dimension must match the normalization function input dimension";
+  if (normalizationFunction.getInputDimension() != normalizationFunction.getOutputDimension())
+    throw InvalidArgumentException(HERE) << "the normalization function must have the same input and output dimensions";
   if (parameterDistribution.getDimension() != parameterFunction.getParameter().getDimension())
     throw InvalidArgumentException(HERE) << "the parameter distribution dimension must match the parameter function parameter dimension";
 }
@@ -155,6 +161,11 @@ Function TimeVaryingResult::getParameterFunction() const
   return parameterFunction_;
 }
 
+LinearFunction TimeVaryingResult::getNormalizationFunction() const
+{
+  return normalizationFunction_;
+}
+
 /* Accessor to the distribution at a given time */
 Distribution TimeVaryingResult::getDistribution(const Scalar t) const
 {
@@ -169,6 +180,7 @@ void TimeVaryingResult::save(Advocate & adv) const
   adv.saveAttribute("parameterFunction_", parameterFunction_);
   adv.saveAttribute("mesh_", mesh_);
   adv.saveAttribute("parameterDistribution_", parameterDistribution_);
+  adv.saveAttribute("normalizationFunction_", normalizationFunction_);
   adv.saveAttribute("logLikelihood_", logLikelihood_);
 }
 
@@ -179,6 +191,7 @@ void TimeVaryingResult::load(Advocate & adv)
   adv.loadAttribute("parameterFunction_", parameterFunction_);
   adv.loadAttribute("mesh_", mesh_);
   adv.loadAttribute("parameterDistribution_", parameterDistribution_);
+  adv.loadAttribute("normalizationFunction_", normalizationFunction_);
   adv.loadAttribute("logLikelihood_", logLikelihood_);
 }
 
