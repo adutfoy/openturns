@@ -76,11 +76,21 @@ public:
 
   /** Time-varying */
   TimeVaryingResult buildTimeVarying(const Sample & sample,
-                                     const Mesh & mesh,
+                                     const Sample & timeStamps,
                                      const BasisCollection & basisCollection,
                                      const Function & inverseLinkFunction = Function(),
-				     const String & initializationMethod = ResourceMap::GetAsString("GeneralizedExtremeValueFactory-InitializationMethod"),
-				     const String & normalizationMethod = ResourceMap::GetAsString("GeneralizedExtremeValueFactory-NormalizationMethod")) const;
+                                     const String & initializationMethod = ResourceMap::GetAsString("GeneralizedExtremeValueFactory-InitializationMethod"),
+                                     const String & normalizationMethod = ResourceMap::GetAsString("GeneralizedExtremeValueFactory-NormalizationMethod")) const;
+
+  /** Covariates */
+  TimeVaryingResult buildCovariates(const Sample & sample,
+                                    const Sample & covariates,
+                                    const UnsignedInteger muDim,
+                                    const UnsignedInteger sigmaDim,
+                                    const UnsignedInteger xiDim,
+                                    const Function & inverseLinkFunction = Function(),
+                                    const String & initializationMethod = ResourceMap::GetAsString("GeneralizedExtremeValueFactory-InitializationMethod"),
+                                    const String & normalizationMethod = ResourceMap::GetAsString("GeneralizedExtremeValueFactory-NormalizationMethod")) const;
 
   /** Return level */
   Distribution buildReturnLevelEstimator(const DistributionFactoryResult & result, const Scalar m) const;
