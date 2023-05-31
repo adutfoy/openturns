@@ -671,7 +671,9 @@ private:
 TimeVaryingResult GeneralizedExtremeValueFactory::buildTimeVarying(const Sample & sample,
     const Mesh & mesh,
     const BasisCollection & basisCollection,
-    const Function & inverseLinkFunction) const
+								   const Function & inverseLinkFunction,
+								   const String & initializationMethod,
+								   const String & normalizationMethod) const
 {
   const Sample grid(mesh.getVertices());
   if (sample.getSize() < 3)
@@ -696,7 +698,6 @@ TimeVaryingResult GeneralizedExtremeValueFactory::buildTimeVarying(const Sample 
 
   // Get an initial guest for (mu, sigma, xi) as if they were constant
   Point initialGuess(3);
-  const String initializationMethod = ResourceMap::GetAsString("GeneralizedExtremeValueFactory-InitializationMethod");
   LOGINFO(OSS() << "Initialization method is \"" << initializationMethod << "\"");
   if (initializationMethod == "Gumbel")
     {
@@ -713,7 +714,6 @@ TimeVaryingResult GeneralizedExtremeValueFactory::buildTimeVarying(const Sample 
   else throw InvalidArgumentException(HERE) << "Error: the value " << initializationMethod << " is invalid for the \"GeneralizedExtremeValueFactory-InitializationMethod\" key in ResourceMap. Valid values are \"Static\" and \"Gumbel\"";
   LOGINFO(OSS(false) << "In buildTimeVarying, initial guess=" << initialGuess);
   // Check if the covariates have to be normalized
-  const String normalizationMethod(ResourceMap::GetAsString("GeneralizedExtremeValueFactory-NormalizationMethod"));
   Bool mustNormalize = false;
   Function normalizationCovariates;
   if (normalizationMethod == "CenterReduce")

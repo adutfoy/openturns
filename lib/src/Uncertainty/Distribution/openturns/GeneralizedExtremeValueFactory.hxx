@@ -27,6 +27,7 @@
 #include "openturns/ProfileLikelihoodResult.hxx"
 #include "openturns/Basis.hxx"
 #include "openturns/TimeVaryingResult.hxx"
+#include "openturns/ResourceMap.hxx"
 
 BEGIN_NAMESPACE_OPENTURNS
 
@@ -77,7 +78,9 @@ public:
   TimeVaryingResult buildTimeVarying(const Sample & sample,
                                      const Mesh & mesh,
                                      const BasisCollection & basisCollection,
-                                     const Function & inverseLinkFunction = Function()) const;
+                                     const Function & inverseLinkFunction = Function(),
+				     const String & initializationMethod = ResourceMap::GetAsString("GeneralizedExtremeValueFactory-InitializationMethod"),
+				     const String & normalizationMethod = ResourceMap::GetAsString("GeneralizedExtremeValueFactory-NormalizationMethod")) const;
 
   /** Return level */
   Distribution buildReturnLevelEstimator(const DistributionFactoryResult & result, const Scalar m) const;
