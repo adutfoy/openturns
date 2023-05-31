@@ -105,9 +105,12 @@ print(result_PLL_max.getParameterConfidenceInterval())
 # %%
 # We can get the numerical values of the confidence interval: it appears to be a bit smaller
 # with the interval obtained from the profile log-likelihood function than with the log-likelihood function.
+# Note that if the order requested is too high, the confidence interval might not be calculated because
+# one of its bound is out of the definition domain of the log-likelihood function.
 try:
     print('Confidence interval for xi = ', result_PLL_max.getParameterConfidenceInterval())
-except:
+except Exception as ex:
+    print(type(ex))
     pass
 
 # %%

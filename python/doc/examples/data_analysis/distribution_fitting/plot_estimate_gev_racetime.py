@@ -173,8 +173,6 @@ print(f"CI={return_level_ci100}")
 #
 # We can estimate the :math:`m`-block return level :math:`z_m` directly from the data using the profile
 # likelihood with respect to :math:`z_m`.
-# As for the confidence interval of :math:`\xi`, dependeding on the order requested, the interval might
-# not be calculated.
 result_zm_10_PLL = factory.buildReturnLevelProfileLikelihoodEstimator(sample, 10.0)
 zm_10_PLL = result_zm_10_PLL.getParameter()
 print(f"10 years return level (profile)={zm_10_PLL}")
@@ -182,8 +180,14 @@ print(f"10 years return level (profile)={zm_10_PLL}")
 # %%
 # We can get the confidence interval of :math:`z_m`:  once more, it appears to be a bit smaller
 # than the interval obtained from the log-likelihood function.
+# As for the confidence interval of :math:`\xi`, dependeding on the order requested, the interval might
+# not be calculated.
 result_zm_10_PLL.setConfidenceLevel(0.95)
-return_level_ci10 = result_zm_10_PLL.getParameterConfidenceInterval()
+try:
+    return_level_ci10 = result_zm_10_PLL.getParameterConfidenceInterval()
+except Exception as ex:
+    print(type(ex))
+    pass
 print("Maximum profile log-likelihood function : ")
 print(f"CI={return_level_ci10}")
 
@@ -267,7 +271,7 @@ for normMeth in normMethod_list:
 
 # %%
 # According to the previous results, we choose the *MinMax* normalization method and the *Gumbel* initial point.
-# This initial point is cheaper than the *Static* one as it requires no optimization computation.  
+# This initial point is cheaper than the *Static* one as it requires no optimization computation.
 result_NonStatLL = factory.buildTimeVarying(sample, mesh, basis_coll, ot.Function(), "Gumbel", "MinMax")
 beta = result_NonStatLL.getOptimalParameter()
 print('Linear mu(t) model : ')
@@ -278,7 +282,7 @@ print(f"xi = = {beta[3]:.4f}")
 
 # %%
 # You can get the expression of the function :math:`\mu(t)`:
-#print('Function mu(t): ', result_NonStatLL.getParameterFunction())
+print('Function mu(t): ', result_NonStatLL.getParameterFunction())
 
 # %%
 # We get the asymptotic distribution of :math:`\vect{\beta}` to compute some confidence intervals of
@@ -385,8 +389,8 @@ beta = result_NonStatLL_2.getOptimalParameter()
 print('Quadratic mu(t) model : ')
 print('beta1, beta2, beta3, beta4, beta5 = ', beta)
 print(f"mu(t) = {beta[0]:.4f} + {beta[1]:.4f} * tau + {beta[2]:.4f} * tau^2")
-print(f"sigma = = {beta[3]:.4f}") 
-print(f"xi = = {beta[4]:.4f}") 
+print(f"sigma = {beta[3]:.4f}") 
+print(f"xi = {beta[4]:.4f}") 
 
 # %%
 # We get the asymptotic distribution of :math:`\vect{\beta}` to compute some confidence intervals of

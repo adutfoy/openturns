@@ -223,7 +223,7 @@ for normMeth in normMethod_list:
 
 # %%
 # According to the previous results, we choose the *MinMax* normalization method and the *Gumbel* initial point.
-# This initial point is cheaper than the *Static* one as it requires no optimization computation. 
+# This initial point is cheaper than the *Static* one as it requires no optimization computation.
 result_NonStatLL = factory.buildTimeVarying(sample, mesh, basis_coll)
 beta = result_NonStatLL.getOptimalParameter()
 print('beta1, beta2, beta3, beta_4 = ', beta)
@@ -244,7 +244,7 @@ for i in range(beta.getSize()):
 
 # %%
 # You can get the expression of the function :math:`\mu(t)`:
-#print('Function mu(t): ', result_NonStatLL.getParameterFunction())
+print('Function mu(t): ', result_NonStatLL.getParameterFunction())
 
 # %%
 # In order to compare different modelings, we get the optimal log-likelihood of the data for both stationary

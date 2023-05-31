@@ -240,7 +240,7 @@ for normMeth in normMethod_list:
 
 # %%
 # According to the previous results, we choose the *MinMax* normalization method and the *Gumbel* initial point.
-# This initial point is cheaper than the *Static* one as it requires no optimization computation. 
+# This initial point is cheaper than the *Static* one as it requires no optimization computation.
 result_NonStatLL = factory.buildTimeVarying(sample, mesh, basis_coll, ot.Function(), "Gumbel", "MinMax")
 beta = result_NonStatLL.getOptimalParameter()
 print('beta1, beta2, beta3, beta_4 = ', beta)
@@ -250,7 +250,7 @@ print(f"xi = {beta[3]:.4f}")
 
 # %%
 # You can get the expression of the function :math:`\mu(t)`:
-#print('Function mu(t): ', result_NonStatLL.getParameterFunction())
+print('Function mu(t): ', result_NonStatLL.getParameterFunction())
 
 # %%
 # We get the asymptotic distribution of :math:`\vect{\beta}` to compute some confidence intervals of
