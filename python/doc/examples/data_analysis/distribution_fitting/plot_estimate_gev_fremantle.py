@@ -173,7 +173,7 @@ view = otv.View(result_zm_10_PLL.drawProfileLikelihoodFunction())
 # a significant impact on the safety of coastal flood defenses.
 #
 # First we need to get the grid of time values (in years here).
-mesh = ot.Mesh(data[:, 0])
+timeStamps = data[:, 0]
 
 # %%
 # Then, we define the functional basis for each parameter of the GEV model. Even if we have
@@ -233,7 +233,7 @@ for normMeth in normMethod_list:
     for initPoint in initiPoint_list:
         print('normMeth, initPoint = ', normMeth, initPoint)
         # The ot.Function() is the identity function.
-        result = factory.buildTimeVarying(sample, mesh, basis_coll, ot.Function(), initPoint, normMeth)
+        result = factory.buildTimeVarying(sample, timeStamps, basis_coll, ot.Function(), initPoint, normMeth)
         beta = result.getOptimalParameter()
         print('beta1, beta2, beta3, beta4 = ', beta)
         print('Max log-likelihood =  ', result.getLogLikelihood())
@@ -241,7 +241,7 @@ for normMeth in normMethod_list:
 # %%
 # According to the previous results, we choose the *MinMax* normalization method and the *Gumbel* initial point.
 # This initial point is cheaper than the *Static* one as it requires no optimization computation.
-result_NonStatLL = factory.buildTimeVarying(sample, mesh, basis_coll, ot.Function(), "Gumbel", "MinMax")
+result_NonStatLL = factory.buildTimeVarying(sample, timeStamps, basis_coll, ot.Function(), "Gumbel", "MinMax")
 beta = result_NonStatLL.getOptimalParameter()
 print('beta1, beta2, beta3, beta_4 = ', beta)
 print(f"mu(t) = {beta[0]:.4f} + {beta[1]:.4f} * tau")
@@ -368,8 +368,8 @@ print(f"cAlpha={resultLikRatioTest.getThreshold():.2f}")
 basis_quad = ot.Basis([constant, ot.SymbolicFunction(["t"], ["t"]), ot.SymbolicFunction(["t"], ["t^2"])])
 basis_coll_2 = [basis_quad, basis_cst, basis_cst]
 basis_coll_3 = [basis_lin, basis_lin, basis_cst]
-result_NonStatLL_2 = factory.buildTimeVarying(sample, mesh, basis_coll_2, ot.Function(), "Gumbel", "MinMax")
-result_NonStatLL_3 = factory.buildTimeVarying(sample, mesh, basis_coll_3, ot.Function(), "Gumbel", "MinMax")
+result_NonStatLL_2 = factory.buildTimeVarying(sample, timeStamps, basis_coll_2, ot.Function(), "Gumbel", "MinMax")
+result_NonStatLL_3 = factory.buildTimeVarying(sample, timeStamps, basis_coll_3, ot.Function(), "Gumbel", "MinMax")
 print('Max log-likelihood = ')
 print('Non stationary quadratic mu(t) model = ', result_NonStatLL_2.getLogLikelihood())
 print('Non stationary linear mu(t) and sigma(t) model = ', result_NonStatLL_3.getLogLikelihood())

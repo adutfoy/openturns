@@ -206,7 +206,7 @@ view = otv.View(result_zm_10_PLL.drawProfileLikelihoodFunction())
 #
 # We still work on the :math:`M_n` variable.
 # First we need to get the grid of time values (in years here).
-mesh = ot.Mesh(data[:, 0])
+timeStamps = data[:, 0]
 
 # %%
 # Then, we define the functional basis for each parameter of the GEV model. Even if we have
@@ -264,7 +264,7 @@ for normMeth in normMethod_list:
     for initPoint in initiPoint_list:
         print('normMeth, initPoint = ', normMeth, initPoint)
         # The ot.Function() is the identity function.
-        result = factory.buildTimeVarying(sample, mesh, basis_coll, ot.Function(), initPoint, normMeth)
+        result = factory.buildTimeVarying(sample, timeStamps, basis_coll, ot.Function(), initPoint, normMeth)
         beta = result.getOptimalParameter()
         print('beta1, beta2, beta3, beta4 = ', beta)
         print('Max log-likelihood =  ', result.getLogLikelihood())
@@ -272,7 +272,7 @@ for normMeth in normMethod_list:
 # %%
 # According to the previous results, we choose the *MinMax* normalization method and the *Gumbel* initial point.
 # This initial point is cheaper than the *Static* one as it requires no optimization computation.
-result_NonStatLL = factory.buildTimeVarying(sample, mesh, basis_coll, ot.Function(), "Gumbel", "MinMax")
+result_NonStatLL = factory.buildTimeVarying(sample, timeStamps, basis_coll, ot.Function(), "Gumbel", "MinMax")
 beta = result_NonStatLL.getOptimalParameter()
 print('Linear mu(t) model : ')
 print('beta1, beta2, beta3, beta_4 = ', beta)
@@ -384,7 +384,7 @@ print(f"cAlpha={resultLikRatioTest.getThreshold():.2f}")
 #     \end{align*}
 basis_quad = ot.Basis([constant, ot.SymbolicFunction(["t"], ["t"]), ot.SymbolicFunction(["t"], ["t^2"])])
 basis_coll_2 = [basis_quad, basis_cst, basis_cst]
-result_NonStatLL_2 = factory.buildTimeVarying(sample, mesh, basis_coll_2, ot.Function(), "Gumbel", "MinMax")
+result_NonStatLL_2 = factory.buildTimeVarying(sample, timeStamps, basis_coll_2, ot.Function(), "Gumbel", "MinMax")
 beta = result_NonStatLL_2.getOptimalParameter()
 print('Quadratic mu(t) model : ')
 print('beta1, beta2, beta3, beta4, beta5 = ', beta)

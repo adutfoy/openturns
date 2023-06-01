@@ -161,7 +161,7 @@ view = otv.View(result_zm_10_PLL.drawProfileLikelihoodFunction())
 # the observation period.
 #
 # First we need to get the grid of time values (in years here).
-mesh = ot.Mesh(data[:, 0])
+timeStamps = data[:, 0]
 
 # %%
 # Then, we define the functional basis for each parameter of the GEV model. Even if we have
@@ -222,7 +222,7 @@ for normMeth in normMethod_list:
     for initPoint in initiPoint_list:
         print('normMeth, initPoint = ', normMeth, initPoint)
         # The ot.Function() is the identity function.
-        result = factory.buildTimeVarying(sample, mesh, basis_coll, ot.Function(), initPoint, normMeth)
+        result = factory.buildTimeVarying(sample, timeStamps, basis_coll, ot.Function(), initPoint, normMeth)
         beta = result.getOptimalParameter()
         print('beta1, beta2, beta3, beta4 = ', beta)
         print('Max log-likelihood =  ', result.getLogLikelihood())
@@ -230,7 +230,7 @@ for normMeth in normMethod_list:
 # %%
 # According to the previous results, we choose the *MinMax* normalization method and the *Gumbel* initial point.
 # This initial point is cheaper than the *Static* one as it requires no optimization computation.
-result_NonStatLL = factory.buildTimeVarying(sample, mesh, basis_coll)
+result_NonStatLL = factory.buildTimeVarying(sample, timeStamps, basis_coll)
 beta = result_NonStatLL.getOptimalParameter()
 print('beta1, beta2, beta3, beta_4 = ', beta)
 print(f"mu(t) = {beta[0]:.4f} + {beta[1]:.4f} * tau")
