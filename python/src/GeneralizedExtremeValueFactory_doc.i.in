@@ -364,7 +364,7 @@ sample : 2-d sequence of float
     The block maxima grouped in a sample of size :math:`m` and one dimension.
 timeGrid : :class:`~openturns.Mesh`
     Mesh for :math:`t` values.
-basisCollection : sequence of class:`~openturns.Basis`s
+basisCollection : sequence of class:`~openturns.Basis`
     Collection of three functional basis respectively for :math:`\mu(t)`, :math:`\sigma(t)` and :math:`\xi(t)`.
 inverseLinkFunction : :class:`~openturns.Function`, optional
     The :math:`h` function.
