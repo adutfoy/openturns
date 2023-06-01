@@ -23,6 +23,7 @@
 
 #include "openturns/OTprivate.hxx"
 #include "openturns/DistributionFactory.hxx"
+#include "openturns/LinearFunction.hxx"
 
 BEGIN_NAMESPACE_OPENTURNS
 
@@ -35,7 +36,7 @@ public:
 
   TimeVaryingResult(const DistributionFactory & factory,
                     const Function & parameterFunction,
-                    const Mesh & mesh,
+                    const Sample & timeStamps,
                     const Distribution & parameterDistribution,
                     const LinearFunction & normalizationFunction,
                     const Scalar logLikelihood);
@@ -79,7 +80,7 @@ public:
 private:
   DistributionFactory factory_;
   Function parameterFunction_;
-  Mesh mesh_;
+  Sample timeStamps_;
   Distribution parameterDistribution_;
   LinearFunction normalizationFunction_;
   Scalar logLikelihood_ = 0.0;

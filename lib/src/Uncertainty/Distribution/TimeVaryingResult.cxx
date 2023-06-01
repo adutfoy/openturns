@@ -34,26 +34,28 @@ static const Factory<TimeVaryingResult> Factory_TimeVaryingResult;
 
 TimeVaryingResult::TimeVaryingResult()
   : PersistentObject()
-{}
+{
+  // Nothing to do
+}
 
 TimeVaryingResult::TimeVaryingResult(const DistributionFactory & factory,
                                      const Function & parameterFunction,
-                                     const Mesh & mesh,
+                                     const Sample & timeStamps,
                                      const Distribution & parameterDistribution,
                                      const LinearFunction & normalizationFunction,
                                      const Scalar logLikelihood)
   : PersistentObject()
   , factory_(factory)
   , parameterFunction_(parameterFunction)
-  , mesh_(mesh)
+  , timeStamps_(timeStamps)
   , parameterDistribution_(parameterDistribution)
   , normalizationFunction_(normalizationFunction)
   , logLikelihood_(logLikelihood)
 {
-  if (mesh.getDimension() != parameterFunction.getInputDimension())
-    throw InvalidArgumentException(HERE) << "the mesh dimension must match the parameter function input dimension";
-  if (mesh.getDimension() != normalizationFunction.getInputDimension())
-    throw InvalidArgumentException(HERE) << "the mesh dimension must match the normalization function input dimension";
+  if (timeStamps.getDimension() != parameterFunction.getInputDimension())
+    throw InvalidArgumentException(HERE) << "the time stamps dimension must match the parameter function input dimension";
+  if (timeStamps.getDimension() != normalizationFunction.getInputDimension())
+    throw InvalidArgumentException(HERE) << "the time stamps dimension must match the normalization function input dimension";
   if (normalizationFunction.getInputDimension() != normalizationFunction.getOutputDimension())
     throw InvalidArgumentException(HERE) << "the normalization function must have the same input and output dimensions";
   if (parameterDistribution.getDimension() != parameterFunction.getParameter().getDimension())
@@ -93,9 +95,8 @@ Scalar TimeVaryingResult::getLogLikelihood() const
 /* Draw parameter for all time values */
 Graph TimeVaryingResult::drawParameterFunction(const UnsignedInteger parameterIndex) const
 {
-  const Sample grid(mesh_.getVertices());
-  const Scalar xMin = grid.getMin()[0];
-  const Scalar xMax = grid.getMax()[0];
+  const Scalar xMin = timeStamps_.getMin()[0];
+  const Scalar xMax = timeStamps_.getMax()[0];
   Graph result(parameterFunction_.getMarginal(parameterIndex).draw(xMin, xMax));
   result.setTitle("Parameter function");
   return result;
@@ -141,9 +142,8 @@ private:
 /* Draw quantile for all time values */
 Graph TimeVaryingResult::drawQuantileFunction(const Scalar p) const
 {
-  const Sample grid(mesh_.getVertices());
-  const Scalar xMin = grid.getMin()[0];
-  const Scalar xMax = grid.getMax()[0];
+  const Scalar xMin = timeStamps_.getMin()[0];
+  const Scalar xMax = timeStamps_.getMax()[0];
 
   Function quantileFunction(TimeVaryingResultQuantileEvaluation(*this, p));
   Graph result(quantileFunction.draw(xMin, xMax));
@@ -178,7 +178,7 @@ void TimeVaryingResult::save(Advocate & adv) const
 {
   PersistentObject::save(adv);
   adv.saveAttribute("parameterFunction_", parameterFunction_);
-  adv.saveAttribute("mesh_", mesh_);
+  adv.saveAttribute("timeStamps_", timeStamps_);
   adv.saveAttribute("parameterDistribution_", parameterDistribution_);
   adv.saveAttribute("normalizationFunction_", normalizationFunction_);
   adv.saveAttribute("logLikelihood_", logLikelihood_);
@@ -189,7 +189,7 @@ void TimeVaryingResult::load(Advocate & adv)
 {
   PersistentObject::load(adv);
   adv.loadAttribute("parameterFunction_", parameterFunction_);
-  adv.loadAttribute("mesh_", mesh_);
+  adv.loadAttribute("timeStamps_", timeStamps_);
   adv.loadAttribute("parameterDistribution_", parameterDistribution_);
   adv.loadAttribute("normalizationFunction_", normalizationFunction_);
   adv.loadAttribute("logLikelihood_", logLikelihood_);
