@@ -81,7 +81,7 @@ public:
                                      const Function & inverseLinkFunction = Function(),
                                      const String & initializationMethod = ResourceMap::GetAsString("GeneralizedExtremeValueFactory-InitializationMethod"),
                                      const String & normalizationMethod = ResourceMap::GetAsString("GeneralizedExtremeValueFactory-NormalizationMethod")) const;
-
+#ifdef toto
   /** Covariates */
   TimeVaryingResult buildCovariates(const Sample & sample,
                                     const Sample & covariates,
@@ -91,7 +91,7 @@ public:
                                     const Function & inverseLinkFunction = Function(),
                                     const String & initializationMethod = ResourceMap::GetAsString("GeneralizedExtremeValueFactory-InitializationMethod"),
                                     const String & normalizationMethod = ResourceMap::GetAsString("GeneralizedExtremeValueFactory-NormalizationMethod")) const;
-
+#endif
   /** Return level */
   Distribution buildReturnLevelEstimator(const DistributionFactoryResult & result, const Scalar m) const;
 

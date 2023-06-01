@@ -597,7 +597,7 @@ public:
     , sample_(sample)
     , timeStamps_(timeStamps)
     , thetaFunction_(thetaFunction)
-    , startingValue_(startingValue);
+    , startingValue_(startingValue)
   {
     // Nothing to do
   }
@@ -715,7 +715,7 @@ TimeVaryingResult GeneralizedExtremeValueFactory::buildTimeVarying(const Sample 
   LOGINFO(OSS(false) << "In buildTimeVarying, initial guess=" << initialGuess);
   // Check if the timeStamps have to be normalized
   Bool mustNormalize = false;
-  LinearFunction normalizationFunction;
+  LinearFunction normalizationFunction(Point(1), Point(1), IdentityMatrix(1));
   if (normalizationMethod == "CenterReduce")
   {
     mustNormalize = true;
@@ -723,7 +723,7 @@ TimeVaryingResult GeneralizedExtremeValueFactory::buildTimeVarying(const Sample 
     const Scalar stdTimeStamps = timeStamps.computeStandardDeviation()[0];
     SymmetricMatrix matrix(1);
     matrix(0, 0) = (stdTimeStamps > 0.0 ? 1.0 / stdTimeStamps : 1.0);
-    normalizationFunction = LinearFunction(meanTimeStamps, Point(1), matrix);
+    normalizationFunction = LinearFunction(Point(1, meanTimeStamps), Point(1), matrix);
     LOGINFO(OSS() << "Normalization method=" << normalizationMethod << ", transformation=" << normalizationFunction);
   }
   else if (normalizationMethod == "MinMax")
@@ -733,12 +733,11 @@ TimeVaryingResult GeneralizedExtremeValueFactory::buildTimeVarying(const Sample 
     const Scalar maxTimeStamps = timeStamps.getMax()[0];
     SymmetricMatrix matrix(1);
     matrix(0, 0) = (minTimeStamps < maxTimeStamps ? 1.0 / (maxTimeStamps - minTimeStamps) : 1.0);
-    normalizationFunction = LinearFunction(minTimeStamps, Point(1), matrix);
+    normalizationFunction = LinearFunction(Point(1, minTimeStamps), Point(1), matrix);
     LOGINFO(OSS() << "Normalization method=" << normalizationMethod << ", transformation=" << normalizationFunction);
   }
   else if (normalizationMethod == "None")
   {
-    normalizationFunction = LinearFunction(Point(1), Point(1), IdentityMatrix(1));
     LOGINFO("No normalization of the timeStamps");
   }
   else throw InvalidArgumentException(HERE) << "Error: the value " << normalizationMethod << " is invalid for the \"GeneralizedExtremeValueFactory-NormalizationMethod\" key in ResourceMap. Valid values are \"MinMax\", \"CenterReduce\", \"None\"";
@@ -844,11 +843,11 @@ TimeVaryingResult GeneralizedExtremeValueFactory::buildTimeVarying(const Sample 
 
   const CovarianceMatrix covariance(SymmetricMatrix(fisher.getImplementation()).solveLinearSystem(IdentityMatrix(nP) / size).getImplementation());
   const Normal parameterDistribution(optimalParameter, covariance);
-  const TimeVaryingResult result(*this, thetaFunction, timeStamps, parameterDistribution, normalizationFunction, normalizationFunction, logLikelihood);
+  const TimeVaryingResult result(*this, thetaFunction, timeStamps, parameterDistribution, normalizationFunction, logLikelihood);
   return result;
 }
 
-
+#ifdef toto
 class GeneralizedExtremeValueCovariateLikelihoodEvaluation : public EvaluationImplementation
 {
 public:
@@ -1095,7 +1094,7 @@ CovariatesResult GeneralizedExtremeValueFactory::buildCovariates(const Sample & 
   const CovariatesResult result(*this, thetaFunction, covariates, parameterDistribution, normalizationFunction, normalizationFunction, logLikelihood);
   return result;  
 }
-
+#endif
 
 /* Return level */
 Distribution GeneralizedExtremeValueFactory::buildReturnLevelEstimator(const DistributionFactoryResult & result, const Scalar m) const
