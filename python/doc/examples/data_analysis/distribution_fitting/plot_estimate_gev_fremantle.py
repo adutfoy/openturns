@@ -172,11 +172,7 @@ view = otv.View(result_zm_10_PLL.drawProfileLikelihoodFunction())
 # We want to model this dependence because a slight increase in extreme sea-levels might have
 # a significant impact on the safety of coastal flood defenses.
 #
-# First we need to get the grid of time values (in years here).
-timeStamps = data[:, 0]
-
-# %%
-# Then, we define the functional basis for each parameter of the GEV model. Even if we have
+# We have define the functional basis for each parameter of the GEV model. Even if we have
 # the possibility to affect a time-varying model to each of the 3 parameters :math:`(\mu, \sigma, \xi)`,
 # it is strongly recommended not to vary the parameter :math:`\xi` and to let it constant.
 #
@@ -204,22 +200,27 @@ timeStamps = data[:, 0]
 #       \xi(t) & = \beta_4
 #     \end{align*}
 #
-# Note that :math:`\mu(t)` is not the mean of the GEV model at the instant :math:`t`!
 constant = ot.SymbolicFunction(["t"], ["1.0"])
 basis_lin = ot.Basis([constant, ot.SymbolicFunction(["t"], ["t"])])
 basis_cst = ot.Basis([constant])
 # basis for mu, sigma, xi
 basis_coll = [basis_lin, basis_cst, basis_cst]
 
+# %% We need to get the time labels (in years here).
+timeStamps = data[:, 0]
+
 # %%
 # We can now estimate the list of coefficients :math:`\vect{\beta} = (\beta_1, \beta_2, \beta_3, \beta_4)` using the log-likelihood of the data.
+#
 # We test the 3 normalizing methods and both initial points in order to evaluate their impact on the results.
 # We can see that:
+#
 # - both normalization methods lead to the same result,
 # - both initial points lead to the same result when the data have been normalized,
 # - it is very important to normalize all the data: if not, the result strongly depends on the initial point
-# and it differs from the result obtained with normalized data. The results are not optimal in that case
-# since the associated log-likelihood are much smaller than those obtained with normalized data.
+#   and it differs from the result obtained with normalized data. The results are not optimal in that case
+#   since the associated log-likelihood are much smaller than those obtained with normalized data.
+#
 initiPoint_list = list()
 initiPoint_list.append("Gumbel")
 initiPoint_list.append("Static")

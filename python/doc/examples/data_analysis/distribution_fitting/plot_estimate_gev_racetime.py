@@ -205,7 +205,7 @@ view = otv.View(result_zm_10_PLL.drawProfileLikelihoodFunction())
 # a significant impact on the safety of coastal flood defenses.
 #
 # We still work on the :math:`M_n` variable.
-# First we need to get the grid of time values (in years here).
+# First we need to get the time labels (in years here).
 timeStamps = data[:, 0]
 
 # %%
@@ -246,11 +246,13 @@ basis_coll = [basis_lin, basis_cst, basis_cst]
 # We can now estimate the list of coefficients :math:`\vect{\beta} = (\beta_1, \beta_2, \beta_3, \beta_4)` using the log-likelihood of the data.
 # We test the 3 normalizing methods and both initial points in order to evaluate their impact on the results.
 # We can see that:
+#
 # - both normalization methods lead to the same result,
 # - both initial points lead to the same result when the data have been normalized,
 # - it is very important to normalize all the data: if not, the result strongly depends on the initial point
-# and it differs from the result obtained with normalized data. The results are not optimal in that case
-# since the associated log-likelihood are much smaller than those obtained with normalized data.
+#   and it differs from the result obtained with normalized data. The results are not optimal in that case
+#   since the associated log-likelihood are much smaller than those obtained with normalized data.
+#
 initiPoint_list = list()
 initiPoint_list.append("Gumbel")
 initiPoint_list.append("Static")

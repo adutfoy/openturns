@@ -303,7 +303,7 @@ Each of :math:`\mu(t), \sigma(t), \xi(t)`  has an expression in terms of a param
 
 where:
 
-- :math:`h: \Rset \mapsto \Rset` is usually as the *inverse-link function*. The function :math:`\theta(t)` denotes
+- :math:`h: \Rset \mapsto \Rset` is usually referred to as the *inverse-link function*. The function :math:`\theta(t)` denotes
   either :math:`\mu(t)`, :math:`\sigma(t)` or :math:`\xi(t)`,
 - each :math:`\varphi_i^{\theta}` is a scalar function :math:`\Rset \mapsto \Rset`,
 - each :math:`\beta_i^{j} \in \Rset`.
