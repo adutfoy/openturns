@@ -26,7 +26,7 @@ param : Collection of :class:`~openturns.PointWithDescription`
 
 Returns
 -------
-distribution : :class:`~openturns.GeneralizedExtremeValueFactory`
+distribution : :class:`~openturns.GeneralizedExtremeValue`
     The estimated distribution.
 
 Notes
@@ -71,7 +71,7 @@ sample : 2-d sequence of float
 
 Returns
 -------
-distribution : :class:`~openturns.GeneralizedExtremeValueFactory`
+distribution : :class:`~openturns.GeneralizedExtremeValue`
     The estimated distribution."
 
 // ----------------------------------------------------------------------------
@@ -289,9 +289,9 @@ For numerical reasons, it is recommended to normalize the time grid. OpenTURNS a
 
 and with three ways of defining :math:`(c,d)`:
 
-- the *CenterReduce* method where :math:`c = \dfrac{1}{m} \sum_{i=1}^m t_i` is the mean time labels
-  and :math:`d = \sqrt{\dfrac{1}{m} \sum_{i=1}^m (t_i-c)^2}` is the standard deviation of the time labels;
-- the *MinMax* method where :math:`c = t_1` is the first time and :math:`d =  = t_m-t_1` the range of the time labels;
+- the *CenterReduce* method where :math:`c = \dfrac{1}{m} \sum_{i=1}^m t_i` is the mean time stamps
+  and :math:`d = \sqrt{\dfrac{1}{m} \sum_{i=1}^m (t_i-c)^2}` is the standard deviation of the time stamps;
+- the *MinMax* method where :math:`c = t_1` is the first time and :math:`d =  = t_m-t_1` the range of the time stamps;
 - the *None* method where :math:`c = 0` and :math:`d = 1`: in that case, data are not normalized.
 
 
@@ -362,8 +362,8 @@ Parameters
 ----------
 sample : 2-d sequence of float
     The block maxima grouped in a sample of size :math:`m` and one dimension.
-timeGrid : :class:`~openturns.Mesh`
-    Mesh for :math:`t` values.
+timeStamps : 2-d sequence of float
+    Values of :math:`t`.
 basisCollection : sequence of class:`~openturns.Basis`
     Collection of three functional basis respectively for :math:`\mu(t)`, :math:`\sigma(t)` and :math:`\xi(t)`.
 inverseLinkFunction : :class:`~openturns.Function`, optional

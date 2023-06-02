@@ -205,7 +205,7 @@ view = otv.View(result_zm_10_PLL.drawProfileLikelihoodFunction())
 # a significant impact on the safety of coastal flood defenses.
 #
 # We still work on the :math:`M_n` variable.
-# First we need to get the time labels (in years here).
+# First we need to get the time stamps (in years here).
 timeStamps = data[:, 0]
 
 # %%
@@ -221,8 +221,8 @@ timeStamps = data[:, 0]
 #
 # where:
 #
-# - the *CenterReduce* method where :math:`c = \dfrac{1}{m} \sum_{i=1}^m t_i` is the mean time labels
-#   and :math:`d = \sqrt{\dfrac{1}{m} \sum_{i=1}^m (t_i-c)^2}` is the standard deviation of the time labels;
+# - the *CenterReduce* method where :math:`c = \dfrac{1}{m} \sum_{i=1}^m t_i` is the mean time stamps
+#   and :math:`d = \sqrt{\dfrac{1}{m} \sum_{i=1}^m (t_i-c)^2}` is the standard deviation of the time stamps;
 # - the *MinMax* method where :math:`c = t_1` is the first time and :math:`d =  = t_m-t_1` the final time;
 # - the *None* method where :math:`c = 0` and :math:`d = 1`: in that case, data are not normalized.
 #
@@ -283,8 +283,12 @@ print(f"sigma = = {beta[2]:.4f}")
 print(f"xi = = {beta[3]:.4f}")
 
 # %%
-# You can get the expression of the function :math:`\mu(t)`:
-print('Function mu(t): ', result_NonStatLL.getParameterFunction())
+# You can get the expression of the normalizing function :math:`t \mapsto \tau(t)`:
+print('Function tau(t): ', result_NonStatLL.getNormalizationFunction())
+
+# %%
+# You can get the function :math:`t \mapsto \vect{\theta}(t)` where :math:`\vect{\theta}(t) = (\mu(t), \sigma(t), \xi(t))`.
+functionTheta = result_NonStatLL.getParameterFunction()
 
 # %%
 # We get the asymptotic distribution of :math:`\vect{\beta}` to compute some confidence intervals of
