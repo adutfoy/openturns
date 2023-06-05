@@ -24,6 +24,7 @@
 #include "openturns/OTprivate.hxx"
 #include "openturns/DistributionFactory.hxx"
 #include "openturns/LinearFunction.hxx"
+#include "openturns/GridLayout.hxx"
 
 BEGIN_NAMESPACE_OPENTURNS
 
@@ -35,8 +36,9 @@ public:
   TimeVaryingResult();
 
   TimeVaryingResult(const DistributionFactory & factory,
+                    const Sample & data,
                     const Function & parameterFunction,
-                    const Sample & timeStamps,
+                    const Sample & timeGrid,
                     const Distribution & parameterDistribution,
                     const LinearFunction & normalizationFunction,
                     const Scalar logLikelihood);
@@ -48,6 +50,9 @@ public:
 
   /** Accessor to the parameter function */
   Function getParameterFunction() const;
+
+  /** Time grid accessor */
+  Sample getTimeGrid() const;
 
   /** Accessor to the normalization function */
   LinearFunction getNormalizationFunction() const;
@@ -69,6 +74,9 @@ public:
   /** Draw quantile for all time values */
   Graph drawQuantileFunction(const Scalar p) const;
 
+  /** Draw diagnostic for time-varying estimation */
+  GridLayout drawDiagnosticPlot() const;
+
   String __repr__() const override;
 
   /** Method save() stores the object through the StorageManager */
@@ -79,8 +87,9 @@ public:
 
 private:
   DistributionFactory factory_;
+  Sample data_;
   Function parameterFunction_;
-  Sample timeStamps_;
+  Sample timeGrid_;
   Distribution parameterDistribution_;
   LinearFunction normalizationFunction_;
   Scalar logLikelihood_ = 0.0;

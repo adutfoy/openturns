@@ -169,10 +169,17 @@ Graph ProfileLikelihoodResult::drawProfileLikelihoodFunction() const
   result.setLegends({"likelihood"});
   String inputVar(profileLikelihoodFunction_.getInputDescription()[0]);
   // use latex syntax
+  String base(inputVar);
+  String suffix("");
   if (inputVar == "xi")
-    inputVar = "\\xi";
+      base = "\\xi";
   else if (inputVar == "zm")
-    inputVar = "z_m";
+    {
+      base = "z";
+      suffix = "_m";
+    }
+  inputVar = base + suffix;
+  std::cout << "inputVar=" << inputVar << std::endl;
   result.setXTitle("$" + inputVar + "$");
   result.setYTitle("profile log-likelihood value");
   result.setTitle("profile likelihood");
@@ -206,7 +213,7 @@ Graph ProfileLikelihoodResult::drawProfileLikelihoodFunction() const
 
   dataX = {xMin};
   dataY = {fx + dy};
-  elt = Text(dataX, dataY, {OSS() << "$L(\\hat{" + inputVar + "})$=" << fx}, "right");
+  elt = Text(dataX, dataY, {OSS() << "$L(\\hat{" + base + "}" + suffix + ")$=" << fx}, "right");
   elt.setColor("black");
   result.add(elt);
 
@@ -261,7 +268,7 @@ Graph ProfileLikelihoodResult::drawProfileLikelihoodFunction() const
 
   dataX = {x + dx};
   dataY = {bbox.getLowerBound()[1]};
-  elt = Text(dataX, dataY, {OSS() << "$\\hat{" + inputVar + "}$=" << ci.getUpperBound()[0]}, "right");
+  elt = Text(dataX, dataY, {OSS() << "$\\hat{" + base + "}" + suffix + "$=" << ci.getUpperBound()[0]}, "right");
   elt.setColor("black");
   elt.setRotation(90.0);
   result.add(elt);

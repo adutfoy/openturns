@@ -1,6 +1,6 @@
 //                                               -*- C++ -*-
 /**
- *  @brief Result of GEV time-varying likelihood
+ *  @brief Result of GEV covariates likelihood
  *
  *  Copyright 2005-2023 Airbus-EDF-IMACS-ONERA-Phimeca
  *
@@ -18,7 +18,7 @@
  *  along with this library.  If not, see <http://www.gnu.org/licenses/>.
  *
  */
-#include "openturns/TimeVaryingResult.hxx"
+#include "openturns/CovariatesResult.hxx"
 #include "openturns/PersistentObjectFactory.hxx"
 #include "openturns/ChiSquare.hxx"
 #include "openturns/Brent.hxx"
@@ -27,84 +27,86 @@
 
 BEGIN_NAMESPACE_OPENTURNS
 
-CLASSNAMEINIT(TimeVaryingResult)
+CLASSNAMEINIT(CovariatesResult)
 
-static const Factory<TimeVaryingResult> Factory_TimeVaryingResult;
+static const Factory<CovariatesResult> Factory_CovariatesResult;
 
 
-TimeVaryingResult::TimeVaryingResult()
+CovariatesResult::CovariatesResult()
   : PersistentObject()
-{}
+{
+  // Nothing to do
+}
 
-TimeVaryingResult::TimeVaryingResult(const DistributionFactory & factory,
+CovariatesResult::CovariatesResult(const DistributionFactory & factory,
                                      const Function & parameterFunction,
-                                     const Mesh & mesh,
+                                     const Sample & covariates,
                                      const Distribution & parameterDistribution,
                                      const LinearFunction & normalizationFunction,
                                      const Scalar logLikelihood)
   : PersistentObject()
   , factory_(factory)
   , parameterFunction_(parameterFunction)
-  , mesh_(mesh)
+  , covariates_(covariates)
   , parameterDistribution_(parameterDistribution)
   , normalizationFunction_(normalizationFunction)
   , logLikelihood_(logLikelihood)
 {
-  if (mesh.getDimension() != parameterFunction.getInputDimension())
-    throw InvalidArgumentException(HERE) << "the mesh dimension must match the parameter function input dimension";
-  if (mesh.getDimension() != normalizationFunction.getInputDimension())
-    throw InvalidArgumentException(HERE) << "the mesh dimension must match the normalization function input dimension";
+  if (covariates.getDimension() != parameterFunction.getInputDimension())
+    throw InvalidArgumentException(HERE) << "the covariates dimension must match the parameter function input dimension";
+  if (covariates.getDimension() != normalizationFunction.getInputDimension())
+    throw InvalidArgumentException(HERE) << "the covariates dimension must match the normalization function input dimension";
   if (normalizationFunction.getInputDimension() != normalizationFunction.getOutputDimension())
     throw InvalidArgumentException(HERE) << "the normalization function must have the same input and output dimensions";
   if (parameterDistribution.getDimension() != parameterFunction.getParameter().getDimension())
     throw InvalidArgumentException(HERE) << "the parameter distribution dimension must match the parameter function parameter dimension";
 }
 
-TimeVaryingResult * TimeVaryingResult::clone() const
+CovariatesResult * CovariatesResult::clone() const
 {
-  return new TimeVaryingResult(*this);
+  return new CovariatesResult(*this);
 }
 
-Point TimeVaryingResult::getOptimalParameter() const
+Point CovariatesResult::getOptimalParameter() const
 {
   return parameterDistribution_.getMean();
 }
 
-void TimeVaryingResult::setParameterDistribution(const Distribution & parameterDistribution)
+void CovariatesResult::setParameterDistribution(const Distribution & parameterDistribution)
 {
   parameterDistribution_ = parameterDistribution;
 }
 
-Distribution TimeVaryingResult::getParameterDistribution() const
+Distribution CovariatesResult::getParameterDistribution() const
 {
   return parameterDistribution_;
 }
 
-void TimeVaryingResult::setLogLikelihood(const Scalar logLikelihood)
+void CovariatesResult::setLogLikelihood(const Scalar logLikelihood)
 {
   logLikelihood_ = logLikelihood;
 }
 
-Scalar TimeVaryingResult::getLogLikelihood() const
+Scalar CovariatesResult::getLogLikelihood() const
 {
   return logLikelihood_;
 }
 
 /* Draw parameter for all time values */
-Graph TimeVaryingResult::drawParameterFunction(const UnsignedInteger parameterIndex) const
+Graph CovariatesResult::drawParameterFunction(const UnsignedInteger parameterIndex) const
 {
-  const Sample grid(mesh_.getVertices());
-  const Scalar xMin = grid.getMin()[0];
-  const Scalar xMax = grid.getMax()[0];
+  if (covariates_.getDimension() > 2) throw NotDefinedException(HERE) << "Error: cannot draw a parameter function when there is more than 2 covariates";
+  const Point xMin(covariates_.getMin());
+  const Point xMax(covariates_.getMax());
   Graph result(parameterFunction_.getMarginal(parameterIndex).draw(xMin, xMax));
   result.setTitle("Parameter function");
   return result;
 }
 
-class TimeVaryingResultQuantileEvaluation : public EvaluationImplementation
+class CovariatesResultQuantileEvaluation : public EvaluationImplementation
 {
 public:
-  TimeVaryingResultQuantileEvaluation(const TimeVaryingResult & result, const Scalar p)
+  CovariatesResultQuantileEvaluation(const CovariatesResult & result, const Scalar p)
     : result_(result)
     , p_(p)
   {
@@ -112,9 +114,9 @@ public:
     setOutputDescription({"quantile(t)"});
   }
 
-  TimeVaryingResultQuantileEvaluation * clone() const override
+  CovariatesResultQuantileEvaluation * clone() const override
   {
-    return new TimeVaryingResultQuantileEvaluation(*this);
+    return new CovariatesResultQuantileEvaluation(*this);
   }
 
   Point operator()(const Point & inP) const override
@@ -134,62 +136,62 @@ public:
   }
 
 private:
-  TimeVaryingResult result_;
+  CovariatesResult result_;
   Scalar p_ = 0.0;
 };
 
 /* Draw quantile for all time values */
-Graph TimeVaryingResult::drawQuantileFunction(const Scalar p) const
+Graph CovariatesResult::drawQuantileFunction(const Scalar p) const
 {
-  const Sample grid(mesh_.getVertices());
+  const Sample grid(covariates_.getVertices());
   const Scalar xMin = grid.getMin()[0];
   const Scalar xMax = grid.getMax()[0];
 
-  Function quantileFunction(TimeVaryingResultQuantileEvaluation(*this, p));
+  Function quantileFunction(CovariatesResultQuantileEvaluation(*this, p));
   Graph result(quantileFunction.draw(xMin, xMax));
   result.setTitle("Quantile function");
   return result;
 }
 
-String TimeVaryingResult::__repr__() const
+String CovariatesResult::__repr__() const
 {
   return OSS() << PersistentObject::__repr__();
 }
 
-Function TimeVaryingResult::getParameterFunction() const
+Function CovariatesResult::getParameterFunction() const
 {
   return parameterFunction_;
 }
 
-LinearFunction TimeVaryingResult::getNormalizationFunction() const
+LinearFunction CovariatesResult::getNormalizationFunction() const
 {
   return normalizationFunction_;
 }
 
 /* Accessor to the distribution at a given time */
-Distribution TimeVaryingResult::getDistribution(const Scalar t) const
+Distribution CovariatesResult::getDistribution(const Scalar t) const
 {
   const Point parameters(parameterFunction_(Point(1, t)));
   return factory_.build(parameters);
 }
 
 /* Method save() stores the object through the StorageManager */
-void TimeVaryingResult::save(Advocate & adv) const
+void CovariatesResult::save(Advocate & adv) const
 {
   PersistentObject::save(adv);
   adv.saveAttribute("parameterFunction_", parameterFunction_);
-  adv.saveAttribute("mesh_", mesh_);
+  adv.saveAttribute("covariates_", covariates_);
   adv.saveAttribute("parameterDistribution_", parameterDistribution_);
   adv.saveAttribute("normalizationFunction_", normalizationFunction_);
   adv.saveAttribute("logLikelihood_", logLikelihood_);
 }
 
 /* Method load() reloads the object from the StorageManager */
-void TimeVaryingResult::load(Advocate & adv)
+void CovariatesResult::load(Advocate & adv)
 {
   PersistentObject::load(adv);
   adv.loadAttribute("parameterFunction_", parameterFunction_);
-  adv.loadAttribute("mesh_", mesh_);
+  adv.loadAttribute("covariates_", covariates_);
   adv.loadAttribute("parameterDistribution_", parameterDistribution_);
   adv.loadAttribute("normalizationFunction_", normalizationFunction_);
   adv.loadAttribute("logLikelihood_", logLikelihood_);

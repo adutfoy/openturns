@@ -44,8 +44,9 @@ GeneralizedExtremeValueValidation::GeneralizedExtremeValueValidation(const Distr
   , sample_(sample)
   , result_(result)
 {
-  if (result.getDistribution().getImplementation()->getClassName() != "GeneralizedExtremeValue")
-    throw InvalidArgumentException(HERE) << "Expected a GEV distribution, got " << result.getDistribution();
+  const String distName(result.getDistribution().getImplementation()->getClassName());
+  if (distName != "GeneralizedExtremeValue")
+    throw InvalidArgumentException(HERE) << "Expected a GEV distribution, got " << distName;
 }
 
 GeneralizedExtremeValueValidation * GeneralizedExtremeValueValidation::clone() const
