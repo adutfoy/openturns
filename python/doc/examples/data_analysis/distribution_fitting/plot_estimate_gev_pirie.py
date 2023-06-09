@@ -159,7 +159,7 @@ view = otv.View(result_zm_10_PLL.drawProfileLikelihoodFunction())
 #
 # Now, we want to see whether it is necessary to model the time dependence over
 # the observation period.
-# 
+#
 # We have to define the functional basis for each parameter of the GEV model. Even if we have
 # the possibility to affect a time-varying model to each of the 3 parameters :math:`(\mu, \sigma, \xi)`,
 # it is strongly recommended not to vary the parameter :math:`\xi`.

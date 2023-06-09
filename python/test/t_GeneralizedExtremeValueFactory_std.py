@@ -5,6 +5,7 @@ import openturns.testing as ott
 from openturns.usecases import coles
 
 ot.TESTPREAMBLE()
+ot.Log.Show(ot.Log.INFO)
 
 size = 10000
 distribution = ot.GeneralizedExtremeValue(2.0, 1.5, -0.15)
@@ -101,6 +102,7 @@ graph = estimator_prof_mle.drawProfileLikelihoodFunction()
 
 # specific check for R maxima
 sample_rmax = coles.Coles().venice[:, 1:]
+print("sample_rmax=", sample_rmax)
 estimated_rmax = factory.buildRMaxima(sample_rmax)
 print("Estimated GeneralizedExtremeValue (R maxima)=", estimated_rmax)
 ott.assert_almost_equal(
