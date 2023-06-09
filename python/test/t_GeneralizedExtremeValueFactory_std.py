@@ -103,13 +103,13 @@ graph = estimator_prof_mle.drawProfileLikelihoodFunction()
 # specific check for R maxima
 sample_rmax = coles.Coles().venice[:, 1:]
 print("sample_rmax=", sample_rmax)
-estimated_rmax = factory.buildRMaxima(sample_rmax)
+estimated_rmax = factory.buildMethodOfLikelihoodMaximization(sample_rmax)
 print("Estimated GeneralizedExtremeValue (R maxima)=", estimated_rmax)
 ott.assert_almost_equal(
     estimated_rmax.getParameter(), [120.707, 12.8155, -0.113177], 1e-2, 1e-2
 )
 
-estimator_rmax = factory.buildRMaximaEstimator(sample_rmax)
+estimator_rmax = factory.buildMethodOfLikelihoodMaximizationEstimator(sample_rmax)
 assert (
     estimator_rmax.getParameterDistribution().getImplementation().__class__.__name__
     == "Normal"

@@ -131,7 +131,7 @@ print(sample_rmax[:5])
 factory = ot.GeneralizedExtremeValueFactory()
 r_candidate = [1, 5, 10]
 for r in r_candidate:
-    estimate = factory.buildRMaxima(sample_rmax, r)
+    estimate = factory.buildMethodOfLikelihoodMaximization(sample_rmax, r)
     desc = estimate.getParameterDescription()
     p = estimate.getParameter()
     pretty_p = ", ".join([f"{param}: {value:.3f}" for param, value in zip(desc, p)])

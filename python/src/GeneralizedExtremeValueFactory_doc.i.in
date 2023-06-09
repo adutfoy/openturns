@@ -43,64 +43,6 @@ Same as :meth:`build`.
 
 // ----------------------------------------------------------------------------
 
-%feature("docstring") OT::GeneralizedExtremeValueFactory::buildMethodOfLikelihoodMaximization
-"Estimate the distribution with the maximum likelihood method.
-
-The estimator of :math:`(\mu, \sigma, \xi)` maximizes the  log-likelihood defined as:
-
-If :math:`\xi \neq 0`, then:
-
-.. math::
-    :label: ll1
-
-    \ell (\mu, \sigma, \xi) = -m \log{\sigma} - (-1 + 1 / \xi) \sum_{i=1}^m \log{\left[ 1 + \xi \left( \frac{z_i - \mu}{\sigma} \right) \right]} - \sum_{i=1}^m \left[ 1 + \xi \left( \frac{z_i - \mu}{\sigma} \right) \right]^{-1 / \xi}
-
-defined on :math:`(\mu, \sigma, \xi)` such that :math:`1+\xi \left( \frac{z_i - \mu}{\sigma} \right) > 0` for all :math:`i`.
-
-If :math:`\xi = 0`, then:
-
-.. math::
-    :label: ll2
-
-    \ell (\mu, \sigma) = -m \log{\sigma} - \sum_{i=1}^m \left( \frac{z_i - \mu}{\sigma} \right) - \sum_{i=1}^m \exp \left\{ \frac{z_i - \mu}{\sigma} \right\}
-
-Parameters
-----------
-sample : 2-d sequence of float
-    The block maxima sample of dimension 1.
-
-Returns
--------
-distribution : :class:`~openturns.GeneralizedExtremeValue`
-    The estimated distribution."
-
-// ----------------------------------------------------------------------------
-
-%feature("docstring") OT::GeneralizedExtremeValueFactory::buildMethodOfLikelihoodMaximizationEstimator
-"Estimate the distribution and the parameter distribution with the maximum likelihood method.
-
-
-The estimators are defined in :meth:`buildMethodOfLikelihoodMaximization`.
-
-The result class produced by the method provides:
-
-- the GEV distribution associated to :math:`(\hat{\mu}, \hat{\sigma}, \hat{\xi})`,
-- the asymptotic distribution of :math:`(\hat{\mu}, \hat{\sigma}, \hat{\xi})`,
-- the log-likelihood function :math:`\ell`,
-- the optimal log-likelihood value :math:`\ell(\hat{\mu}, \hat{\sigma}, \hat{\xi})`.
-
-Parameters
-----------
-sample : 2-d sequence of float
-    The block maxima sample of dimension 1.
-
-Returns
--------
-result : :class:`~openturns.DistributionFactoryLikelihoodResult`
-    The result class."
-
-// ----------------------------------------------------------------------------
-
 %feature("docstring") OT::GeneralizedExtremeValueFactory::buildMethodOfProfileLikelihoodMaximization
 "Estimate the distribution with the profile likelihood.
 
@@ -165,7 +107,7 @@ result : :class:`~openturns.ProfileLikelihoodResult`
 
 // ----------------------------------------------------------------------------
 
-%feature("docstring") OT::GeneralizedExtremeValueFactory::buildRMaxima
+%feature("docstring") OT::GeneralizedExtremeValueFactory::buildMethodOfLikelihoodMaximization
 "Estimate the distribution from the :math:`r` largest order statistics.
 
 Let us suppose we have a series of independent and identically distributed variables and that data are grouped
@@ -216,11 +158,11 @@ distribution : :class:`~openturns.GeneralizedExtremeValue`
 
 // ----------------------------------------------------------------------------
 
-%feature("docstring") OT::GeneralizedExtremeValueFactory::buildRMaximaEstimator
+%feature("docstring") OT::GeneralizedExtremeValueFactory::buildMethodOfLikelihoodMaximizationEstimator
 "Estimate the distribution and the parameter distribution with the R-maxima method.
 
 The estimators are defined using the profile log-likelihood  as detailed in
-:meth:`buildRMaxima`.
+:meth:`buildMethodOfLikelihoodMaximization`.
 
 The result class produced by the method provides:
 
@@ -240,7 +182,7 @@ r : int, :math:`1 \leq r \leq R`, optional
 
 Returns
 -------
-result : :class:`~openturns.DistributionFactoryResult`
+result : :class:`~openturns.DistributionFactoryLikelihoodResult`
     The result class."
 
 // ----------------------------------------------------------------------------

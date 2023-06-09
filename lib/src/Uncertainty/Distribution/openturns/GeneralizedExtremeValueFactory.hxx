@@ -61,17 +61,13 @@ public:
   GeneralizedExtremeValue buildAsGeneralizedExtremeValue(const Point & parameters) const;
   GeneralizedExtremeValue buildAsGeneralizedExtremeValue() const;
 
-  /** Maximum likelihood */
-  GeneralizedExtremeValue buildMethodOfLikelihoodMaximization(const Sample & sample) const;
-  DistributionFactoryLikelihoodResult buildMethodOfLikelihoodMaximizationEstimator(const Sample & sample) const;
-
   /** Profiled maximum likelihood */
   ProfileLikelihoodResult buildMethodOfProfileLikelihoodMaximizationEstimator(const Sample & sample) const;
   GeneralizedExtremeValue buildMethodOfProfileLikelihoodMaximization(const Sample & sample) const;
 
   /** R largest order statistics */
-  DistributionFactoryResult buildRMaximaEstimator(const Sample & sample, const UnsignedInteger r = 0);
-  GeneralizedExtremeValue buildRMaxima(const Sample & sample, const UnsignedInteger r = 0);
+  DistributionFactoryLikelihoodResult buildMethodOfLikelihoodMaximizationEstimator(const Sample & sample, const UnsignedInteger r = 0);
+  GeneralizedExtremeValue buildMethodOfLikelihoodMaximization(const Sample & sample, const UnsignedInteger r = 0);
 
   /** Time-varying */
   TimeVaryingResult buildTimeVarying(const Sample & sample,
