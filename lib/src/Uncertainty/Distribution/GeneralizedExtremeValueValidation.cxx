@@ -81,7 +81,7 @@ Graph GeneralizedExtremeValueValidation::drawReturnLevel() const
   rlPlot.add(curveLO);
   rlPlot.add(curveUP);
   rlPlot.add(cloudRl);
-  rlPlot.setLegends({"return level", "CI low", "CI up", "data"});
+  rlPlot.setLegends({"model", "CI low", "CI up", "data"});
   rlPlot.setTitle("Return level plot");
   return rlPlot;
 }

@@ -177,6 +177,18 @@ GridLayout TimeVaryingResult::drawDiagnosticPlot() const
   const DistributionFactoryResult factoryResult(GeneralizedExtremeValue(0.0, 1.0, 0.0), dummy);
   const GeneralizedExtremeValueValidation validation(factoryResult, zT);
   GridLayout grid(validation.drawDiagnosticPlot());
+  // Now adapt the axes titles and the legend
+  Graph ppPlot(grid.getGraph(0, 0));
+  ppPlot.setYTitle("Gumbel probability");
+  grid.setGraph(0, 0, ppPlot);
+  Graph qqPlot(grid.getGraph(0, 1));
+  qqPlot.setYTitle("Gumbel quantile");
+  grid.setGraph(0, 1, qqPlot);
+  Graph densityPlot(grid.getGraph(1, 1));
+  Description legends(densityPlot.getLegends());
+  legends[0] = "Gumbel PDF";
+  densityPlot.setLegends(legends);
+  grid.setGraph(1, 1, densityPlot);
   return grid;
 }
 
