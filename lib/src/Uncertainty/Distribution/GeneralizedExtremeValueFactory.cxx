@@ -489,7 +489,7 @@ DistributionFactoryResult GeneralizedExtremeValueFactory::buildRMaximaEstimator(
 {
   const UnsignedInteger R = sample.getDimension();
   // r=0 means r=R
-  const UnsignedInteger r = rx ? rx : R;
+  const UnsignedInteger r = (rx > 0) ? rx : R;
   const UnsignedInteger size = sample.getSize();
   if (r > R)
     throw InvalidArgumentException(HERE) << "r(" << r << ") should be < R (" << R << ")";
@@ -561,28 +561,6 @@ GeneralizedExtremeValue GeneralizedExtremeValueFactory::buildRMaxima(const Sampl
 {
   const Distribution distribution(buildRMaximaEstimator(sample, rx).getDistribution());
   return buildAsGeneralizedExtremeValue(distribution.getParameter());
-}
-
-UnsignedInteger GeneralizedExtremeValueFactory::buildBestRMaxima(const Sample & sample, const Indices & rx, Point & logLikelihoodOut)
-{
-  UnsignedInteger bestR = 0;
-  Scalar bestLL = -SpecFunc::MaxScalar;
-  logLikelihoodOut.resize(rx.getSize());
-  for (UnsignedInteger i = 0; i < rx.getSize(); ++ i)
-  {
-    // r=0 means R
-    const UnsignedInteger r = rx[i] ? rx[i] : sample.getDimension();
-    const GeneralizedExtremeValue candidate(buildRMaxima(sample, r));
-    const Function objective(new GeneralizedExtremeValueRMaximaLikelihoodEvaluation(sample, r));
-    const Scalar candidateLL = objective(candidate.getParameter())[0];
-    logLikelihoodOut[i] = candidateLL;
-    if (candidateLL > bestLL)
-    {
-      bestR = r;
-      bestLL = candidateLL;
-    }
-  }
-  return bestR;
 }
 
 
@@ -819,6 +797,7 @@ TimeVaryingResult GeneralizedExtremeValueFactory::buildTimeVarying(const Sample 
   // estimate parameter distribution via the Fisher information matrix
   const UnsignedInteger size = sample.getSize();
   Matrix fisher(nP, nP);
+
   const Scalar epsilon = ResourceMap::GetAsScalar("Evaluation-ParameterEpsilon");
   for (UnsignedInteger i = 0; i < size; ++ i)
   {
@@ -855,15 +834,18 @@ public:
       const Matrix & muCovariates,
       const Matrix & sigmaCovariates,
       const Matrix & xiCovariates,
+      const UnsignedInteger muDim,
+      const UnsignedInteger sigmaDim,
+      const UnsignedInteger xiDim,
       const Scalar startingValue)
     : EvaluationImplementation()
     , sample_(sample)
     , muCovariates_(muCovariates)
     , sigmaCovariates_(sigmaCovariates)
     , xiCovariates_(xiCovariates)
-    , muDim_(muCovariates.getNbColumns())
-    , sigmaDim_(sigmaCovariates.getNbColumns())
-    , xiDim_(xiCovariates.getNbColumns())
+    , muDim_(muDim)
+    , sigmaDim_(sigmaDim)
+    , xiDim_(xiDim)
     , startingValue_(startingValue)
   {
     // Nothing to do
@@ -886,21 +868,21 @@ public:
 
   Point operator() (const Point & beta) const override
   {
+    // Mu
     Point betaMu(muDim_);
-    Point betaSigma(sigmaDim_);
-    Point betaXi(xiDim_);
-    UnsignedInteger shiftBegin = 0;
-    UnsignedInteger shiftEnd = muDim_;
-    std::copy(beta.begin() + shiftBegin, beta.begin() + shiftEnd, betaMu.begin());
-    shiftBegin = shiftEnd;
-    shiftEnd += sigmaDim_;
-    std::copy(beta.begin() + shiftBegin, beta.begin() + shiftEnd, betaSigma.begin());
-    shiftBegin = shiftEnd;
-    shiftEnd += xiDim_;
-    std::copy(beta.begin() + shiftBegin, beta.begin() + shiftEnd, betaXi.begin());
+    std::copy(beta.begin(), beta.begin() + muDim, betaMu.begin());
     const Point muT(muCovariates_ * betaMu);
+    UnsignedInteger shift = muDim;
+    // Sigma
+    Point betaSigma(sigmaDim_);
+    std::copy(beta.begin() + shift, beta.begin() + shift + sigmaDim, betaSigma.begin());
     const Point sigmaT(sigmaCovariates_ * betaSigma);
+    shift += sigmaDim;
+    // Xi
+    Point betaXi(xiDim_);
+    std::copy(beta.begin() + shift, beta.begin() + shift + xiDim, betaXi.begin());
     const Point xiT(xiCovariates_ * betaXi);
+    
     Scalar ll = startingValue_;
     Scalar minSigma = SpecFunc::MaxScalar;
     Scalar minC1 = SpecFunc::MaxScalar;
@@ -952,9 +934,9 @@ private:
 /** Covariates */
 CovariatesResult GeneralizedExtremeValueFactory::buildCovariates(const Sample & sample,
     const Sample & covariates,
-    const UnsignedInteger muDim,
-    const UnsignedInteger sigmaDim,
-    const UnsignedInteger xiDim,
+    const Indices & muIndices,
+    const Indices & sigmaIndices,
+    const Indices & xiIndices,
     const Function & inverseLinkFunction = Function(),
     const String & initializationMethod = ResourceMap::GetAsString("GeneralizedExtremeValueFactory-InitializationMethod"),
     const String & normalizationMethod = ResourceMap::GetAsString("GeneralizedExtremeValueFactory-NormalizationMethod")) const
@@ -964,9 +946,13 @@ CovariatesResult GeneralizedExtremeValueFactory::buildCovariates(const Sample & 
   if (sample.getDimension() != 1)
     throw InvalidArgumentException(HERE) << "Error: can build a GeneralizedExtremeValue distribution only from a sample of dimension 1, here dimension=" << sample.getDimension();
   if (covariates.getSize() != sample.getSize())
-    throw InvalidArgumentException(HERE) << "Error: can build a GeneralizedExtremeValue distribution only if the sample of covariates has the same size as the sample of observations()";
-  if (covariates.getDimension() != muDim + sigmaDim + xiDim)
-    throw InvalidArgumentException(HERE) << "Error: the covariates dimension does not match the sum of dimensions for the covariates of mu, sigma and xi";
+    throw InvalidArgumentException(HERE) << "Error: can build a GeneralizedExtremeValue distribution only if the sample of covariates has the same size as the sample of observations";
+  if (!muIndices.check(covariates.getDimension()))
+    throw InvalidArgumentException(HERE) << "Error: the indices for mu are not compatible with the covariates dimension";
+  if (!sigmaIndices.check(covariates.getDimension()))
+    throw InvalidArgumentException(HERE) << "Error: the indices for sigma are not compatible with the covariates dimension";
+  if (!xiIndices.check(covariates.getDimension()))
+    throw InvalidArgumentException(HERE) << "Error: the indices for xi are not compatible with the covariates dimension";
 
   // inverseLinkFunction is optional
   if (inverseLinkFunction.getEvaluation().getImplementation()->isActualImplementation())
@@ -1028,17 +1014,14 @@ CovariatesResult GeneralizedExtremeValueFactory::buildCovariates(const Sample & 
   else throw InvalidArgumentException(HERE) << "Error: the value " << normalizationMethod << " is invalid for the \"GeneralizedExtremeValueFactory-NormalizationMethod\" key in ResourceMap. Valid values are \"MinMax\", \"CenterReduce\", \"None\"";
   const Sample normalizedCovariates(normalizationFunction(covariates));
   // Extract the 3 matrices corresponding to the covariates for mu, sigma and xi
-  Indices muIndices(muDim);
-  muIndices.fill();
-  const Matrix muCovariates(normalizedCovariates.getSize(), muDim, normalizedCovariates.getMarginal(muIndices).getImplementation()->getData());
-  Indices sigmaIndices(sigmaDim);
-  sigmaIndices.fill(muIndices);
-  Matrix sigmaCovariates(normalizedCovariates.getSize(), muDim, normalizedCovariates.getMarginal(sigmaIndices).getImplementation()->getData());
-  Indices xiIndices(xiDim);
-  xiIndices.fill(muIndices);
-  Matrix xiCovariates(normalizedCovariates.getSize(), muDim, normalizedCovariates.getMarginal(xiIndices).getImplementation()->getData());
+  const Matrix muCovariates(normalizedCovariates.getSize(), muIndices.getSize(), normalizedCovariates.getMarginal(muIndices).getImplementation()->getData());
+  const Matrix sigmaCovariates(normalizedCovariates.getSize(), sigmaIndices.getSize(), normalizedCovariates.getMarginal(sigmaIndices).getImplementation()->getData());
+  const Matrix xiCovariates(normalizedCovariates.getSize(), xiIndices.getSize(), normalizedCovariates.getMarginal(xiIndices).getImplementation()->getData());
+  const UnsignedInteger muDim = muIndices.getSize();
+  const UnsignedInteger sigmaDim = sigmaIndices.getSize();
+  const UnsignedInteger xiDim = xiIndices.getSize();
   // Conpute the log-likelihood associated to the initial point with a zero reference value in order to find a feasible initial point
-  GeneralizedExtremeValueCovariatesLikelihoodEvaluation evaluation(sample, muCovariates, sigmaCovariates, xiCovariates, 0.0);
+  GeneralizedExtremeValueCovariatesLikelihoodEvaluation evaluation(sample, muCovariates, sigmaCovariates, xiCovariates, muDim, sigmaDim, xiDim, 0.0);
   // heuristic for feasible mu
   UnsignedInteger i = 0;
   const UnsignedInteger maxIter = ResourceMap::GetAsUnsignedInteger("GeneralizedExtremeValueFactory-FeasibilityMaximumIterationNumber");
@@ -1054,7 +1037,7 @@ CovariatesResult GeneralizedExtremeValueFactory::buildCovariates(const Sample & 
   // Now take into account the initial log-likelihood in order to work on the log-likelihood improvement during the optimization step
   // It gives a more robust stopping criterion
   const Scalar startingValue = -evaluation(x0)[0];
-  evaluation = GeneralizedExtremeValueCovariatesLikelihoodEvaluation(sample, muCovariates, sigmaCovariates, xiCovariates, startingValue);
+  evaluation = GeneralizedExtremeValueCovariatesLikelihoodEvaluation(sample, muCovariates, sigmaCovariates, xiCovariates, muDim, sigmaDim, xiDim, startingValue);
 
   const Function objectiveAndConstraints(evaluation.clone());
   const Function objective(objectiveAndConstraints.getMarginal(0));
@@ -1073,41 +1056,48 @@ CovariatesResult GeneralizedExtremeValueFactory::buildCovariates(const Sample & 
   LOGINFO(OSS(false) << "Optimal coefficients=" << optimalParameter << ", optimal log-likelihood=" << logLikelihood);
   // Build the theta function which maps a (muDim+sigmaDim+xiDim) vector into a 3d (mu, sigma, xi) vector. The function is
   // a general linear model
-  // First, the linear part
-  Matrix linear(3, covariates.getDimension());
-  UnsignedInteger shift = 0;
-  for (UnsignedInteger i = 0; i < muDim; ++i)
-    linear(0, i) = optimalParameter[shift + i];
-  shift += muDim;
-  for (UnsignedInteger i = 0; i < sigmaDim; ++i)
-    linear(1, i) = optimalParameter[shift + i];
-  shift += sigmaDim;
-  for (UnsignedInteger i = 0; i < xiDim; ++i)
-    linear(2, i) = optimalParameter[shift + i];
+  // First, the linear part: a matrix 3xdim with dim = muDim + sigmaDim + xiDim
+  MatrixImplementation linear(3, );
+  std::copy(muCovariates.getImplementation()->begin(), muCovariates.getImplementation()->end(), linear.begin());
+  std::copy(muCovariates.getImplementation()->begin() + , muCovariates.getImplementation()->end(), linear.begin());
+  std::copy(muCovariates.getImplementation()->begin(), muCovariates.getImplementation()->end(), linear.begin());
   // Now, compose with the normalization function
-  Function thetaFunction(LinearFunction(normalizationFunctrion.getCenter(), linear * normalizationFunction.getConstant(), linear * normalizationFunction.getLinear()));
+  const LinearFunction betaFunction(normalizationFunctrion.getCenter(), linear * normalizationFunction.getConstant(), linear * normalizationFunction.getLinear());
+  Function thetaFunction(betaFunction);
   // The theta function is the composition between the inverse link function and the linear function
   if (inverseLinkFunction.getEvaluation().getImplementation()->isActualImplementation())
     thetaFunction = ComposedFunction(inverseLinkFunction, thetaFunction);
   // estimate parameter distribution via the Fisher information matrix
   const UnsignedInteger size = sample.getSize();
+  UnsignedInteger nP = covariates.getDimension();
   Matrix fisher(nP, nP);
   const Scalar epsilon = ResourceMap::GetAsScalar("Evaluation-ParameterEpsilon");
   for (UnsignedInteger i = 0; i < size; ++ i)
   {
-    Point param(thetaFunction(covariates[i]));
-    const Scalar pdfIRef = buildAsGeneralizedExtremeValue(param).computePDF(sample(i, 0));
-
-    // evaluate dpdf/dbeta by finite-differences
-    Matrix dpdfi(nP, 1);
-    for (UnsignedInteger j = 0; j < nP; ++ j)
+    // The current covariates
+    const Point covariatesI(covariates[i]);
+    // Compute the parameters values in two steps in order to manage the explicit dependence wrt beta
+    const Point betaValue(betaFunction(covariatesI));
+    const Matrix linkGradient;
+    Point param;
+    if (inverseLinkFunction.getEvaluation().getImplementation()->isActualImplementation())
     {
-      Point betaIj(optimalParameter);
-      betaIj[j] += epsilon;
-      const Scalar pdfIj = buildAsGeneralizedExtremeValue(thetaFunction(covariates[i])).computePDF(sample(i, 0));
-      dpdfi(j, 0) = (pdfIj - pdfIRef) / epsilon;
+      linkGradient = inverseLinkFunction.gradient(betaValue);
+      param = inverseLinkFunction(betaValue);
     }
-    dpdfi = dpdfi / pdfIRef;
+    else
+    {
+      linkGradient = IdentityMatrix(3);
+      param = betaValue;
+    }
+    const Point pdfGradient(buildAsGeneralizedExtremeValue(param).computeLogPDFGradient(sample(i, 0)));
+    Matrix gradLogP(pdfGradient * linkGradient);
+    for (UnsignedInteger row = 0; row < 3; ++row)
+    {
+      for (UnsignedInteger col = 0; col < nP; ++col)
+      {
+      } // col
+    } // row
     fisher = fisher + dpdfi * dpdfi.transpose() / size;
   }
   thetaFunction.setParameter(optimalParameter); // reset before return
@@ -1115,7 +1105,7 @@ CovariatesResult GeneralizedExtremeValueFactory::buildCovariates(const Sample & 
   const CovarianceMatrix covariance(SymmetricMatrix(fisher.getImplementation()).solveLinearSystem(IdentityMatrix(nP) / size).getImplementation());
   const Normal parameterDistribution(optimalParameter, covariance);
   const CovariatesResult result(*this, thetaFunction, covariates, parameterDistribution, normalizationFunction, normalizationFunction, logLikelihood);
-  return result;  
+  return result;
 }
 #endif
 

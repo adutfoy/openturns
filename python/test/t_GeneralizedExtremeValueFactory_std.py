@@ -115,12 +115,6 @@ assert (
     == "Normal"
 )
 
-r_optim, llh = factory.buildBestRMaxima(sample_rmax, range(1, 11))
-print(f"r_optim={r_optim}")
-assert r_optim == 1, "wrong r"
-print(llh)
-assert len(llh) == 10, "no llh"
-
 # specific check for time-varying
 fremantle = coles.Coles().fremantle
 t0 = fremantle[0, 0]  # year of first record

@@ -138,12 +138,4 @@ for r in r_candidate:
     print(f"r={r:2} {pretty_p}")
 
 # %%
-# If we want to prioritise the models with respect to the log-likelihood value and get the best model,
-# we can use the following method. It also stores the log-likelihood value associated to each model.
-best_r, llh = factory.buildBestRMaxima(sample_rmax, r_candidate)
-print('Best model obtained for r = ', best_r)
-for i in range(3):
-    print(f"r={r_candidate[i]} likelihood={llh[i]}")
-
-# %%
 otv.View.ShowAll()

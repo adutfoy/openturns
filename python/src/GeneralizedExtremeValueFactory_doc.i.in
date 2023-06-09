@@ -245,31 +245,6 @@ result : :class:`~openturns.DistributionFactoryResult`
 
 // ----------------------------------------------------------------------------
 
-%feature("docstring") OT::GeneralizedExtremeValueFactory::buildBestRMaxima
-"Find the best :math:`r` value with the R-maxima method.
-
-
-The estimators are computed using the profile log-likelihood  as detailed in
-:meth:`buildRMaxima` for several :math:`r`.
-
-Parameters
-----------
-sample : 2-d sequence of float
-    Block largest order statistics grouped in a sample of size :math:`m` and dimension :math:`R`.
-
-    The :math:`i`-th point of the sample contains the :math:`R` largest order statistics of the block :math:`i`.
-r_list : list of int :math:`r_i`, with :math:`1 \leq r_i \leq R`, 
-    List of number of largest order statistics taken into account among the :math:`R` stored ones.
-
-Returns
--------
-r_opt : int, :math:`1 \leq r_opt`,
-    The value among :math:`r_{list}` that maximizes the log-likelihood defined in :eq:`llR1` and :eq:`llR2`.
-llh : :class:`~openturns.Point`
-    Log-likelihood values for each :math:`r` value."
-
-// ----------------------------------------------------------------------------
-
 %feature("docstring") OT::GeneralizedExtremeValueFactory::buildTimeVarying
 "Estimate a non stationary GEV.
 

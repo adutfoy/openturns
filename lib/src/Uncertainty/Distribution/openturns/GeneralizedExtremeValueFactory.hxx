@@ -72,7 +72,6 @@ public:
   /** R largest order statistics */
   DistributionFactoryResult buildRMaximaEstimator(const Sample & sample, const UnsignedInteger r = 0);
   GeneralizedExtremeValue buildRMaxima(const Sample & sample, const UnsignedInteger r = 0);
-  UnsignedInteger buildBestRMaxima(const Sample & sample, const Indices & r, Point & logLikelihoodOut);
 
   /** Time-varying */
   TimeVaryingResult buildTimeVarying(const Sample & sample,
@@ -85,9 +84,9 @@ public:
   /** Covariates */
   TimeVaryingResult buildCovariates(const Sample & sample,
                                     const Sample & covariates,
-                                    const UnsignedInteger muDim,
-                                    const UnsignedInteger sigmaDim,
-                                    const UnsignedInteger xiDim,
+                                    const Indices & muIndices,
+                                    const Indices & sigmaIndices,
+                                    const Indices & xiIndices,
                                     const Function & inverseLinkFunction = Function(),
                                     const String & initializationMethod = ResourceMap::GetAsString("GeneralizedExtremeValueFactory-InitializationMethod"),
                                     const String & normalizationMethod = ResourceMap::GetAsString("GeneralizedExtremeValueFactory-NormalizationMethod")) const;
