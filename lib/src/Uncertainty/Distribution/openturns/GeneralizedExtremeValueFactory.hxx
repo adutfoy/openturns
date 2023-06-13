@@ -22,12 +22,13 @@
 #define OPENTURNS_GENERALIZEDEXTREMEVALUEFACTORY_HXX
 
 #include "openturns/OTprivate.hxx"
+#include "openturns/Basis.hxx"
+#include "openturns/ResourceMap.hxx"
 #include "openturns/DistributionFactoryImplementation.hxx"
 #include "openturns/GeneralizedExtremeValue.hxx"
 #include "openturns/ProfileLikelihoodResult.hxx"
-#include "openturns/Basis.hxx"
 #include "openturns/TimeVaryingResult.hxx"
-#include "openturns/ResourceMap.hxx"
+#include "openturns/CovariatesResult.hxx"
 
 BEGIN_NAMESPACE_OPENTURNS
 
@@ -76,17 +77,17 @@ public:
                                      const Function & inverseLinkFunction = Function(),
                                      const String & initializationMethod = ResourceMap::GetAsString("GeneralizedExtremeValueFactory-InitializationMethod"),
                                      const String & normalizationMethod = ResourceMap::GetAsString("GeneralizedExtremeValueFactory-NormalizationMethod")) const;
-#ifdef toto
+
   /** Covariates */
-  TimeVaryingResult buildCovariates(const Sample & sample,
-                                    const Sample & covariates,
-                                    const Indices & muIndices,
-                                    const Indices & sigmaIndices,
-                                    const Indices & xiIndices,
-                                    const Function & inverseLinkFunction = Function(),
-                                    const String & initializationMethod = ResourceMap::GetAsString("GeneralizedExtremeValueFactory-InitializationMethod"),
-                                    const String & normalizationMethod = ResourceMap::GetAsString("GeneralizedExtremeValueFactory-NormalizationMethod")) const;
-#endif
+  CovariatesResult buildCovariates(const Sample & sample,
+                                   const Sample & covariates,
+                                   const Indices & muIndices,
+                                   const Indices & sigmaIndices,
+                                   const Indices & xiIndices,
+                                   const Function & inverseLinkFunction = Function(),
+                                   const String & initializationMethod = ResourceMap::GetAsString("GeneralizedExtremeValueFactory-InitializationMethod"),
+                                   const String & normalizationMethod = ResourceMap::GetAsString("GeneralizedExtremeValueFactory-NormalizationMethod")) const;
+
   /** Return level */
   Distribution buildReturnLevelEstimator(const DistributionFactoryResult & result, const Scalar m) const;
 

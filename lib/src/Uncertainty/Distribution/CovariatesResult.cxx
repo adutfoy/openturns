@@ -143,9 +143,8 @@ private:
 /* Draw quantile for all time values */
 Graph CovariatesResult::drawQuantileFunction(const Scalar p) const
 {
-  const Sample grid(covariates_.getVertices());
-  const Scalar xMin = grid.getMin()[0];
-  const Scalar xMax = grid.getMax()[0];
+  const Scalar xMin = covariates_.getMin()[0];
+  const Scalar xMax = covariates_.getMax()[0];
 
   Function quantileFunction(CovariatesResultQuantileEvaluation(*this, p));
   Graph result(quantileFunction.draw(xMin, xMax));

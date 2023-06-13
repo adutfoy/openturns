@@ -20,23 +20,24 @@
  */
 #include "openturns/GeneralizedExtremeValueFactory.hxx"
 #include "openturns/PersistentObjectFactory.hxx"
+#include "openturns/OptimizationAlgorithm.hxx"
+#include "openturns/Cobyla.hxx"
+#include "openturns/Brent.hxx"
+#include "openturns/SpecFunc.hxx"
+#include "openturns/SymbolicFunction.hxx"
+#include "openturns/AggregatedFunction.hxx"
+#include "openturns/ComposedFunction.hxx"
+#include "openturns/ParametricFunction.hxx"
+#include "openturns/LinearFunction.hxx"
+#include "openturns/IdentityMatrix.hxx"
+#include "openturns/SymmetricMatrix.hxx"
+#include "openturns/Normal.hxx"
 #include "openturns/FrechetFactory.hxx"
 #include "openturns/WeibullMaxFactory.hxx"
 #include "openturns/GumbelFactory.hxx"
 #include "openturns/DistributionFactory.hxx"
-#include "openturns/FittingTest.hxx"
-#include "openturns/OptimizationAlgorithm.hxx"
-#include "openturns/SpecFunc.hxx"
-#include "openturns/Cobyla.hxx"
-#include "openturns/SymbolicFunction.hxx"
 #include "openturns/MaximumLikelihoodFactory.hxx"
-#include "openturns/ParametricFunction.hxx"
-#include "openturns/Brent.hxx"
-#include "openturns/AggregatedFunction.hxx"
-#include "openturns/ComposedFunction.hxx"
-#include "openturns/LinearEvaluation.hxx"
-#include "openturns/LinearFunction.hxx"
-#include "openturns/Normal.hxx"
+#include "openturns/FittingTest.hxx"
 
 BEGIN_NAMESPACE_OPENTURNS
 
@@ -138,7 +139,6 @@ public:
 
   Point operator() (const Point & parameter) const override
   {
-    // std::cerr << "parameter=" << parameter << std::endl;
     const Scalar mu = parameter[0];
     const Scalar sigma = parameter[1];
     const Scalar xi = parameter[2];
@@ -146,7 +146,6 @@ public:
     if (sigma <= 0.0)
     {
       value[0] = -std::log(SpecFunc::MaxScalar);
-      // std::cerr << "sigma<0:" << sigma << ", ll=" << value[0] << std::endl;
       return value;
     }
 
@@ -175,7 +174,6 @@ public:
         if (c1 <= SpecFunc::Precision - 1.0) // can be slightly off
         {
           ll += -std::log(SpecFunc::MaxScalar);
-          // std::cerr << "i=" << i << ", c1<-1:" << c1 << ", xi=" << xi << ", yir=" << yir << ", ll=" << ll << std::endl;
           continue;
         }
         const Scalar log1pC1 = std::log1p(c1);
@@ -188,7 +186,6 @@ public:
           if (c2 <= SpecFunc::Precision - 1.0) // can be slightly off
           {
             ll += -std::log(SpecFunc::MaxScalar);
-            // std::cerr << "i=" << i << ", c2<-1:" << c1 << ", xi=" << xi << ", yik=" << yik << ", ll=" << ll << std::endl;
             continue;
           }
           ll += (-1.0 / xi - 1.0) * std::log1p(c2);
@@ -196,7 +193,6 @@ public:
       } // i
     } // std::abs(xi) >= SpecFunc::Precision
     value[0] = ll;
-    // std::cerr << "ll=" << ll << std::endl;
     return value;
   }
 
@@ -276,18 +272,16 @@ public:
 
     // Adapt mu
     const Point cv(constraint(x0));
-    // std::cerr << "Initial x0=" << x0 << ", cv=" << constraint(x0) << std::endl;
     if (xi0 < 0.0)
-      {
-        if (cv[0] <= 0.0)
-          x0[0] = zMax_;
-      }
+    {
+      if (cv[0] <= 0.0)
+        x0[0] = zMax_;
+    }
     else
-      {
-        if (cv[1] <= 0.0)
-          x0[0] = zMin_;
-      }
-    // std::cerr << "Final x0=" << x0 << ", cv=" << constraint(x0) << std::endl;
+    {
+      if (cv[1] <= 0.0)
+        x0[0] = zMin_;
+    }
     // solve optimization problem
     Cobyla solver(problem);
     solver.setProblem(problem);
@@ -302,7 +296,6 @@ public:
     }
     catch (const Exception &)
     {
-      // std::cerr << "x0=" << x0 << std::endl;
       return Point(1, -std::log(SpecFunc::MaxScalar));
     }
   }
@@ -366,20 +359,19 @@ ProfileLikelihoodResult GeneralizedExtremeValueFactory::buildMethodOfProfileLike
   const Scalar logLikelihood = solver.getResult().getOptimalValue()[0];
   // Compute the extreme possible values for xi given the sample and (mu, sigma)
   /*
-  const Scalar mu = optimalParameter[0];
-  const Scalar sigma = optimalParameter[1];
-  Scalar xiMin;
-  if (zMax > mu)
+    const Scalar mu = optimalParameter[0];
+    const Scalar sigma = optimalParameter[1];
+    Scalar xiMin;
+    if (zMax > mu)
     xiMin = -sigma / (zMax - mu);
-  else
+    else
     xiMin = -SpecFunc::MaxScalar;
-  Scalar xiMax;
-  if (zMin < mu)
+    Scalar xiMax;
+    if (zMin < mu)
     xiMax = sigma / (mu - zMin);
-  else
+    else
     xiMax = SpecFunc::MaxScalar;
-  // std::cerr << "mu=" << mu << ", sigma=" << sigma << ", zMin=" << zMin << ", zMax=" << zMax << ", xiMin=" << xiMin << ", xiMax=" << xiMax << std::endl;
-  */
+    */
   const Scalar xiMin = -SpecFunc::MaxScalar;
   const Scalar xiMax = SpecFunc::MaxScalar;
   ProfileLikelihoodResult result(distribution, parameterDistribution, logLikelihood, objective, xi, xiMin, xiMax);
@@ -465,7 +457,6 @@ DistributionFactoryLikelihoodResult GeneralizedExtremeValueFactory::buildMethodO
   // Only the maxima are representative of the estimated distribution.
   const Distribution parameterDistribution(MaximumLikelihoodFactory::BuildGaussianEstimator(distribution, sample.getMarginal(0)));
   const Scalar logLikelihood = solver.getResult().getOptimalValue()[0];
-  // std::cerr << "optimalParameter=" << optimalParameter << ", logLikelihood=" << logLikelihood << std::endl;
   DistributionFactoryLikelihoodResult result(distribution, parameterDistribution, logLikelihood);
   return result;
 }
@@ -529,7 +520,6 @@ public:
       if (sigma <= 0.0)
       {
         ll += -std::log(SpecFunc::MaxScalar);
-        // std::cerr << "sigma<0:" << sigma << ", ll=" << ll << std::endl;
         continue;
       }
 
@@ -540,7 +530,6 @@ public:
       if (c1 <= SpecFunc::Precision - 1.0) // can be slightly off
       {
         ll += -std::log(SpecFunc::MaxScalar);
-        // std::cerr << "c1<-1:" << c1 << ", xi=" << xi << ", yi=" << yi << ", ll=" << ll << std::endl;
         continue;
       }
       const Scalar log1pC1 = std::log1p(c1);
@@ -741,7 +730,7 @@ TimeVaryingResult GeneralizedExtremeValueFactory::buildTimeVarying(const Sample 
   return result;
 }
 
-#ifdef toto
+
 class GeneralizedExtremeValueCovariatesLikelihoodEvaluation : public EvaluationImplementation
 {
 public:
@@ -773,7 +762,7 @@ public:
 
   UnsignedInteger getInputDimension() const override
   {
-    return covariates_.getNbColumns();
+    return muDim_ + sigmaDim_ + xiDim_;
   }
 
   UnsignedInteger getOutputDimension() const override
@@ -785,40 +774,34 @@ public:
   {
     // Mu
     Point betaMu(muDim_);
-    std::copy(beta.begin(), beta.begin() + muDim, betaMu.begin());
+    std::copy(beta.begin(), beta.begin() + muDim_, betaMu.begin());
     const Point muT(muCovariates_ * betaMu);
-    UnsignedInteger shift = muDim;
+    UnsignedInteger shift = muDim_;
     // Sigma
     Point betaSigma(sigmaDim_);
-    std::copy(beta.begin() + shift, beta.begin() + shift + sigmaDim, betaSigma.begin());
+    std::copy(beta.begin() + shift, beta.begin() + shift + sigmaDim_, betaSigma.begin());
     const Point sigmaT(sigmaCovariates_ * betaSigma);
-    shift += sigmaDim;
+    shift += sigmaDim_;
     // Xi
     Point betaXi(xiDim_);
-    std::copy(beta.begin() + shift, beta.begin() + shift + xiDim, betaXi.begin());
+    std::copy(beta.begin() + shift, beta.begin() + shift + xiDim_, betaXi.begin());
     const Point xiT(xiCovariates_ * betaXi);
 
     Scalar ll = startingValue_;
     Scalar minSigma = SpecFunc::MaxScalar;
     Scalar minC1 = SpecFunc::MaxScalar;
-    if (std::abs(xi) < SpecFunc::Precision)
+    for (UnsignedInteger i = 0; i < sample_.getSize(); ++ i)
     {
-      for (UnsignedInteger i = 0; i < sample_.getSize(); ++ i)
+      const Scalar mu = muT[i];
+      const Scalar sigma = sigmaT[i];
+      const Scalar xi = xiT[i];
+      const Scalar yi = (sample_(i, 0) - mu) / sigma;
+      if (std::abs(xi) < SpecFunc::Precision)
       {
-        const Scalar mu = muT[i];
-        const Scalar sigma = sigmaT[i];
-        const Scalar xi = xiT[i];
-        const Scalar yi = (sample_(i, 0) - mu) / sigma;
         ll += -(yi + std::exp(-yi));
-      } // i
-    } // std::abs(xi) < SpecFunc::Precision
-    else
-    {
-      for (UnsignedInteger i = 0; i < sample_.getSize(); ++ i)
+      } // std::abs(xi) < SpecFunc::Precision
+      else
       {
-        const Scalar mu = muT[i];
-        const Scalar sigma = sigmaT[i];
-        const Scalar xi = xiT[i];
         minSigma = std::min(minSigma, sigma);
 
         if (sigma <= 0.0)
@@ -838,8 +821,8 @@ public:
         }
         const Scalar log1pC1 = std::log1p(c1);
         ll += -(1.0 + 1.0 / xi) * log1pC1 - std::exp(-log1pC1 / xi);
-      } // i
-    } // std::abs(xi) >= SpecFunc::Precision
+      } // std::abs(xi) >= SpecFunc::Precision
+    } // i
     Point value(3);
     value[0] = ll;
     value[1] = minSigma;
@@ -866,9 +849,9 @@ CovariatesResult GeneralizedExtremeValueFactory::buildCovariates(const Sample & 
     const Indices & muIndices,
     const Indices & sigmaIndices,
     const Indices & xiIndices,
-    const Function & inverseLinkFunction = Function(),
-    const String & initializationMethod = ResourceMap::GetAsString("GeneralizedExtremeValueFactory-InitializationMethod"),
-    const String & normalizationMethod = ResourceMap::GetAsString("GeneralizedExtremeValueFactory-NormalizationMethod")) const
+    const Function & inverseLinkFunction,
+    const String & initializationMethod,
+    const String & normalizationMethod) const
 {
   const UnsignedInteger size = sample.getSize();
   if (size < 3)
@@ -937,11 +920,12 @@ CovariatesResult GeneralizedExtremeValueFactory::buildCovariates(const Sample & 
   }
   else if (normalizationMethod == "None")
   {
-    matrix = IdentityMatrix(covariatesDimension;
+    matrix = IdentityMatrix(covariatesDimension);
     LOGINFO("No normalization of the covariates");
   }
-    else throw InvalidArgumentException(HERE) << "Error: the value " << normalizationMethod << " is invalid for the \"GeneralizedExtremeValueFactory-NormalizationMethod\" key in ResourceMap. Valid values are \"MinMax\", \"CenterReduce\", \"None\"";
-    const Sample normalizedCovariates(normalizationFunction(center, constant, matrix)(covariates));
+  else throw InvalidArgumentException(HERE) << "Error: the value " << normalizationMethod << " is invalid for the \"GeneralizedExtremeValueFactory-NormalizationMethod\" key in ResourceMap. Valid values are \"MinMax\", \"CenterReduce\", \"None\"";
+  const LinearFunction normalizationFunction(center, constant, matrix);
+  const Sample normalizedCovariates(normalizationFunction(covariates));
   // Extract the 3 matrices corresponding to the covariates for mu, sigma and xi
   const Matrix muCovariates(normalizedCovariates.getSize(), muIndices.getSize(), normalizedCovariates.getMarginal(muIndices).getImplementation()->getData());
   const Matrix sigmaCovariates(normalizedCovariates.getSize(), sigmaIndices.getSize(), normalizedCovariates.getMarginal(sigmaIndices).getImplementation()->getData());
@@ -955,17 +939,17 @@ CovariatesResult GeneralizedExtremeValueFactory::buildCovariates(const Sample & 
   UnsignedInteger i = 0;
   const UnsignedInteger maxIter = ResourceMap::GetAsUnsignedInteger("GeneralizedExtremeValueFactory-FeasibilityMaximumIterationNumber");
   const Scalar rho = ResourceMap::GetAsScalar("GeneralizedExtremeValueFactory-FeasibilityRhoFactor");
-  Point value(evaluation(x0));
+  Point value(evaluation(initialGuess));
   while (((value[1] <= 0.0) || (value[2] <= 0)) && (i < maxIter))
   {
-    x0[0] *= rho;
-    value = evaluation(x0);
+    initialGuess[0] *= rho;
+    value = evaluation(initialGuess);
     ++ i;
   }
-  LOGINFO(OSS(false) << "Starting points for the coefficients=" << x0);
+  LOGINFO(OSS(false) << "Starting points for the coefficients=" << initialGuess);
   // Now take into account the initial log-likelihood in order to work on the log-likelihood improvement during the optimization step
   // It gives a more robust stopping criterion
-  const Scalar startingValue = -evaluation(x0)[0];
+  const Scalar startingValue = -evaluation(initialGuess)[0];
   evaluation = GeneralizedExtremeValueCovariatesLikelihoodEvaluation(sample, muCovariates, sigmaCovariates, xiCovariates, muDim, sigmaDim, xiDim, startingValue);
 
   const Function objectiveAndConstraints(evaluation.clone());
@@ -978,7 +962,7 @@ CovariatesResult GeneralizedExtremeValueFactory::buildCovariates(const Sample & 
   Cobyla solver(problem);
   solver.setProblem(problem);
   solver.setMaximumEvaluationNumber(ResourceMap::GetAsUnsignedInteger("GeneralizedExtremeValueFactory-MaximumEvaluationNumber"));
-  solver.setStartingPoint(x0);
+  solver.setStartingPoint(initialGuess);
   solver.run();
   const Point optimalParameter(solver.getResult().getOptimalPoint());
   const Scalar logLikelihood = solver.getResult().getOptimalValue()[0] - startingValue;
@@ -986,15 +970,15 @@ CovariatesResult GeneralizedExtremeValueFactory::buildCovariates(const Sample & 
   // Build the theta function which maps a dim(covariates) vector into a (mu, sigma, xi) vector. This function has
   // the following general form: theta(x)=h(betaFunction(x)) where btaFunction(x)=linear(z), z=Normalization(x)
   // First, the l part: a matrix 3xdim(covariates)
-  MatrixImplementation linear(3, covariatesDimension);
+  Matrix linear(3, covariatesDimension);
   for (UnsignedInteger i = 0; i < muDim; ++i)
-    linear(0, muIndices(i)) = optimalParameter[i];;
+    linear(0, muIndices[i]) = optimalParameter[i];;
   UnsignedInteger shift = muDim;
   for (UnsignedInteger i = 0; i < sigmaDim; ++i)
-    linear(1, sigmaIndices(i)) = optimalParameter[shift + i];;
+    linear(1, sigmaIndices[i]) = optimalParameter[shift + i];;
   shift += sigmaDim;
   for (UnsignedInteger i = 0; i < xiDim; ++i)
-    linear(2, xiIndices(i)) = optimalParameter[shift + i];;
+    linear(2, xiIndices[i]) = optimalParameter[shift + i];;
   // Now, compose with the normalization function
   const LinearFunction betaFunction(center, constant, linear * matrix);
   Function thetaFunction(betaFunction);
@@ -1004,6 +988,8 @@ CovariatesResult GeneralizedExtremeValueFactory::buildCovariates(const Sample & 
   // estimate parameter distribution via the Fisher information matrix
   Matrix fisher(covariatesDimension, covariatesDimension);
   const Scalar epsilon = ResourceMap::GetAsScalar("Evaluation-ParameterEpsilon");
+  UnsignedInteger nP = muDim + sigmaDim + xiDim;
+  /*
   for (UnsignedInteger i = 0; i < size; ++ i)
   {
     // The current covariates
@@ -1032,14 +1018,15 @@ CovariatesResult GeneralizedExtremeValueFactory::buildCovariates(const Sample & 
     } // row
     fisher = fisher + dpdfi * dpdfi.transpose() / size;
   }
+  */
   thetaFunction.setParameter(optimalParameter); // reset before return
 
   const CovarianceMatrix covariance(SymmetricMatrix(fisher.getImplementation()).solveLinearSystem(IdentityMatrix(nP) / size).getImplementation());
   const Normal parameterDistribution(optimalParameter, covariance);
-  const CovariatesResult result(*this, thetaFunction, covariates, parameterDistribution, normalizationFunction, normalizationFunction, logLikelihood);
+  const CovariatesResult result(*this, thetaFunction, covariates, parameterDistribution, normalizationFunction, logLikelihood);
   return result;
 }
-#endif
+
 
 /* Return level */
 Distribution GeneralizedExtremeValueFactory::buildReturnLevelEstimator(const DistributionFactoryResult & result, const Scalar m) const
@@ -1265,33 +1252,32 @@ ProfileLikelihoodResult GeneralizedExtremeValueFactory::buildReturnLevelProfileL
   Normal parameterDistribution(optimalParameter, CovarianceMatrix(covZm.getImplementation()));
   parameterDistribution.setDescription({"zm", "sigma", "xi"});
   const Scalar logLikelihood = solver.getResult().getOptimalValue()[0];
-  
+
   // Compute the extreme possible values for zm given the sample and (mu, sigma)
   // As the function xi->zm(xi;mu,sigma,m) is increasing for all m>=2, we get
   // zmMin = mu + sigma * (exp(-xiMin * log(-log(1-1/m))) - 1) / xiMin
   // zmMin = mu + sigma * (exp(-xiMax * log(-log(1-1/m))) - 1) / xiMax
   // logLog1pM = log(-log(1-p)) p<=1/2, 1-p >= 1/2, log(1-p) >= -log(2), -log(1-p) <= log(2), log(-log(1-p)) <= log(log(2)), log(-log(1-p)) <= log(log(2)) < 0
   /* Unfortunately this nice idea fails...
-    const Scalar zMin = sample.getMin()[0];
-    const Scalar zMax = sample.getMax()[0];
-    Scalar zmMin;
-    if (zMax > mu)
-    {
-    const Scalar xiMin = sigma / (mu - zMax);
-    zmMin = mu + sigma * std::expm1(-xiMin * logLog1pM) / xiMin;
-    }
-    else
-    // mu + sigma * (0 - 1) / (-inf) = mu
-    zmMin = mu;
-    Scalar zmMax;
-    if (zMin < mu)
-    {
-    const Scalar xiMax = sigma / (mu - zMin);
-    zmMax = mu + sigma * std::expm1(-xiMax * logLog1pM) / xiMax;
-    }
-    else
-    zmMax = SpecFunc::MaxScalar;
-    std::cerr << "mu=" << mu << ", sigma=" << sigma << ", zMin=" << zMin << ", zMax=" << zMax << ", zmMin=" << zmMin << ", zmMax=" << zmMax << std::endl;
+     const Scalar zMin = sample.getMin()[0];
+     const Scalar zMax = sample.getMax()[0];
+     Scalar zmMin;
+     if (zMax > mu)
+     {
+     const Scalar xiMin = sigma / (mu - zMax);
+     zmMin = mu + sigma * std::expm1(-xiMin * logLog1pM) / xiMin;
+     }
+     else
+     // mu + sigma * (0 - 1) / (-inf) = mu
+     zmMin = mu;
+     Scalar zmMax;
+     if (zMin < mu)
+     {
+     const Scalar xiMax = sigma / (mu - zMin);
+     zmMax = mu + sigma * std::expm1(-xiMax * logLog1pM) / xiMax;
+     }
+     else
+     zmMax = SpecFunc::MaxScalar;
   */
   const Scalar zmMin = -SpecFunc::MaxScalar;
   const Scalar zmMax =  SpecFunc::MaxScalar;

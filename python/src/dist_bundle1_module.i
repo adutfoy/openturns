@@ -72,6 +72,7 @@
 %include DistributionFactoryLikelihoodResult.i
 %include ProfileLikelihoodResult.i
 %include TimeVaryingResult.i
+%include CovariatesResult.i
 %include GeneralizedExtremeValueFactory.i
 %include GumbelFactory.i
 %include GumbelLambdaGamma.i
