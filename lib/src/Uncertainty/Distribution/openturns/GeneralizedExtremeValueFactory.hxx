@@ -65,9 +65,9 @@ public:
   ProfileLikelihoodResult buildMethodOfProfileLikelihoodMaximizationEstimator(const Sample & sample) const;
   GeneralizedExtremeValue buildMethodOfProfileLikelihoodMaximization(const Sample & sample) const;
 
-  /** R largest order statistics */
-  DistributionFactoryLikelihoodResult buildMethodOfLikelihoodMaximizationEstimator(const Sample & sample, const UnsignedInteger r = 0);
-  GeneralizedExtremeValue buildMethodOfLikelihoodMaximization(const Sample & sample, const UnsignedInteger r = 0);
+  /** Maximum likelihood r largest order statistics */
+  DistributionFactoryLikelihoodResult buildMethodOfLikelihoodMaximizationEstimator(const Sample & sample, const UnsignedInteger r = 0) const;
+  GeneralizedExtremeValue buildMethodOfLikelihoodMaximization(const Sample & sample, const UnsignedInteger r = 0) const;
 
   /** Time-varying */
   TimeVaryingResult buildTimeVarying(const Sample & sample,
