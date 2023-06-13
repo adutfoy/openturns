@@ -53,7 +53,6 @@ ProfileLikelihoodResult::ProfileLikelihoodResult(const Distribution & distributi
   , xMax_(xMax)
 {
   // Nothing to do
-  std::cout << "parameter=" << parameter << ", xMin=" << xMin << ", xMax=" << xMax << std::endl;
 }
 
 ProfileLikelihoodResult * ProfileLikelihoodResult::clone() const
@@ -165,8 +164,14 @@ Graph ProfileLikelihoodResult::drawProfileLikelihoodFunction() const
   Sample filteredData(0, 2);
   for (UnsignedInteger i = 0; i < dataIni.getSize(); ++i)
     if (dataIni(i, 1) > 2.0 * threshold - fx) filteredData.add(dataIni[i]);
-  result.setDrawable(Curve(filteredData), 0);
+  if (filteredData.getSize() < dataIni.getSize())
+    {
+      xMin = filteredData.getMin()[0];
+      xMax = filteredData.getMax()[0];
+      result = profileLikelihoodFunction_.draw(xMin, xMax);
+    }
   result.setLegends({"likelihood"});
+  // std::cerr << "xMin=" << xMin << ", x=" << x << ", xMax=" << xMax << std::endl;
   String inputVar(profileLikelihoodFunction_.getInputDescription()[0]);
   // use latex syntax
   String base(inputVar);
@@ -179,7 +184,6 @@ Graph ProfileLikelihoodResult::drawProfileLikelihoodFunction() const
       suffix = "_m";
     }
   inputVar = base + suffix;
-  std::cout << "inputVar=" << inputVar << std::endl;
   result.setXTitle("$" + inputVar + "$");
   result.setYTitle("profile log-likelihood value");
   result.setTitle("profile likelihood");
@@ -222,10 +226,10 @@ Graph ProfileLikelihoodResult::drawProfileLikelihoodFunction() const
     // add lower bound vertical line
     dataX = {ci.getLowerBound()[0], ci.getLowerBound()[0]};
     dataY = {bbox.getLowerBound()[1], bbox.getUpperBound()[1]};
-    hLine = Curve(dataX, dataY, OSS() << "CI @ " << getConfidenceLevel());
-    hLine.setColor("red");
-    hLine.setLineStyle("dashed");
-    result.add(hLine);
+    Curve vLine(dataX, dataY, OSS() << "CI @ " << getConfidenceLevel());
+    vLine.setColor("red");
+    vLine.setLineStyle("dashed");
+    result.add(vLine);
 
     dataX = {ci.getLowerBound()[0] + dx};
     dataY = {bbox.getLowerBound()[1]};
@@ -237,10 +241,10 @@ Graph ProfileLikelihoodResult::drawProfileLikelihoodFunction() const
     // add upper bound vertical line
     dataX = {ci.getUpperBound()[0], ci.getUpperBound()[0]};
     dataY = {bbox.getLowerBound()[1], bbox.getUpperBound()[1]};
-    hLine = Curve(dataX, dataY);
-    hLine.setColor("red");
-    hLine.setLineStyle("dashed");
-    result.add(hLine);
+    vLine = Curve(dataX, dataY);
+    vLine.setColor("red");
+    vLine.setLineStyle("dashed");
+    result.add(vLine);
 
     dataX = {ci.getUpperBound()[0] + dx};
     dataY = {bbox.getLowerBound()[1]};
@@ -255,20 +259,19 @@ Graph ProfileLikelihoodResult::drawProfileLikelihoodFunction() const
     dataY = {bbox.getLowerBound()[1], bbox.getLowerBound()[1]};
     Curve curve(dataX, dataY, String(OSS() << "No CI @ " << getConfidenceLevel()));
     curve.setLineWidth(0.0);
-    //curve.setColor("white");
     result.add(curve);
   }
   // add x vertical line
   dataX = {x, x};
   dataY = {bbox.getLowerBound()[1], bbox.getUpperBound()[1]};
-  hLine = Curve(dataX, dataY);
-  hLine.setColor("black");
-  hLine.setLineStyle("dashed");
-  result.add(hLine);
+  Curve vLine(dataX, dataY);
+  vLine.setColor("black");
+  vLine.setLineStyle("dashed");
+  result.add(vLine);
 
   dataX = {x + dx};
   dataY = {bbox.getLowerBound()[1]};
-  elt = Text(dataX, dataY, {OSS() << "$\\hat{" + base + "}" + suffix + "$=" << ci.getUpperBound()[0]}, "right");
+  elt = Text(dataX, dataY, {OSS() << "$\\hat{" + base + "}" + suffix + "$=" << x}, "right");
   elt.setColor("black");
   elt.setRotation(90.0);
   result.add(elt);
