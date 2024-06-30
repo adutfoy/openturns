@@ -1,7 +1,7 @@
 .. _quantile_estimation_wilks:
 
-Estimation of an upper bound of the quantile :math:`x_{\alpha}`
----------------------------------------------------------------
+Estimation of a quantile upper bound by Wilks' method
+-----------------------------------------------------
 
 We consider a random variable :math:`X` of dimension 1 and its unknown quantile :math:`x_{\alpha}` of order :math:`\alpha`.
 We seek to evaluate an upper bound of :math:`x_{\alpha}` with a confidence greater than :math:`\beta`, using a given order statistics.
@@ -50,7 +50,7 @@ Then, we have:
 
 .. math::
 
-    F_{X_{(k)}}(x_{\alpha}) = \sum_{i=k}^{\sampleSize} \binom{\sampleSize}{i} \alpha^i (1-\alpha)^{\sampleSize-i
+    F_{X_{(k)}}(x_{\alpha}) = \sum_{i=k}^{\sampleSize} \binom{\sampleSize}{i} \alpha^i (1-\alpha)^{\sampleSize-i}
     = \overline{F}_{(\sampleSize,\alpha)}(k-1)
 
 and relation :eq:`EqOrderStat` can be written as:
@@ -65,8 +65,8 @@ The smallest order :math:`k_{sol}` is defined by:
 
 .. math::
 
-    k_{sol} & = \min \{ k \in \llbracket 1, n \rrbracket \, | \, F_{\sampleSize, \alpha}(k-1)\geq \beta \}\\
-            & = 1 +  \min \{ k \in \llbracket 1, n \rrbracket \, | \, F_{\sampleSize, \alpha}(k)\geq \beta \}
+    k_{sol} & = \min \{ k \in [1, n] \, | \, F_{\sampleSize, \alpha}(k-1)\geq \beta \}\\
+            & = 1 +  \min \{ k \in [1, n] \, | \, F_{\sampleSize, \alpha}(k)\geq \beta \}
 
 An upper bound of  :math:`x_{\alpha}` is estimated by the value of :math:`X_{(k_{sol})}`  on the sample
 :math:`(x_1, \dots, x_\sampleSize)`.

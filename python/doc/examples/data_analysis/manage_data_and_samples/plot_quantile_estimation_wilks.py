@@ -62,8 +62,8 @@ print(empiricalQuantile)
 #
 # .. math::
 #
-#    i_n & = \lfloor n \alpha - \sqrt{n}a_{\beta}\sqrt{\alpha(1-\alpha)}\rfloor\\
-#    j_n & = \lfloor n \alpha + \sqrt{n}a_{\beta}\sqrt{\alpha(1-\alpha)}\rfloor
+#     i_n & = \lfloor n \alpha - \sqrt{n}a_{\beta}\sqrt{\alpha(1-\alpha)}\rfloor\\
+#     j_n & = \lfloor n \alpha + \sqrt{n}a_{\beta}\sqrt{\alpha(1-\alpha)}\rfloor
 #
 # where  :math:`a_{\beta}` is the quantile of order :math:`(1-\beta/2)` of the standard normal distribution.
 #
@@ -72,6 +72,7 @@ print(empiricalQuantile)
 # .. math::
 #
 #     \lim\limits_{n \rightarrow +\infty} \Prob{x_{\alpha} \in \left[ X_{(i_n,n)}, X_{(j_n,n)}\right]} = 1-\beta
+#
 
 # %%
 a_beta = ot.Normal(1).computeQuantile((1.0 + beta) / 2.0)[0]
