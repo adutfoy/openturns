@@ -1,13 +1,21 @@
 """
-Plot enumeration rules
-----------------------
+Plot enumeration function
+-------------------------
 """
 
 # %%
-# In order to build up a functional chaos multivariate basis :math:`\{\psi_{\idx},\idx \in \NM\}`
-# by tensorization of univariate basis terms, we need to enumerate the multi-indices :math:`\vect{\alpha} \in \mathbb{N}^{n_X}`.
-# In this example we are going to explore properties of these enumeration rules.
-# Refer also to :ref:`enumeration_strategy` in the theoric documentation.
+# This example illustrates the enumeration functions which are ijections between :math:`\Nset` into :math:`\Nset^\inputDim`.
+# Refer to :ref:`enumeration_strategy` to get the precise description of the enumerate functions. We detail here the bijections:
+#
+# - Linear enumeration function
+# - Hyperbolic enumeration function
+# - Anisotropic hyperbolic enumeration function
+# - Infinity norm enumeration function
+#
+# These bijections are used in the in the :ref:`functional chaos expansion setting <functional_chaos>`.
+# In order to build up a multivariate basis :math:`\{\psi_{\vect{\alpha}},\vect{\alpha} \in \Nset^\inputDim\}`
+# by tensorization of univariate basis terms, we need to enumerate the multi-indices :math:`\vect{\alpha} \in \Nset^\inputDim`.
+# In this example, we interprete the impact of the different enumeration functions within the functional chaos expansion setting.
 
 import openturns as ot
 import openturns.viewer as otv
@@ -15,6 +23,7 @@ import math as m
 
 # %%
 # The simplest way to generate the multi-indices is to enumerate the terms of increasing length.
+# If the basis is polynomial, then the length correspons to the total degree of the polynomial.
 # In other words, we enumerate the multi-indices with length equal to 0, then 1, 2, 3, etc.
 # This is called "graded reverse-lexicographic ordering" in [sullivan2015]_.
 # This is named the linear enumeration rule in the library; let us instantiate it in the 2-dimensional case.
@@ -35,7 +44,7 @@ for i in range(25):
     print(f"{i:2} |       {multi_index} |           {td}")
 
 # %%
-# Plot the multi-indices of the enumeration rule by stratas.
+# We plot the multi-indices of the enumeration rule by stratas.
 # In the specific case of the linear enumerate function, each strata contains
 # multi-indices of identical length that is also the index of the strata.
 
@@ -79,13 +88,13 @@ graph = draw_stratas(enum_func)
 view = otv.View(graph, axes_kw={"aspect": "equal"})
 
 # %%
-# When the number of input dimensions of a polynomial chaos expansion (PCE) increases,
+# When the number of input dimensions of a functional chaos expansion (FCE) increases,
 # each multi-index corresponds to a coefficient in the expansion.
-# Hence, the number of multi-indices represents the number of coefficients in the PCE.
-# Plot the number of terms in the basis depending on the maximum total degree
+# Hence, the number of multi-indices represents the number of coefficients in the FCE.
+# We plot the number of terms in the basis depending on the maximum total length
 # for several dimension values.
 # We observe the exponential increase of the number of terms with the dimension
-# :math:`d` (curse of dimensionality).
+# :math:`\inputDim` (curse of dimensionality).
 graph = ot.Graph("Linear enumeration", "Total degree", "Number of coefficients")
 degree_maximum = 10
 list_of_dimensions = [1, 5, 10, 15, 20]
@@ -106,7 +115,7 @@ graph.setLogScale(ot.GraphImplementation.LOGY)
 view = otv.View(graph, figure_kw={"figsize": (5, 4)})
 
 # %%
-# Plot the hyperbolic quasi norm for different values of :math:`q`.
+# We plot the hyperbolic quasi norm for different values of :math:`q`.
 # With :math:`q = 1` stratas are hyperplanes, and in case of isotropy
 # it is equivalent to the linear enumeration rule.
 
@@ -138,7 +147,7 @@ grid.setTitle("Hyperbolic quasi norm")
 view = otv.View(grid, axes_kw={"aspect": "equal"})
 
 # %%
-# Plot the multi-indices of the linear enumeration rule by stratas.
+# We plot the multi-indices of the linear enumeration rule by stratas.
 # The lower the value of :math:`q` the lower the number of interactions terms in stratas.
 grid = ot.GridLayout(2, 2)
 grid.setGraph(0, 0, draw_stratas(ot.HyperbolicAnisotropicEnumerateFunction(dim, 1.0)))
@@ -189,11 +198,24 @@ graph.setLogScale(ot.GraphImplementation.LOGY)
 view = otv.View(graph, figure_kw={"figsize": (5, 4)})
 
 
-otv.View.ShowAll()
-
 # %%
 # When the quasi-norm parameter is close to 1, then the hyperbolic rule is equal to the
 # linear enumeration rule and the number of coefficients is larger.
 #
 # In practice, we often test several values of the parameter :math:`q`, in the :math:`[0.5, 0.9]` range,
 # for example :math:`q \in \{0.5, 0.6, 0.7, 0.8, 0.9\}`.
+
+
+# %%
+# Now we use the infinity norm enumeration function. We illustrate the enumeration in dimension 2.
+# We display the 25 first multi-indices.
+enum_func = ot.NormInfEnumerateFunction(2)
+print("#  | multi-index ")
+print("---+-------------")
+for i in range(25):
+    multi_index = enum_func(i)
+    print(f"{i:2} |       {multi_index}")
+
+# %%
+# Display the graphs.
+otv.View.ShowAll()

@@ -4,15 +4,18 @@ Multivariate indices enumeration functions
 ------------------------------------------
 
 
-Enumeration functions are bijections from :math:`\Nset` to :math:`\Nset^{\inputDim}`. We detail here some particular bjiections:
+Enumeration functions are bijections from :math:`\Nset` to :math:`\Nset^{\inputDim}`. We detail here some particular bijections:
 
 - Linear enumeration function
 - Hyperbolic enumeration function
 - Anisotropic hyperbolic enumeration function
 - Infinity norm enumeration function
 
+All these enumeration functions are illustrated in :doc:`/auto_surrogate_modeling/polynomial_chaos/plot_enumeratefunction`.
+
 A possible use is to build a multivariate basis as the tensorization of univariate basis: this is the
-case for example in the functional chaos expansion setting (refer to  :ref:`functional_chaos` and :ref:`enumeration_multivariate_basis`).
+case for example in the functional chaos expansion setting (refer to  :ref:`functional_chaos` and
+:ref:`enumeration_multivariate_basis`).
 
 Let  :math:`\vect{\alpha}` be a multi-index is defined by:
 
@@ -20,9 +23,9 @@ Let  :math:`\vect{\alpha}` be a multi-index is defined by:
 
     \vect{\alpha} = (\alpha_1, \dots, \alpha_{\inputDim}) \in \Nset^{\inputDim}
 
-
 An enumeration function :math:`\tau` is a bijection from :math:`\Nset` to :math:`\Nset^{\inputDim}`,
-which creates a one-to-one mapping between an integer :math:`j` and a multi-index :math:`\vect{\alpha}`. The function :math:`\tau` is defined by:
+which creates a one-to-one mapping between an integer :math:`j` and a multi-index :math:`\vect{\alpha}`. The function :math:`\tau`
+is defined by:
 
 .. math::
 
@@ -40,10 +43,7 @@ Let the *length* of any multi-index :math:`{\vect{\alpha}} \in {\Nset}^{\inputDi
 
 
 Linear enumeration function
-^^^^^^^^^^^^^^^^^^^^^^^^^^^
-
-A natural choice to sort the multi-indices  :math:`\vect{\alpha}` is the
-lexicographical order with a constraint of increasing length.
+~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 The linear enumeration function :math:`\tau : \Nset \longrightarrow \Nset^{\inputDim}` is a function:
 
@@ -98,120 +98,19 @@ are not on the same strata; Condition :eq:`cond_ii` states that, if the two
 multi-indices :math:`\vect{\alpha}_j` and :math:`\vect{\alpha}_k` are on the same strata,
 then at least one of the component (denoted by :math:`m` in the definition) is different while the previous components are equal.
 
-Such an enumeration function is illustrated in a two-dimensional case
-(i.e. :math:`\inputDim=2`) in the figure below:
-
-.. plot::
-
-    import matplotlib.pyplot as plt
-
-    # Create the figure
-    plt.figure(1, figsize=(4, 4))
-    ax = plt.subplot(111)
-
-    # Create the points
-    ax.plot([0, 0, 1, 0, 1, 2, 3, 2, 1, 0], [
-            0, 1, 0, 2, 1, 0, 0, 1, 2, 3], "o", markersize=9)
-
-    # Create the arrows
-    ax.annotate("",
-                xy=(0.97, 0), xycoords='data',
-                xytext=(0, 0), textcoords='data',
-                arrowprops=dict(
-                    arrowstyle="-|>", linestyle="dashed", mutation_scale=15,
-                                connectionstyle="arc3", color='black'),
-                )
-
-    ax.arrow(1, 0, -0.97, 0.97, head_width=0.08, head_length=0.08, fc='k',
-            ec='k', length_includes_head=True, linestyle="dashed",)
-    ax.arrow(0, 1, 1.97, -0.97, head_width=0.08, head_length=0.08, fc='k',
-            ec='k', length_includes_head=True, linestyle="dashed",)
-    ax.arrow(2, 0, -1.97, 1.97, head_width=0.08, head_length=0.08, fc='k',
-            ec='k', length_includes_head=True, linestyle="dashed",)
-    ax.arrow(0, 2, 2.97, -1.97, head_width=0.08, head_length=0.08, fc='k',
-            ec='k', length_includes_head=True, linestyle="dashed",)
-    ax.arrow(3, 0, -2.97, 2.97, head_width=0.08, head_length=0.08, fc='k',
-            ec='k', length_includes_head=True, linestyle="dashed",)
-    ax.arrow(0, 3, 1.97, -0.97, head_width=0.08, head_length=0.08, fc='k',
-            ec='k', length_includes_head=True, linestyle="dashed",)
-
-    # Annotate points
-    ax.annotate('4',
-                xy=(1, 1), xycoords='data',
-                xytext=(-20, -5), textcoords='offset points', fontsize=16)
-
-    ax.annotate('7',
-                xy=(2, 1), xycoords='data',
-                xytext=(+15, +0), textcoords='offset points', fontsize=16)
-
-    ax.annotate('8',
-                xy=(1, 2), xycoords='data',
-                xytext=(+15, +0), textcoords='offset points', fontsize=16)
-
-    # Add labels
-    ax.annotate(r'$\tau_1$', xy=(1, 0), xytext=(10, 10), ha='left', va='center',
-                xycoords='axes fraction', textcoords='offset points', fontsize=20)
-
-    ax.annotate(r'$\tau_2$', xy=(0, 1), xytext=(0, 10), ha='left', va='center',
-                xycoords='axes fraction', textcoords='offset points', fontsize=20)
-
-    # Hide spines
-    ax.spines['right'].set_color('none')
-    ax.spines['top'].set_color('none')
-
-    # Set spines's position
-    ax.xaxis.set_ticks_position('bottom')
-    ax.spines['bottom'].set_position(('data', 0))
-    ax.yaxis.set_ticks_position('left')
-    ax.spines['left'].set_position(('data', 0))
-
-    # Add labels
-    plt.xticks([-0.1] + list(range(4)) + [3.2])
-    ax.set_xticklabels(('', '$0$', '$1$', '$3$', '$6$', ''), fontsize=20)
-    plt.yticks([-0.1] + list(range(4)) + [3.2])
-    ax.set_yticklabels(('', '', '$2$', '$5$', '$9$', ''), fontsize=20)
-
-    # Show the figure
-    plt.show()
-
-
-This corresponds to the following enumeration of the multi-indices:
-
-+-------------+--------------------------------------------------------+-------------------------+
-| :math:`j`   | :math:`\vect{\alpha} \, = \, \{\alpha_1,\alpha_2\}`    | :math:`|\vect{\alpha}|` |
-+=============+========================================================+=========================+
-| :math:`0`   | :math:`\{0,0\}`                                        | 0                       |
-+-------------+--------------------------------------------------------+-------------------------+
-| :math:`1`   | :math:`\{0,1\}`                                        | 1                       |
-+-------------+--------------------------------------------------------+-------------------------+
-| :math:`2`   | :math:`\{1,0\}`                                        | 1                       |
-+-------------+--------------------------------------------------------+-------------------------+
-| :math:`3`   | :math:`\{2,0\}`                                        | 2                       |
-+-------------+--------------------------------------------------------+-------------------------+
-| :math:`4`   | :math:`\{1,1\}`                                        | 2                       |
-+-------------+--------------------------------------------------------+-------------------------+
-| :math:`5`   | :math:`\{0,2\}`                                        | 2                       |
-+-------------+--------------------------------------------------------+-------------------------+
-| :math:`6`   | :math:`\{3,0\}`                                        | 3                       |
-+-------------+--------------------------------------------------------+-------------------------+
-| :math:`7`   | :math:`\{2,1\}`                                        | 3                       |
-+-------------+--------------------------------------------------------+-------------------------+
-| :math:`8`   | :math:`\{1,2\}`                                        | 3                       |
-+-------------+--------------------------------------------------------+-------------------------+
-| :math:`9`   | :math:`\{0,3\}`                                        | 3                       |
-+-------------+--------------------------------------------------------+-------------------------+
+This numeration function is depicted in  :doc:`/auto_surrogate_modeling/polynomial_chaos/plot_enumeratefunction`.
 
 Hyperbolic enumeration function
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 For any real number :math:`q` in :math:`(0,1]`, let
 :math:`q`-*hyperbolic norm* (or :math:`q`-*norm* for short) of a
 multi-index :math:`\vect{\alpha}` be defined by:
 
-  .. math::
-     :label: hyperBolEnumFct
+.. math::
+   :label: hyperBolEnumFct
 
-     \|\vect{\alpha}\|_{q} \, \, = \, \, \left(\sum_{i=1}^{\inputDim} \; \alpha_i^q \right)^{1/q}
+    \|\vect{\alpha}\|_{q} \, \, = \, \, \left(\sum_{i=1}^{\inputDim} \; \alpha_i^q \right)^{1/q}
 
 The operator :math:`\|\cdot\|_q` is  a norm if anf only if :math:`q \geq 1` and is
 a *pseudo-norm* if :math:`0 < q < 1` since it does not satisfy the triangular
@@ -223,137 +122,77 @@ Let :math:`\lambda` be a real positive number. Let :math:`\cA_{\lambda}` be the 
 multi-indices with :math:`q`-norm not greater than :math:`\lambda` as
 follows:
 
-  .. math::
+.. math::
     :label: eq_q_set
 
-      \cA_{\lambda} \, \, = \, \, \{\vect{\alpha} \in \Nset^{\inputDim} \, : \, \|\vect{\alpha}\|_q \, \leq \lambda \}.
+    \cA_{\lambda} \, \, = \, \, \{\vect{\alpha} \in \Nset^{\inputDim} \, : \, \|\vect{\alpha}\|_q \, \leq \lambda \}.
 
 Moreover, let the *front* of :math:`\cA_{\lambda}` be defined by:
 
-  .. math:: \partial \cA_{\lambda} \, \, = \, \, \left\{\vect{\alpha} \in \cA_{\lambda} \, : \, \exists \; i \; \in \; \{1,\dots,\inputDim\} \, , \, \, \vect{\alpha} \, + \, \vect{e_i} \, \notin \, \cA_{\lambda} \right\}
+.. math::
+
+   \partial \cA_{\lambda} \, \, = \, \, \left\{\vect{\alpha} \in \cA_{\lambda} \, : \, \exists \; i \; \in \; \{1,\dots,\inputDim\} \, , \, \, \vect{\alpha} \, + \, \vect{e_i} \, \notin \, \cA_{\lambda} \right\}
 
 where :math:`\vect{e_i}` is a multi-index with a unit :math:`i`-entry
 and zero :math:`k`-entries, :math:`k\neq i`.
 
-The idea consists in exploring the space :math:`\Nset^{\inputDim}` by progressively
-increasing the :math:`q`-norm of its elements. In this purpose, one
-wants to construct an enumeration function that relies upon:
-
-- the bijection :math:`\tau` defined in the previous paragraph,
-- an appropriate increasing sequence :math:`(\lambda_n)_{\Nset}` that tends
-  to infinity. Such a sequence can be used to define a specific partition
-  of :math:`\Nset^{\inputDim}` into *strata* :math:`(\Delta_n)_{\Nset}`.
-
-We detail in the sequel several possible definitions of sequence of strata :math:`(\Delta_n)_{\Nset}`.
-
-*Partition based on disjoint fronts:* That definition consists in defining the strata :math:`(\Delta_n)_{\Nset}`
-in ascending order of the :math:`q`-norm and by sorting the elements inside each :math:`\Delta_n`
-using the bijection :math:`\tau`. In that case, we use the sequence :math:`\lambda_n = n`.
-The strata are defined by:
+We also define the set of *candidates* from the elements of :math:`\cA_\lambda`. The set of
+the candidates is denoted by :math:`\cC_\lambda` and is defined by:
 
   .. math::
 
-     \left\{
-       \begin{array}{l}
-         \Delta_0 \, \, = \, \, \{\vect{0}\} \\
-         \forall \; n  \geq  1 \, \, , \, \, \Delta_n \, \, = \, \, \cA_{n} \; \setminus \; \cA_{n-1}  \, \, = \, \,
-         \{\vect{\alpha} \in \Nset^{\inputDim} \, : \, n - 1 \, < \, \|\vect{\alpha}\|_q \, \leq n \}      \\
-       \end{array}
-       \right.
+     \cC_\lambda\, \, = \, \, \left\{\vect{\alpha} \, + \, \vect{e_i} \, : \,
+     \vect{\alpha} \in \partial \cA_{\lambda} \, , \,
+     \vect{\alpha} + \, \vect{e_i} \notin  \cA_{\lambda} \, , \,
+     1 \leq i \leq \inputDim, \right\}
 
 
-The progressive exploration of :math:`\Nset^{\inputDim}` is depicted in the
-two-dimensional case for various values of the parameter :math:`q`:
+We note that for all :math:`\lambda`, :math:`\cC_\lambda \neq \emptyset` because for any :math:`\lambda \in \Rset^+`,
+there exists :math:`\vect{\alpha} \in \Nset^\inputDim` sich that  :math:`\|\vect{\alpha}\|_{q} > \lambda`.
 
-.. plot::
+The principle consists in exploring the space :math:`\Nset^{\inputDim}` through the
+:math:`q`-norm of its elements. In this purpose, we define an appropriate
+increasing sequence :math:`(\lambda_n)_{n \in \Nset}`  as follows:
 
-    import openturns as ot
-    from matplotlib import pyplot as plt
-    import openturns.viewer as otv
-
-    nrows=3
-    ncols=4
-
-    # coordinates of grid
-    grid = ot.Box([5, 5], ot.Interval([0.0]*2, [6.0]*2))
-    sample = grid.generate()
-    grid_x = sample.getMarginal(0)
-    grid_y = sample.getMarginal(1)
-
-    #plt.rc('text', usetex=True)
-
-    q_values = [1.0, 0.75, 0.5]
-    fig = plt.figure()
-    index = 1
-    for i in range(nrows):
-        q = q_values[i]
-        enumerate = ot.HyperbolicAnisotropicEnumerateFunction(2, q)
-        for j in range(ncols):
-            ax = fig.add_subplot(nrows, ncols, index, aspect=1.0)
-            ax.plot(grid_x, grid_y, 'xr')
-            strataIndex = j + 3
-            strata_x, strata_y = [], []
-            strataCardinal = enumerate.getStrataCumulatedCardinal(strataIndex)
-            for ii in range(strataCardinal):
-                x = enumerate(ii)
-                strata_x.append(x[0])
-                strata_y.append(x[1])
-            ax.plot(strata_x, strata_y, 'ob')
-            ax.set_yticks([])
-            #ax.set_title('$||x||_{'+str(q)+'} \leq '+str(strataIndex)+'$')
-            ax.set_title('||x||q=' + str(q) + ' < ' + str(strataIndex))
-            index += 1
-    plt.subplots_adjust(hspace=0.5)
-    plt.show()
-
-As expected, hyperbolic norms penalize multi-indices associated with
-large marginal indices increasingly strongly as :math:`q` decreases. Note that
-setting :math:`q` equal to 1 corresponds to the usual *linear*
-enumeration strategy. Then the retained basis terms are located under
-a straight line, hence the label *linear enumeration strategy*. In
-contrast, when :math:`q < 1`, the retained marginal indices are
-located under an hyperbola, hence the name *hyperbolic enumeration
-strategy*.
-
-*Partition based on disjoint fronts:* That definition consists in defining the sequence
-:math:`(\lambda_n)_{\Nset}` recursively by:
-
-  .. math::
+.. math::
 
      \left\{
        \begin{array}{l}
-         \lambda_0 \, \, = \, \, 0 \\
-         \forall \; n  \geq  1 \, \, , \, \, \lambda_n \, \, = \, \,
-         \inf_{\lambda \in \Rset^+} \; \left\{ \lambda \geq \lambda_{n-1} \, \, \mbox{ and } \, \,\partial \cA_{\lambda} \, \cap \, \partial \cA_{\lambda_{n-1}} \, = \, \emptyset \right\}
+         \lambda_0  =  0 \\
+         \lambda_{n+1}  =  \min_{\vect{\alpha} \in \cC_{\lambda_n}}  \left\{ \|\vect{\alpha}\|_{q} \right\}
        \end{array}
-       \right.
+     \right.
 
-In other words, :math:`\lambda_n` is the infimum of the real numbers
-:math:`\lambda` for which the new front contains only element which do
-not belong to the former one. Hence the sequence of strata is defined by:
+The sequence is well defined because by definition, all the elements of :math:`\cC_{\lambda_n}`
+have a :math:`q`-*norm* strictly greater than :math:`\lambda_n`.
 
-  .. math::
+From the sequence :math:`(\lambda_n)_{n \in \Nset}`, we call :math:`(\cA_{\lambda_n})_{n \in \Nset}` the sequence of *cumulated strata*.
+The sequence :math:`(\Delta_n)_{n \in \Nset}` of the strata is defined by:
 
-     \left\{
+.. math::
+
+   \left\{
        \begin{array}{l}
-         \Delta_0 \, \, = \, \, \{\vect{0}\} \\
-         \forall \; n  \geq  1 \, \, , \, \, \Delta_n \, \, = \, \, \cA_{\lambda_n} \; \setminus \; \cA_{\lambda_{n-1}} \\
+         \Delta_0 =  \cA_{\lambda_{0}} \\
+         \Delta_{n+1} =  \cA_{\lambda_{n+1}}  \setminus  \cA_{\lambda_n}
        \end{array}
-       \right.
+    \right.
+    
+Note that we have :math:`\cA_{\lambda_{n+1}} \subset \cA_{\lambda_n} \cup \cC_n` and that
+:math:`\Delta_n =  \left\{ \vect{\alpha} \in \Nset^\inputDim, \|\vect{\alpha}\|_{q} = \lambda_n \right\}`.
 
-Note that this partition of :math:`\Nset^{\inputDim}` is finer than the one based
-on the length, since the cardinality of the strata is smaller.
+The sequence  of strata is depicted in  :doc:`/auto_surrogate_modeling/polynomial_chaos/plot_enumeratefunction`.
 
 Anisotropic hyperbolic enumeration function
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 We consider enumeration functions based on an
 *anisotropic* hyperbolic norm defined by:
 
-  .. math::
-     :label: anisotropEnumFct
+.. math::
+    :label: anisotropEnumFct
 
-     \|\vect{\alpha}\|_{\vect{w},q} \, \, = \, \, \left(\sum_{i=1}^{\inputDim} \; w_i\; \alpha_i^q \right)^{1/q}
+    \|\vect{\alpha}\|_{\vect{w},q} \, \, = \, \, \left(\sum_{i=1}^{\inputDim} \; w_i\; \alpha_i^q \right)^{1/q}
 
 where the weights :math:`w_i` are real positive numbers. They enable to weight
 some specific marginal indices.
@@ -365,43 +204,30 @@ replace the isotropic :math:`q`-norm in :eq:`eq_q_set` with the
 This enumerate function emphasizes multi-indices whose components are larger
 when the associated weights are smaller.
 
+The sequence  of strata is depicted in  :doc:`/auto_surrogate_modeling/polynomial_chaos/plot_enumeratefunction`.
+
 Infinity norm enumeration function
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 We consider the enumeration function based on the infinite norm:
 
-  .. math::
+.. math::
      :label: infEnumFct
 
      \|\vect{\alpha}\|_{\infty} \, \, = \, \, \max_{1 \leq i \leq \inputDim} \; \alpha_i
 
+This enumeration function is depicted in  :doc:`/auto_surrogate_modeling/polynomial_chaos/plot_enumeratefunction`.
 
-This corresponds to the following enumeration of the multi-indices:
+Link between enumeration functions
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+Note the following links.
 
-+-------------+--------------------------------------------------------+-------------------------+
-| :math:`j`   | :math:`\vect{\alpha} \, = \, \{\alpha_1,\alpha_2\}`    | :math:`|\vect{\alpha}|` |
-+=============+========================================================+=========================+
-| :math:`0`   | :math:`\{0,0\}`                                        | 0                       |
-+-------------+--------------------------------------------------------+-------------------------+
-| :math:`1`   | :math:`\{1,0\}`                                        | 1                       |
-+-------------+--------------------------------------------------------+-------------------------+
-| :math:`2`   | :math:`\{0,1\}`                                        | 1                       |
-+-------------+--------------------------------------------------------+-------------------------+
-| :math:`3`   | :math:`\{1,1\}`                                        | 1                       |
-+-------------+--------------------------------------------------------+-------------------------+
-| :math:`4`   | :math:`\{2,0\}`                                        | 2                       |
-+-------------+--------------------------------------------------------+-------------------------+
-| :math:`5`   | :math:`\{2,1\}`                                        | 2                       |
-+-------------+--------------------------------------------------------+-------------------------+
-| :math:`6`   | :math:`\{0,2\}`                                        | 2                       |
-+-------------+--------------------------------------------------------+-------------------------+
-| :math:`7`   | :math:`\{1,2\}`                                        | 2                       |
-+-------------+--------------------------------------------------------+-------------------------+
-| :math:`8`   | :math:`\{2,2\}`                                        | 2                       |
-+-------------+--------------------------------------------------------+-------------------------+
-| :math:`9`   | :math:`\{3,0\}`                                        | 3                       |
-+-------------+--------------------------------------------------------+-------------------------+
+If :math:`q=1`, the :math:`\|\vect{\alpha}\|_{1}` is the length of the multi_index. The hyperbolic enumeration
+function becomes the linear enumeration function
+for which the sequence becomes :math:`\lambda_n = n`.
 
+If :math:`q \rightarrow 0`, then :math:`\|\vect{\alpha}\|_{q} \rightarrow \|\vect{\alpha}\|_{\infty}`
+defined by :eq:`infEnumFct`. In that case, we have :math:`\lambda_n = n`.
 
 
 .. topic:: API:

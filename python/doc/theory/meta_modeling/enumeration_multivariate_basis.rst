@@ -6,8 +6,7 @@ Tensorized multivariate basis enumeration functions
 Enumeration functions (refer to :ref:`enumeration_strategy`) help to enumerate a multivariate basis
 built as the tensorization of univariate basis, using the indexation of each marginal basis.
 
-Such a  multivariate basis is used, for example, in the functional chaos expansion setting
-(refer to  :ref:`functional_chaos`).
+Such a  multivariate basis is used, for example, in the :ref:`functional chaos expansion setting <functional_chaos>`.
 
 Let consider some :math:`\inputDim` univariate basis, denoted by
 :math:`(\pi_{k}^{(i)})_{k \geq 0}` for :math:`1 \leq i \leq \inputDim`, where each
@@ -41,9 +40,8 @@ We detail the interest of each one in the functional chaos expansion setting.
 Linear enumeration function
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~
 The linear enumeration function (defined in :ref:`enumeration_strategy`, equation
-:eq:`linearEnumFct`) explores multivariate polynomials by increasing total degrees,
-and for a given value of the total degree, by lexicographic order of the marginal degrees.
-The exploration is symmetric with respect to the components.
+:eq:`linearEnumFct`) builds the multivariate polynomials by increasing total degrees and for a
+given value of the total degree, by  "graded reverse-lexicographic ordering" (see [sullivan2015]_).
 
 Hyperbolic enumeration function
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -65,9 +63,8 @@ The library implements the partition based on the length of the multi-index.
 Anisotropic hyperbolic enumeration function
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 The anisotropic hyperbolic enumeration functions (defined in :ref:`enumeration_strategy`, equation
-:eq:`anisotropEnumFct`) lead to first select the basis terms
-depending on a specific subset of input variables. This function emphasizes multivariate polynomials
-for whose components associated to small coefficients are polynomials of high degree.
+:eq:`anisotropEnumFct`) is a weighted version of the hyperbolic enumeration function. The components with large
+anisotropic coefficients will have marginal degrees lower than the components with small anisotropic coefficients.
 
 Therefore, when the model is governed by main effects of specific inputs, the associated weights
 should be small compared to the other ones.

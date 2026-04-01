@@ -4,7 +4,6 @@ Create a FCE for dependent inputs: transformation vs domination
 """
 
 # %%
-#
 # In this example, we create a functional chaos expansion for the
 # :ref:`Ishigami function<use-case-ishigami>` when the input distribution
 # has dependent marginals.
