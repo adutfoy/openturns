@@ -23,9 +23,9 @@ Let  :math:`\vect{\alpha}` be a multi-index is defined by:
 
     \vect{\alpha} = (\alpha_1, \dots, \alpha_{\inputDim}) \in \Nset^{\inputDim}
 
+
 An enumeration function :math:`\tau` is a bijection from :math:`\Nset` to :math:`\Nset^{\inputDim}`,
-which creates a one-to-one mapping between an integer :math:`j` and a multi-index :math:`\vect{\alpha}`. The function :math:`\tau`
-is defined by:
+which creates a one-to-one mapping between an integer :math:`j` and a multi-index :math:`\vect{\alpha}`. The function :math:`\tau` is defined by:
 
 .. math::
 

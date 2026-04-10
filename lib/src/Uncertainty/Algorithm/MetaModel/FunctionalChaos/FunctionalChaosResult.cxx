@@ -334,6 +334,9 @@ FunctionalChaosResult FunctionalChaosResult::getConditionalExpectation(const Ind
   if (!distribution_.hasIndependentCopula())
     throw InvalidArgumentException(HERE) << "FunctionalChaosResult can only compute the conditional expectation for an independent copula.";
 
+  if (getUseDomination())
+    throw NotYetImplementedException(HERE) << "FunctionalChaosResult conditional expectation is not available with domination method";
+
   // Create the conditioned orthogonal basis
   if (!orthogonalBasis_.getImplementation()->isTensorProduct())
     throw InvalidArgumentException(HERE) << "FunctionalChaosResult can only compute the conditional expectation for a tensor-product basis.";
