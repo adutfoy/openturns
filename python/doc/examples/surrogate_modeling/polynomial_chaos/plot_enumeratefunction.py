@@ -23,7 +23,7 @@ import math as m
 
 # %%
 # The simplest way to generate the multi-indices is to enumerate the terms of increasing length.
-# If the basis is polynomial, then the length correspons to the total degree of the polynomial.
+# If the basis is polynomial, then the length corresponds to the total degree of the polynomial.
 # In other words, we enumerate the multi-indices with length equal to 0, then 1, 2, 3, etc.
 # This is called "graded reverse-lexicographic ordering" in [sullivan2015]_.
 # This is named the linear enumeration rule in the library; let us instantiate it in the 2-dimensional case.
@@ -167,7 +167,7 @@ view = otv.View(grid, axes_kw={"aspect": "equal"})
 # sooner with the hyperbolic enumeration rule.
 
 # %%
-# Plot the number of terms in the basis depending on the maximum total degree
+# We plot the number of terms in the basis depending on the maximum total degree
 # in dimension :math:`d = 5` for several :math:`q` -norm values.
 # We observe that the gap between high and low values of :math:`q` can lead to a gap
 # in the numbers of terms of an order of magnitude.
@@ -199,7 +199,7 @@ view = otv.View(graph, figure_kw={"figsize": (5, 4)})
 
 
 # %%
-# When the quasi-norm parameter is close to 1, then the hyperbolic rule is equal to the
+# When the quasi-norm parameter is 1, then the hyperbolic rule is equal to the
 # linear enumeration rule and the number of coefficients is larger.
 #
 # In practice, we often test several values of the parameter :math:`q`, in the :math:`[0.5, 0.9]` range,
@@ -208,8 +208,13 @@ view = otv.View(graph, figure_kw={"figsize": (5, 4)})
 
 # %%
 # Now we use the infinity norm enumeration function. We illustrate the enumeration in dimension 2.
-# We display the 25 first multi-indices.
+# We plot the first stratas.
 enum_func = ot.NormInfEnumerateFunction(2)
+graph = draw_stratas(enum_func)
+view = otv.View(graph, axes_kw={"aspect": "equal"})
+
+# %%
+# We display the 25 first multi-indices.
 print("#  | multi-index ")
 print("---+-------------")
 for i in range(25):
