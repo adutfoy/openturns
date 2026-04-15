@@ -21,7 +21,7 @@ Let  :math:`\vect{\alpha}` be a multi-index is defined by:
 
     \vect{\alpha} = (\alpha_0, \dots, \alpha_{\inputDim-1}) \in \Nset^{\inputDim}
 
-For any real number :math:`q \geq 0`, we consider the
+For any real number :math:`q > 0`, we consider the
 :math:`q`-*hyperbolic norm* (or :math:`q`-*norm* for short) of a
 multi-index :math:`\vect{\alpha}` be defined by:
 
@@ -65,11 +65,11 @@ which means that:
 
   .. math::
 
-      \begin{array}{ll}
-      & \alpha_0(j) = \alpha_0(k) \\
-      & \vdots \\
-      & \alpha_{m - 1}(j) = \alpha_{m - 1}(k) \\
-      & \alpha_m(j) > \alpha_m(k).
+      \begin{array}{lcl}
+      \alpha_0(j) & = & \alpha_0(k) \\
+                & \vdots & \\
+      \alpha_{m - 1}(j) & = & \alpha_{m - 1}(k) \\
+      \alpha_m(j) & > & \alpha_m(k)
       \end{array}
 
 
@@ -93,7 +93,7 @@ Moreover, let the *front* of :math:`\cA_{\lambda}` be defined by:
 
 .. math::
 
-   \partial \cA_{\lambda} \, \, = \, \, \left\{\vect{\alpha} \in \cA_{\lambda} \, : \, \exists \; i \; \in \; \{1,\dots,\inputDim\} \, , \, \, \vect{\alpha} \, + \, \vect{e_i} \, \notin \, \cA_{\lambda} \right\}
+   \partial \cA_{\lambda} \, \, = \, \, \left\{\vect{\alpha} \in \cA_{\lambda} \, : \, \exists \; i \; \in \; \{0,\dots,\inputDim-1\} \, , \, \, \vect{\alpha} \, + \, \vect{e_i} \, \notin \, \cA_{\lambda} \right\}
 
 where :math:`\vect{e_i}` is a multi-index with a unit :math:`i`-entry
 and zero :math:`k`-entries, :math:`k\neq i`.
@@ -106,7 +106,7 @@ the candidates is denoted by :math:`\cC_\lambda` and is defined by:
      \cC_\lambda\, \, = \, \, \left\{\vect{\alpha} \, + \, \vect{e_i} \, : \,
      \vect{\alpha} \in \partial \cA_{\lambda} \, , \,
      \vect{\alpha} + \, \vect{e_i} \notin  \cA_{\lambda} \, , \,
-     1 \leq i \leq \inputDim, \right\}
+     0 \leq i \leq \inputDim-1, \right\}
 
 
 We note that for all :math:`\lambda`, :math:`\cC_\lambda \neq \emptyset` because for any :math:`\lambda \in \Rset^+`,
@@ -167,7 +167,7 @@ We consider enumeration functions based on an
 .. math::
     :label: def_anisotropNorm
 
-    \|\vect{\alpha}\|_{\vect{w},q} \, \, = \, \, \left(\sum_{i=1}^{\inputDim} \; w_i\; \alpha_i^q \right)^{1/q}
+    \|\vect{\alpha}\|_{\vect{w},q} \, \, = \, \, \left(\sum_{i=0}^{\inputDim-1} \; w_i\; \alpha_i^q \right)^{1/q}
 
 where the weights :math:`w_i` are real positive numbers. They enable to weight
 some specific marginal indices.
