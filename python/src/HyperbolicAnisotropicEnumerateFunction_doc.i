@@ -36,6 +36,13 @@ They can be used to enumerate a multivariate basis
 built as the tensorization of univariate basis, using the indexation of each marginal basis
 (refer to and :ref:`enumeration_multivariate_basis`).
 
+In the tensorized polynomials basis context:
+
+- the hyperbolic isotropic enumeration functions  penalizes the indices associated with
+  high-order interactions all the more since :math:`q` is low;
+- the  hyperbolic anisotropic enumeration functions emphasizes the
+  indices whose components associated to small weights are large.
+
 Examples
 --------
 In the following example, we create an hyperbolic enumerate function

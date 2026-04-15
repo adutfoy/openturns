@@ -6,8 +6,7 @@ Tensorized multivariate basis enumeration functions
 Enumeration functions (refer to :ref:`enumeration_strategy`) help to enumerate a multivariate basis
 built as the tensorization of univariate basis, using the indexation of each marginal basis.
 
-Such a  multivariate basis is used, for example, in the functional chaos expansion setting
-(refer to  :ref:`functional_chaos`).
+Such a  multivariate basis is used, for example, in the :ref:`functional chaos expansion setting <functional_chaos>`.
 
 Let consider some :math:`\inputDim` univariate basis, denoted by
 :math:`(\pi_{k}^{(i)})_{k \geq 0}` for :math:`1 \leq i \leq \inputDim`, where each
