@@ -40,8 +40,7 @@ We detail the interest of each one in the functional chaos expansion setting.
 
 Linear enumeration function
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~
-The linear enumeration function (defined in :ref:`enumeration_strategy`, equation
-:eq:`linearEnumFct`) builds the multivariate polynomials by increasing total degrees and for a
+The linear enumeration function builds the multivariate polynomials by increasing total degrees and for a
 given value of the total degree, by  "graded reverse-lexicographic ordering" (see [sullivan2015]_).
 
 Hyperbolic enumeration function
@@ -54,26 +53,32 @@ selects those multi-indices related to main effects, i.e. with a
 reasonably small number of nonzero components, prior to selecting
 those associated with higher-order interactions.
 
-The hyperbolic enumeration functions (defined in :ref:`enumeration_strategy`, equation
-:eq:`hyperBolEnumFct`) are based on the q-norm  (defined in :ref:`enumeration_strategy`,
-equation :eq:`eq_q_set`).
-The smaller :math:`q` is, the more the indices containing high-order interactions are penalized.
+The hyperbolic enumeration functions are based on the q-norm  defined in :ref:`enumeration_strategy`,
+equation :eq:`qnorm_def`.
+The smaller :math:`q` is, the more the indices containing high-order
+interactions are penalized.
 
-The library implements the partition based on the length of the multi-index.
+The indices are ordered by increasing  q-norm and for a same  q-norm,
+according to the graded reverse-lexicographic ordering.
 
 Anisotropic hyperbolic enumeration function
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-The anisotropic hyperbolic enumeration functions (defined in :ref:`enumeration_strategy`, equation
-:eq:`anisotropEnumFct`) is a weighted version of the hyperbolic enumeration function. The components with large
+The anisotropic hyperbolic enumeration functions is a weighted version
+of the hyperbolic enumeration function, using a weighted q-norm
+defined in  :ref:`enumeration_strategy`,
+equation :eq:`def_anisotropNorm`. The components with large
 anisotropic coefficients will have marginal degrees lower than the components with small anisotropic coefficients.
 
 Therefore, when the model is governed by main effects of specific inputs, the associated weights
 should be small compared to the other ones.
 
+The indices are ordered by increasing  weighted q-norm and for a same
+weighted q-norm, according to the graded reverse-lexicographic ordering.
+
 Infinity norm enumeration function
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-The infinity norm enumeration function (defined in :ref:`enumeration_strategy`, equation
-:eq:`infEnumFct`) is based on polynomials with increasing maximum marginal degree.
+The infinity norm enumeration function is based on the infinity-norm
+defined in :ref:`enumeration_strategy`, equation :eq:`def_infNorm`.
 
 This function allows one to define the largest space of polynomials with given maximum marginal degree.
 When a tensorized Gaussian quadrature formula (:class:`~openturns.GaussProductExperiment`)

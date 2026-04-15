@@ -222,7 +222,8 @@ The sub-spaces :math:`(\cP_n)_{n \in \Nset}` are nested which means that the bas
 :math:`\cP_{n+1}` is constructed from that of :math:`\cP_{n}` by enrichment. Several choices
 of basis are possible.
 
-We can choose **a basis which is orthonormal with respect to :math:`\mu_{\inputRV}`** (see
+We can choose **a basis which is orthonormal with respect to**
+:math:`\boldsymbol{\mu_{\inputRV}}` (see
 :ref:`chaos_basis` for more details):
 
 - If  :math:`\mu_{\inputRV}` has independent components,
@@ -234,7 +235,8 @@ We can choose **a basis which is orthonormal with respect to :math:`\mu_{\inputR
   :math:`\mu_{\inputRV}` into a measure :math:`\mu_{\vect{U}}` with independent marginals.
   We can also use the Soize-Ghanem basis but this usage is not recommended.
 
-We can also choose **a basis which is not orthonormal with respect to a :math:`\mu_{\inputRV}`** but
+We can also choose **a basis which is not orthonormal with respect to**
+:math:`\boldsymbol{\mu_{\inputRV}}` but
 which is orthonormal with respect to an *instrumental measure* :math:`\tilde{p} \neq \mu_{\inputRV}`.
 This instrumental measure is such that:
 

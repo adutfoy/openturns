@@ -19,9 +19,6 @@ They can be used to enumerate a multivariate basis
 built as the tensorization of univariate basis, using the indexation of each marginal basis
 (refer to and :ref:`enumeration_multivariate_basis`).
 
-In the tensorized polynomials basis context, :eq:`infinity norm enumeration function <infEnumFct>` is
-based on polynomials with fixed maximum marginal degree in ascending order.
-
 Examples
 --------
 >>> import openturns as ot

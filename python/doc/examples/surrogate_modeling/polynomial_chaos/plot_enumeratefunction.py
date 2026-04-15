@@ -24,32 +24,31 @@ import math as m
 # %%
 # The simplest way to generate the multi-indices is to enumerate the terms of increasing length.
 # If the basis is polynomial, then the length corresponds to the total degree of the polynomial.
-# In other words, we enumerate the multi-indices with length equal to 0, then 1, 2, 3, etc.
-# This is called "graded reverse-lexicographic ordering" in [sullivan2015]_.
-# This is named the linear enumeration rule in the library; let us instantiate it in the 2-dimensional case.
-dim = 2
+# Within a strata, the multi-indices are ordered according to the "graded reverse lexicographic
+# ordering" in [sullivan2015]_.
+# This is named the linear enumeration rule in the library.
+#
+# We print the ordered elements in dimension 4 to illustrate the ordering of the multi-indices.
+# We only consider the 4 first strata and we print their associated length (wich are equal to 0
+# up to 3).
+dim = 4
 enum_func = ot.LinearEnumerateFunction(dim)
-
-# %%
-# Print the 25 first multi-indices and their associated length.
 td_prev = 0
-print("#  | multi-index | length")
-print("---+-------------+-------------")
-for i in range(25):
+print("#  | multi-index     | length")
+print("---+-----------------+-------------")
+i_max = enum_func.getStrataCumulatedCardinal(3)
+for i in range(i_max):
     multi_index = enum_func(i)
     td = sum(multi_index)
     if td > td_prev:
         td_prev = td
-        print("---+-------------+-------------")
+        print("---+-----------------+-------------")
     print(f"{i:2} |       {multi_index} |           {td}")
 
 # %%
-# We plot the multi-indices of the enumeration rule by stratas.
-# In the specific case of the linear enumerate function, each strata contains
-# multi-indices of identical length that is also the index of the strata.
+# We define a function that plots the successive stratas with different colors.
 
-
-def draw_stratas(enum_func):
+def draw_stratas(enum_func, maximum_strata_index):
     """
     Plot enumeration rule by stratas.
 
@@ -63,12 +62,13 @@ def draw_stratas(enum_func):
     graph : openturns.Graph
         Plot of the multi-indices colored by stratas
     """
-    maximum_strata_index = 7
-    graph = ot.Graph("", "$\\alpha_1$", "$\\alpha_2$")
+    graph = ot.Graph("", "$\\alpha_1$", "$\\alpha_2$", True)
     if enum_func.__class__.__name__ == "LinearEnumerateFunction":
         graph.setTitle("Linear enumeration rule")
     elif enum_func.__class__.__name__ == "HyperbolicAnisotropicEnumerateFunction":
         graph.setTitle(f"q={enum_func.getQ()}")
+    elif enum_func.__class__.__name__ == "NormInfEnumerateFunction":
+        graph.setTitle("Infinity Norm enumeration rule")
     offset = 0
     for strata_index in range(maximum_strata_index):
         strata_cardinal = enum_func.getStrataCardinal(strata_index)
@@ -84,7 +84,11 @@ def draw_stratas(enum_func):
     return graph
 
 
-graph = draw_stratas(enum_func)
+# %%
+# We consider the dimension 2 and we plot the first strata.
+dim = 2
+enum_func = ot.LinearEnumerateFunction(dim)
+graph = draw_stratas(enum_func, 7)
 view = otv.View(graph, axes_kw={"aspect": "equal"})
 
 # %%
@@ -95,7 +99,7 @@ view = otv.View(graph, axes_kw={"aspect": "equal"})
 # for several dimension values.
 # We observe the exponential increase of the number of terms with the dimension
 # :math:`\inputDim` (curse of dimensionality).
-graph = ot.Graph("Linear enumeration", "Total degree", "Number of coefficients")
+graph = ot.Graph("Linear enumeration", "Total degree", "Number of coefficients", True)
 degree_maximum = 10
 list_of_dimensions = [1, 5, 10, 15, 20]
 point_styles = ["bullet", "circle", "fdiamond", "fsquare", "triangleup"]
@@ -115,9 +119,10 @@ graph.setLogScale(ot.GraphImplementation.LOGY)
 view = otv.View(graph, figure_kw={"figsize": (5, 4)})
 
 # %%
+# The hyperbolic enumeration function is based on the q-norm.
 # We plot the hyperbolic quasi norm for different values of :math:`q`.
-# With :math:`q = 1` stratas are hyperplanes, and in case of isotropy
-# it is equivalent to the linear enumeration rule.
+# With :math:`q = 1` (with isotropy), stratas are hyperplanes:
+# we recover the linear enumeration rule.
 
 
 def draw_qnorm(q):
@@ -147,13 +152,13 @@ grid.setTitle("Hyperbolic quasi norm")
 view = otv.View(grid, axes_kw={"aspect": "equal"})
 
 # %%
-# We plot the multi-indices of the linear enumeration rule by stratas.
+# We plot the multi-indices of the hyperbolic isotropic enumeration rule by stratas.
 # The lower the value of :math:`q` the lower the number of interactions terms in stratas.
 grid = ot.GridLayout(2, 2)
-grid.setGraph(0, 0, draw_stratas(ot.HyperbolicAnisotropicEnumerateFunction(dim, 1.0)))
-grid.setGraph(0, 1, draw_stratas(ot.HyperbolicAnisotropicEnumerateFunction(dim, 0.75)))
-grid.setGraph(1, 0, draw_stratas(ot.HyperbolicAnisotropicEnumerateFunction(dim, 0.5)))
-grid.setGraph(1, 1, draw_stratas(ot.HyperbolicAnisotropicEnumerateFunction(dim, 0.25)))
+grid.setGraph(0, 0, draw_stratas(ot.HyperbolicAnisotropicEnumerateFunction(dim, 1.0), 7))
+grid.setGraph(0, 1, draw_stratas(ot.HyperbolicAnisotropicEnumerateFunction(dim, 0.75), 7))
+grid.setGraph(1, 0, draw_stratas(ot.HyperbolicAnisotropicEnumerateFunction(dim, 0.5), 7))
+grid.setGraph(1, 1, draw_stratas(ot.HyperbolicAnisotropicEnumerateFunction(dim, 0.25), 7))
 grid.setTitle("Hyperbolic rule")
 view = otv.View(grid, axes_kw={"aspect": "equal"})
 
@@ -161,7 +166,7 @@ view = otv.View(grid, axes_kw={"aspect": "equal"})
 # Interaction multi-indices are presented in the center of the :math:`(\alpha_1, \alpha_2)` space.
 # We see that when the quasi-norm parameter is close to zero, the enumeration rule
 # shows less interaction multi-indices.
-# Instead, multi-indices close to the :math:`x` and :math:`y` axes represent multivariate polynomials
+# Instead, multi-indices close to the axes represent multivariate polynomials
 # with high marginal degrees.
 # When :math:`q` is close to zero, these polynomials with high marginal degrees appear
 # sooner with the hyperbolic enumeration rule.
@@ -197,27 +202,34 @@ graph.setIntegerXTick(True)
 graph.setLogScale(ot.GraphImplementation.LOGY)
 view = otv.View(graph, figure_kw={"figsize": (5, 4)})
 
-
 # %%
-# When the quasi-norm parameter is 1, then the hyperbolic rule is equal to the
-# linear enumeration rule and the number of coefficients is larger.
-#
-# In practice, we often test several values of the parameter :math:`q`, in the :math:`[0.5, 0.9]` range,
-# for example :math:`q \in \{0.5, 0.6, 0.7, 0.8, 0.9\}`.
-
+# We plot the multi-indices of the hyperbolic anisotropic enumeration rule by stratas.
+# This enumerate function emphasizes multi-indices whose components are larger
+# when the associated weights are smaller.
+grid = ot.GridLayout(2, 2)
+weights = [0.4, 0.6]
+maximum_strata_index = 14
+grid.setGraph(0, 0, draw_stratas(ot.HyperbolicAnisotropicEnumerateFunction(weights, 1.0), maximum_strata_index))
+grid.setGraph(0, 1, draw_stratas(ot.HyperbolicAnisotropicEnumerateFunction(weights, 0.7), maximum_strata_index))
+grid.setGraph(1, 0, draw_stratas(ot.HyperbolicAnisotropicEnumerateFunction(weights, 0.5), maximum_strata_index))
+grid.setGraph(1, 1, draw_stratas(ot.HyperbolicAnisotropicEnumerateFunction(weights, 0.25), maximum_strata_index))
+grid.setTitle("Hyperbolic anisotropic rule, weights = [0.4, 0.6]")
+view = otv.View(grid, axes_kw={"aspect": "equal"})
 
 # %%
 # Now we use the infinity norm enumeration function. We illustrate the enumeration in dimension 2.
 # We plot the first stratas.
 enum_func = ot.NormInfEnumerateFunction(2)
-graph = draw_stratas(enum_func)
+graph = draw_stratas(enum_func, 7)
 view = otv.View(graph, axes_kw={"aspect": "equal"})
 
 # %%
-# We display the 25 first multi-indices.
+# We print the 3 first stratas in dimension 3.
 print("#  | multi-index ")
 print("---+-------------")
-for i in range(25):
+enum_func = ot.NormInfEnumerateFunction(3)
+i_max = enum_func.getStrataCumulatedCardinal(3)
+for i in range(i_max):
     multi_index = enum_func(i)
     print(f"{i:2} |       {multi_index}")
 

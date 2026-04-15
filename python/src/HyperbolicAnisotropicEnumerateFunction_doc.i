@@ -16,10 +16,13 @@ dim : int
     Dimension of the :class:`~openturns.EnumerateFunction`. *dim* must be equal
     to the dimension of the :class:`~openturns.OrthogonalBasis`.
 q : float
-    Correspond to the q-quasi norm parameter. If not precised, :math:`q = 0.4`.
+    Correspond to the q-quasi norm parameter.
+
+    Default value is :math:`q = 0.4`.
 weight : sequence of float
-    Weights of the indices in each dimension. If not precised, all weights are
-    equals to :math:`w_i = 1`.
+    Weights of the indices in each dimension.
+
+    Default value  is :math:`w_i = 1` for any :math:`i`.
 
 See also
 --------
@@ -32,13 +35,6 @@ Enumeration functions are bijections from :math:`\Nset` to :math:`\Nset^{\inputD
 They can be used to enumerate a multivariate basis
 built as the tensorization of univariate basis, using the indexation of each marginal basis
 (refer to and :ref:`enumeration_multivariate_basis`).
-
-In the tensorized polynomials basis context:
-
-- the :eq:`hyperbolic enumeration functions <eq_q_set>` penalize the indices associated with
-  high-order interactions all the more since :math:`q` is low;
-- the :eq:`anisotropic hyperbolic enumeration functions <anisotropEnumFct>` lead to first select the
-  basis terms depending on a specific subset of input variables (those  associated to small weights). 
 
 Examples
 --------

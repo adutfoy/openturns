@@ -106,7 +106,7 @@ where :math:`F_i` is the cumulative distribution function of the :math:`i`-th ma
 
 It is important to note that although :math:`(\varphi_{\alpha_i})_{\alpha_i}` is a polynomial basis,
 :math:`(\psi_{\vect{\alpha}})_\vect{\alpha}` is not a polynomial basis. In addition,
-:math:`(\varphi_\vect{0}) \neq 0` if the copula is not the independent copula.
+:math:`(\psi_\vect{0}) \neq 1` if the copula is not the independent copula.
 
 Furthermore, this basis generates approximation subspaces of poor quality.
 Indeed, for most copulas, the density :math:`c` tends to infinity at :math:`\vect{0}` or :math:`\vect{1}`

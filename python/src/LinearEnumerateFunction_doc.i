@@ -14,9 +14,6 @@ They can be used to enumerate a multivariate basis
 built as the tensorization of univariate basis, using the indexation of each marginal basis
 (refer to and :ref:`enumeration_multivariate_basis`).
 
-In the tensorized polynomials basis context, the :eq:`linear enumeration function <linearEnumFct>` explores the marginal degrees linearly, in order
-of increasing total degree. The exploration is symmetric with respect to the components.
-
 See also
 --------
 EnumerateFunction, HyperbolicAnisotropicEnumerateFunction
