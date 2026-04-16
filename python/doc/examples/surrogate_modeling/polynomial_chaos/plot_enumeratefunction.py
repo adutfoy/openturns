@@ -29,8 +29,8 @@ import math as m
 # This is named the linear enumeration rule in the library.
 #
 # We print the ordered elements in dimension 4 to illustrate the ordering of the multi-indices.
-# We only consider the 4 first strata and we print their associated length (which are equal to 0
-# up to 3).
+# We only consider the 4 first strata and we print their associated length
+# (which are equal to 0 up to 3).
 dim = 4
 enum_func = ot.LinearEnumerateFunction(dim)
 td_prev = 0
@@ -47,6 +47,7 @@ for i in range(i_max):
 
 # %%
 # We define a function that plots the successive stratas with different colors.
+
 
 def draw_stratas(enum_func, maximum_strata_index):
     """
