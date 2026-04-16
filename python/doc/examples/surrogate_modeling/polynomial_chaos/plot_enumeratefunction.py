@@ -29,7 +29,7 @@ import math as m
 # This is named the linear enumeration rule in the library.
 #
 # We print the ordered elements in dimension 4 to illustrate the ordering of the multi-indices.
-# We only consider the 4 first strata and we print their associated length (wich are equal to 0
+# We only consider the 4 first strata and we print their associated length (which are equal to 0
 # up to 3).
 dim = 4
 enum_func = ot.LinearEnumerateFunction(dim)
