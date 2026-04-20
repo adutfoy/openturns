@@ -1,7 +1,7 @@
 .. _chaos_basis:
 
-Orthonormal basis
------------------
+Multivariate Orthonormal basis
+------------------------------
 
 In that file, we detail the construction of an orthonormal basis with respect to a multivariate
 measure denoted by :math:`\mu`, addressing both the independent and dependent marginal settings.
@@ -37,20 +37,20 @@ We assume here that :math:`\mu` is a multivariate distribution with independent 
 denoted by :math:`\mu_i`:
 
 .. math::
-   \mu = \otimes_{i=1}^{\inputDim} \mu_i
+   \mu = \otimes_{i=0}^{\inputDim-1} \mu_i
 
 In that case, a multivariate basis orthonormal with respect to :math:`\mu` can be built as the
 tensorization of univariate basis orthonormal with respect to its marginals.
 
-For any :math:`1 \leq i \leq \inputDim`, let
+For any :math:`0 \leq i \leq \inputDim-1`, let
 :math:`\left(\varphi_k^{(i)}\right)_{k \geq 0}` be the univariate
 basis orthonormal with respect to the marginal distribution :math:`\mu_i`.
 The tensorized multivariate basis is defined by:
 
   .. math::
-        \Psi_\vect{\alpha}(\vect{x}) = \prod_{i=1}^{\inputDim} \varphi_{\alpha_i}^{(i)}(x_i)
+        \Psi_\vect{\alpha}(\vect{x}) = \prod_{i=0}^{\inputDim-1} \varphi_{\alpha_i}^{(i)}(x_i)
 
-where :math:`\vect{\alpha} = (\alpha_1, \dots, \alpha_{\inputDim}) \in \Nset^{\inputDim}` is a
+where :math:`\vect{\alpha} = (\alpha_0, \dots, \alpha_{\inputDim-1}) \in \Nset^{\inputDim}` is a
 multi-index that enables to define each element of the multivariate basis from the elements of
 the univariate marginal basis (see :ref:`enumeration_multivariate_basis` and the class
 :class:`~openturns.EnumerateFunction` to get details on that
@@ -97,8 +97,8 @@ Soize-Ghanem in [soizeghanem2004]_ defined by:
 .. math::
 
     \psi_{\vect{\alpha}}(\vect{x})
-    =  \dfrac{1}{\sqrt{c(F_1(x_1), \dots, F_\inputDim(x_\inputDim))}}
-    \prod_{i=1}^{\inputDim} \varphi^{(i)}_{\alpha_{i}}(x_{i})
+    =  \dfrac{1}{\sqrt{c(F_0(x_0), \dots, F_{\inputDim-1}(x_{\inputDim-1}))}}
+    \prod_{i=0}^{\inputDim-1} \varphi^{(i)}_{\alpha_{i}}(x_{i})
 
 where :math:`F_i` is the cumulative distribution function of the :math:`i`-th marginal of
 :math:`\mu`, :math:`c` the probability density function of its copula and

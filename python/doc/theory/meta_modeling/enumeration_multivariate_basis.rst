@@ -9,7 +9,7 @@ built as the tensorization of univariate basis, using the indexation of each mar
 Such a  multivariate basis is used, for example, in the :ref:`functional chaos expansion setting <functional_chaos>`.
 
 Let consider some :math:`\inputDim` univariate basis, denoted by
-:math:`(\pi_{k}^{(i)})_{k \geq 0}` for :math:`1 \leq i \leq \inputDim`, where each
+:math:`(\pi_{k}^{(i)})_{k \geq 0}` for :math:`0 \leq i \leq \inputDim-1`, where each
 :math:`\pi_{k}^{(i)}: \Rset \rightarrow \Rset`.
 
 Let denote by :math:`\{\psi_{\vect{\alpha}},\vect{\alpha} \in \Nset^\inputDim\}` a multivariate basis
@@ -18,8 +18,8 @@ built as the tensorization of the univariate basis. The multivariate basis term
 
 .. math::
 
-    \psi_{\vect{\alpha}} (\vect{\xi}) = \pi_{\alpha_1}^{(1)}(\xi_1) \times \dots \times
-    \pi_{\alpha_{\inputDim}}^{({\inputDim})}(\xi_{\inputDim})
+    \psi_{\vect{\alpha}} (\vect{\xi}) = \pi_{\alpha_0}^{(0)}(\xi_0) \times \dots \times
+    \pi_{\alpha_{\inputDim-1}}^{({\inputDim-1})}(\xi_{\inputDim-1})
 
 for any :math:`\vect{\xi} \in \mathbb{R}^{\inputDim}`.
 

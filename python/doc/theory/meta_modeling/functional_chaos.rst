@@ -376,7 +376,7 @@ to  :math:`\mu_{\inputRV}` and that the first element be:
 The orthogonality of the functions implies that:
 
   .. math::
-      \mathbf{E}_{\mu_{\inputRV}}\left[\psi_{i}(\vect{X})\right] = \scalarproduct{\psi_{i}}{\psi_{0}}_{L^2\left(\mu\right)} = 0
+      \mathbf{E}_{\mu_{\inputRV}}\left[\psi_{i}(\vect{X})\right] = \scalarproduct{\psi_{i}}{\psi_{0}}_{L^2\left(\mu_{\inputRV}\right)} = 0
 
 for any non-zero :math:`i\neq 0`.
 
@@ -398,6 +398,7 @@ more details on this topic.
 .. topic:: Examples:
 
     - See :doc:`/auto_surrogate_modeling/polynomial_chaos/plot_functional_chaos`
+    - See :doc:`/auto_surrogate_modeling/polynomial_chaos/plot_chaos_ishigami_dependent_input`
     - See :doc:`/auto_functional_modeling/univariate_functions/plot_create_univariate_function`
 
 
