@@ -18,6 +18,8 @@ Then the sequence :math:`(P_n)_{n \in \Nset}` verifies the relation:
 
     P_{n+1}\ =\ (a_nx+b_n)\ P_n\ +\ c_n\ P_{n-1}
 
+where for all :math:`n`, :math:`a_n \geq 0` and :math:`c_n < 0`.
+
 We detail:
 
 - some well-known sequences of univariate orthonormal polynomials,

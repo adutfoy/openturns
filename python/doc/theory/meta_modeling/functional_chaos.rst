@@ -245,6 +245,11 @@ This instrumental measure is such that:
 
 This choice is done in the **domination** strategy.
 
+Once the basis has been chosen, the enumeration function helps to enumerate the
+elements of the basis in a specific order
+(see :ref:`enumeration_multivariate_basis` and :ref:`enumeration_strategy` for more
+details on this topic).
+
 Which sub-space of approximation?
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
@@ -357,8 +362,10 @@ This equation can be used to simulate independent random observations
 from the functional chaos expansion: see the :class:`~openturns.FunctionalChaosRandomVector`
 class for more details on this topic.
 
-The second usage assumes that the input distribution :math:`\mu_{\inputRV}` has independent
-marginals and that the basis :math:`\left(\psi_k\right)_{k \in I_n}` is orthonormal with respect
+The second usage assumes that the input distribution :math:`\mu_{\inputRV}` has
+independent
+marginals and that the basis :math:`\left(\psi_k\right)_{k \in I_n}` is orthonormal
+with respect
 to  :math:`\mu_{\inputRV}` and that the first element be:
 
   .. math::
@@ -369,7 +376,7 @@ to  :math:`\mu_{\inputRV}` and that the first element be:
 The orthogonality of the functions implies that:
 
   .. math::
-      \mathbf{E}_{\mu}\left[\psi_{i}(\vect{X})\right] = \scalarproduct{\psi_{i}}{\psi_{0}}_{L^2\left(\mu\right)} = 0
+      \mathbf{E}_{\mu_{\inputRV}}\left[\psi_{i}(\vect{X})\right] = \scalarproduct{\psi_{i}}{\psi_{0}}_{L^2\left(\mu\right)} = 0
 
 for any non-zero :math:`i\neq 0`.
 
