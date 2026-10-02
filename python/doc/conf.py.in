@@ -70,6 +70,601 @@ intersphinx_mapping = {
 
 if "@USE_SPHINX_EXT_MATHJAX@" == "ON":
     extensions.append("sphinx.ext.mathjax")
+    # Macros mirroring math_notations.sty so MathJax renders like LaTeX.
+    # (imgmath and LaTeX builds consume the .sty directly.)
+    mathjax4_config = {
+        "loader": {"load": ["[tex]/boldsymbol"]},
+        "tex": {"macros": {
+        "model": [
+                "{g}",
+                0
+        ],
+        "inputDim": [
+                "{d}",
+                0
+        ],
+        "outputDim": [
+                "{{d_Y}}",
+                0
+        ],
+        "metaModel": [
+                "{\\widetilde{\\model}}",
+                0
+        ],
+        "inputRV": [
+                "{\\vect{X}}",
+                0
+        ],
+        "outputRV": [
+                "{\\vect{Y}}",
+                0
+        ],
+        "inputMeasure": [
+                "{\\mu_{\\inputRV}}",
+                0
+        ],
+        "outputMeasure": [
+                "{\\mu_{\\outputRV}}",
+                0
+        ],
+        "standardRV": [
+                "{\\vect{Z}}",
+                0
+        ],
+        "RVU": [
+                "{\\vect{U}}",
+                0
+        ],
+        "pdf": [
+                "{\\inputMeasure(\\inputReal)}",
+                0
+        ],
+        "inputReal": [
+                "{\\vect{x}}",
+                0
+        ],
+        "outputReal": [
+                "{\\vect{y}}",
+                0
+        ],
+        "standardDim": [
+                "{d_Z}",
+                0
+        ],
+        "dimU": [
+                "{d_U}",
+                0
+        ],
+        "standardReal": [
+                "{\\vect{z}}",
+                0
+        ],
+        "realU": [
+                "{\\vect{u}}",
+                0
+        ],
+        "supp": [
+                "{\\operatorname{supp}\\left(#1\\right)}",
+                1
+        ],
+        "sampleSize": [
+                "{n}",
+                0
+        ],
+        "scalarproduct": [
+                "{\\left\\langle #1, #2 \\right\\rangle}",
+                2
+        ],
+        "set": [
+                "{\\mathcal{#1}}",
+                1
+        ],
+        "standardInputSpace": [
+                "{\\set{Z}}",
+                0
+        ],
+        "physicalInputSpace": [
+                "{\\set{X}}",
+                0
+        ],
+        "physicalOutputSpace": [
+                "{\\set{Y}}",
+                0
+        ],
+        "inputProbabilityDensityFunction": [
+                "{f}",
+                0
+        ],
+        "vect": [
+                "{{\\mathbf{\\boldsymbol{{#1}}}}}",
+                1
+        ],
+        "mat": [
+                "{{\\vect{\\vect{#1}}}}",
+                1
+        ],
+        "tens": [
+                "{{\\vect{\\vect{\\vect{#1}}}}}",
+                1
+        ],
+        "Tr": [
+                "{{#1}^\\top}",
+                1
+        ],
+        "muX": [
+                "{\\vect{\\mu}_{\\:X}}",
+                0
+        ],
+        "Var": [
+                "{\\mathrm{Var}\\left( #1 \\right)}",
+                1
+        ],
+        "Cov": [
+                "{\\mathrm{Cov}\\left( #1 \\right)}",
+                1
+        ],
+        "Expect": [
+                "{{\\mathbb E}\\left[ #1 \\right]}",
+                1
+        ],
+        "Econd": [
+                "{{\\mathbb E}_{#1}\\left[ #2 \\right]}",
+                2
+        ],
+        "Prob": [
+                "{{\\mathbb P}\\left( #1 \\right)}",
+                1
+        ],
+        "ProbCond": [
+                "{{\\mathbb P}_{#1}\\left( #2 \\right)}",
+                2
+        ],
+        "ech": [
+                "{\\left\\{ x_1, \\, \\dots\\,, x_N  \\right\\}}",
+                0
+        ],
+        "matcov": [
+                "{\\mathbf C}",
+                0
+        ],
+        "matcor": [
+                "{\\mathbf R}",
+                0
+        ],
+        "fcar": [
+                "{{\\mathbf 1}_{#1}(#2)}",
+                2
+        ],
+        "di": [
+                "{{\\,\\mathrm{d}#1}}",
+                1
+        ],
+        "norm": [
+                "{\\left\\|#1\\right\\|}",
+                1
+        ],
+        "tendto": [
+                "{\\xrightarrow[#1\\rightarrow#2]{}}",
+                2
+        ],
+        "matr": [
+                "{\\vect{\\vect{#1}}}",
+                1
+        ],
+        "idx": [
+                "{\\vect{\\alpha}}",
+                0
+        ],
+        "Cor": [
+                "{\\mathrm{Cor}\\left[ #1 \\right]}",
+                1
+        ],
+        "NM": [
+                "{\\Nset^{\\inputDim}}",
+                0
+        ],
+        "bdA": [
+                "{{\\boldsymbol{A}}}",
+                0
+        ],
+        "bdB": [
+                "{{\\boldsymbol{B}}}",
+                0
+        ],
+        "bdC": [
+                "{{\\boldsymbol{C}}}",
+                0
+        ],
+        "bdD": [
+                "{{\\boldsymbol{D}}}",
+                0
+        ],
+        "bdE": [
+                "{{\\boldsymbol{E}}}",
+                0
+        ],
+        "bdF": [
+                "{{\\boldsymbol{F}}}",
+                0
+        ],
+        "bdG": [
+                "{{\\boldsymbol{G}}}",
+                0
+        ],
+        "bdH": [
+                "{{\\boldsymbol{H}}}",
+                0
+        ],
+        "bdI": [
+                "{{\\boldsymbol{I}}}",
+                0
+        ],
+        "bdJ": [
+                "{{\\boldsymbol{J}}}",
+                0
+        ],
+        "bdK": [
+                "{{\\boldsymbol{K}}}",
+                0
+        ],
+        "bdL": [
+                "{{\\boldsymbol{L}}}",
+                0
+        ],
+        "bdM": [
+                "{{\\boldsymbol{M}}}",
+                0
+        ],
+        "bdN": [
+                "{{\\boldsymbol{N}}}",
+                0
+        ],
+        "bdO": [
+                "{{\\boldsymbol{O}}}",
+                0
+        ],
+        "bdP": [
+                "{{\\boldsymbol{P}}}",
+                0
+        ],
+        "bdQ": [
+                "{{\\boldsymbol{Q}}}",
+                0
+        ],
+        "bdR": [
+                "{{\\boldsymbol{R}}}",
+                0
+        ],
+        "bdS": [
+                "{{\\boldsymbol{S}}}",
+                0
+        ],
+        "bdT": [
+                "{{\\boldsymbol{T}}}",
+                0
+        ],
+        "bdU": [
+                "{{\\boldsymbol{U}}}",
+                0
+        ],
+        "bdV": [
+                "{{\\boldsymbol{V}}}",
+                0
+        ],
+        "bdW": [
+                "{{\\boldsymbol{W}}}",
+                0
+        ],
+        "bdX": [
+                "{{\\boldsymbol{X}}}",
+                0
+        ],
+        "bdY": [
+                "{{\\boldsymbol{Y}}}",
+                0
+        ],
+        "bdZ": [
+                "{{\\boldsymbol{Z}}}",
+                0
+        ],
+        "bda": [
+                "{{\\boldsymbol{a}}}",
+                0
+        ],
+        "bdb": [
+                "{{\\boldsymbol{b}}}",
+                0
+        ],
+        "bdc": [
+                "{{\\boldsymbol{c}}}",
+                0
+        ],
+        "bdd": [
+                "{{\\boldsymbol{d}}}",
+                0
+        ],
+        "bde": [
+                "{{\\boldsymbol{e}}}",
+                0
+        ],
+        "bdf": [
+                "{{\\boldsymbol{f}}}",
+                0
+        ],
+        "bdg": [
+                "{{\\boldsymbol{g}}}",
+                0
+        ],
+        "bdh": [
+                "{{\\boldsymbol{h}}}",
+                0
+        ],
+        "bdi": [
+                "{{\\boldsymbol{i}}}",
+                0
+        ],
+        "bdj": [
+                "{{\\boldsymbol{j}}}",
+                0
+        ],
+        "bdk": [
+                "{{\\boldsymbol{k}}}",
+                0
+        ],
+        "bdl": [
+                "{{\\boldsymbol{l}}}",
+                0
+        ],
+        "bdm": [
+                "{{\\boldsymbol{m}}}",
+                0
+        ],
+        "bdn": [
+                "{{\\boldsymbol{n}}}",
+                0
+        ],
+        "bdo": [
+                "{{\\boldsymbol{o}}}",
+                0
+        ],
+        "bdp": [
+                "{{\\boldsymbol{p}}}",
+                0
+        ],
+        "bdq": [
+                "{{\\boldsymbol{q}}}",
+                0
+        ],
+        "bdr": [
+                "{{\\boldsymbol{r}}}",
+                0
+        ],
+        "bds": [
+                "{{\\boldsymbol{s}}}",
+                0
+        ],
+        "bdt": [
+                "{{\\boldsymbol{t}}}",
+                0
+        ],
+        "bdu": [
+                "{{\\boldsymbol{u}}}",
+                0
+        ],
+        "bdv": [
+                "{{\\boldsymbol{v}}}",
+                0
+        ],
+        "bdw": [
+                "{{\\boldsymbol{w}}}",
+                0
+        ],
+        "bdx": [
+                "{{\\boldsymbol{x}}}",
+                0
+        ],
+        "bdy": [
+                "{{\\boldsymbol{y}}}",
+                0
+        ],
+        "bdz": [
+                "{{\\boldsymbol{z}}}",
+                0
+        ],
+        "cA": [
+                "{{\\mathcal A}}",
+                0
+        ],
+        "cB": [
+                "{{\\mathcal B}}",
+                0
+        ],
+        "cC": [
+                "{{\\mathcal C}}",
+                0
+        ],
+        "cD": [
+                "{{\\mathcal D}}",
+                0
+        ],
+        "cE": [
+                "{{\\mathcal E}}",
+                0
+        ],
+        "cF": [
+                "{{\\mathcal F}}",
+                0
+        ],
+        "cG": [
+                "{{\\mathcal G}}",
+                0
+        ],
+        "cH": [
+                "{{\\mathcal H}}",
+                0
+        ],
+        "cI": [
+                "{{\\mathcal I}}",
+                0
+        ],
+        "cJ": [
+                "{{\\mathcal J}}",
+                0
+        ],
+        "cK": [
+                "{{\\mathcal K}}",
+                0
+        ],
+        "cL": [
+                "{{\\mathcal L}}",
+                0
+        ],
+        "cM": [
+                "{{\\mathcal M}}",
+                0
+        ],
+        "cN": [
+                "{{\\mathcal N}}",
+                0
+        ],
+        "cO": [
+                "{{\\mathcal O}}",
+                0
+        ],
+        "cP": [
+                "{{\\mathcal P}}",
+                0
+        ],
+        "cQ": [
+                "{{\\mathcal Q}}",
+                0
+        ],
+        "cR": [
+                "{{\\mathcal R}}",
+                0
+        ],
+        "cS": [
+                "{{\\mathcal S}}",
+                0
+        ],
+        "cT": [
+                "{{\\mathcal T}}",
+                0
+        ],
+        "cU": [
+                "{{\\mathcal U}}",
+                0
+        ],
+        "cV": [
+                "{{\\mathcal V}}",
+                0
+        ],
+        "cW": [
+                "{{\\mathcal W}}",
+                0
+        ],
+        "cX": [
+                "{{\\mathcal X}}",
+                0
+        ],
+        "cY": [
+                "{{\\mathcal Y}}",
+                0
+        ],
+        "cZ": [
+                "{{\\mathcal Z}}",
+                0
+        ],
+        "Cset": [
+                "{{\\mathbb C}}",
+                0
+        ],
+        "Eset": [
+                "{{\\mathbb E}}",
+                0
+        ],
+        "Nset": [
+                "{{\\mathbb N}}",
+                0
+        ],
+        "Pset": [
+                "{{\\mathbb P}}",
+                0
+        ],
+        "Qset": [
+                "{{\\mathbb Q}}",
+                0
+        ],
+        "Rset": [
+                "{{\\mathbb R}}",
+                0
+        ],
+        "Zset": [
+                "{{\\mathbb Z}}",
+                0
+        ],
+        "Diff": [
+                "{{\\mathrm{d}}}",
+                0
+        ],
+        "un": [
+                "{\\vect{#1}}",
+                1
+        ],
+        "dpl": [
+                "{\\displaystyle{#1}}",
+                1
+        ],
+        "uw": [
+                "{\\vect{w}}",
+                0
+        ],
+        "uW": [
+                "{\\vect{W}}",
+                0
+        ],
+        "ux": [
+                "{\\vect{x}}",
+                0
+        ],
+        "uX": [
+                "{\\vect{X}}",
+                0
+        ],
+        "uy": [
+                "{\\vect{y}}",
+                0
+        ],
+        "uY": [
+                "{\\vect{Y}}",
+                0
+        ],
+        "uz": [
+                "{\\vect{z}}",
+                0
+        ],
+        "uZ": [
+                "{\\vect{Z}}",
+                0
+        ],
+        "argmin": [
+                "\\operatorname*{argmin}",
+                0
+        ],
+        "argmax": [
+                "\\operatorname*{argmax}",
+                0
+        ],
+        "diag": [
+                "\\operatorname*{diag}",
+                0
+        ],
+        "sgn": [
+                "\\operatorname{sgn}",
+                0
+        ]
+}},
+    }
 else:
     extensions.append("sphinx.ext.imgmath")
     mnpkg = Path(__file__).resolve().parent / "math_notations"
